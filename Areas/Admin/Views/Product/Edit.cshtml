@@ -1,0 +1,11 @@
+﻿
+@model ClotherS.Models.Product
+<h2>Edit Product</h2>
+<form asp-area="Admin" asp-action="Edit">
+    <input type="hidden" asp-for="ProductId" />
+    <label>Name</label>
+    <input asp-for="ProductName" />
+    <label>Price</label>
+    <input asp-for="Price" />
+    <button type="submit">Update</button>
+</form>

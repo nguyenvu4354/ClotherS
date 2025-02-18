@@ -1,0 +1,557 @@
+{
+  "Files": [
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\ClotherS.bundle.scp.css",
+      "PackagePath": "staticwebassets\\ClotherS.k3mjdoiff5.bundle.scp.css"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\css\\animate.css",
+      "PackagePath": "staticwebassets\\css\\animate.css"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\css\\bootstrap.min.css",
+      "PackagePath": "staticwebassets\\css\\bootstrap.min.css"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\css\\font-awesome.min.css",
+      "PackagePath": "staticwebassets\\css\\font-awesome.min.css"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\css\\main.css",
+      "PackagePath": "staticwebassets\\css\\main.css"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\css\\prettyPhoto.css",
+      "PackagePath": "staticwebassets\\css\\prettyPhoto.css"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\css\\price-range.css",
+      "PackagePath": "staticwebassets\\css\\price-range.css"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\css\\responsive.css",
+      "PackagePath": "staticwebassets\\css\\responsive.css"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\favicon.jpg",
+      "PackagePath": "staticwebassets\\favicon.jpg"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\images\\60756746c73a7727a390fe491a9def31.jpeg",
+      "PackagePath": "staticwebassets\\images\\60756746c73a7727a390fe491a9def31.jpeg"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\images\\71a8768ef9b8309287e886e5538a2739.jpeg",
+      "PackagePath": "staticwebassets\\images\\71a8768ef9b8309287e886e5538a2739.jpeg"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\images\\B1.jpeg",
+      "PackagePath": "staticwebassets\\images\\B1.jpeg"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\images\\B2.jpeg",
+      "PackagePath": "staticwebassets\\images\\B2.jpeg"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\images\\B3.jpeg",
+      "PackagePath": "staticwebassets\\images\\B3.jpeg"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\images\\Banner-security.jpg",
+      "PackagePath": "staticwebassets\\images\\Banner-security.jpg"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\images\\accountImg.png",
+      "PackagePath": "staticwebassets\\images\\accountImg.png"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\images\\app.jpg",
+      "PackagePath": "staticwebassets\\images\\app.jpg"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\images\\appStore.png",
+      "PackagePath": "staticwebassets\\images\\appStore.png"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\images\\banner1.jpg",
+      "PackagePath": "staticwebassets\\images\\banner1.jpg"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\images\\banner2.jpg",
+      "PackagePath": "staticwebassets\\images\\banner2.jpg"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\images\\banner3.jpg",
+      "PackagePath": "staticwebassets\\images\\banner3.jpg"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\images\\f4.jpg",
+      "PackagePath": "staticwebassets\\images\\f4.jpg"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\images\\f5.jpg",
+      "PackagePath": "staticwebassets\\images\\f5.jpg"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\images\\googlePlay.png",
+      "PackagePath": "staticwebassets\\images\\googlePlay.png"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\images\\gymItem.png",
+      "PackagePath": "staticwebassets\\images\\gymItem.png"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\images\\headerLogo.png",
+      "PackagePath": "staticwebassets\\images\\headerLogo.png"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\images\\loginVector.jpg",
+      "PackagePath": "staticwebassets\\images\\loginVector.jpg"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\images\\logo.webp",
+      "PackagePath": "staticwebassets\\images\\logo.webp"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\images\\pay.png",
+      "PackagePath": "staticwebassets\\images\\pay.png"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\images\\play.jpg",
+      "PackagePath": "staticwebassets\\images\\play.jpg"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\images\\pngtree-clothing-shop-logo-template-vector-icon-clothes-icon-shop-vector-png-image_12521626.png",
+      "PackagePath": "staticwebassets\\images\\pngtree-clothing-shop-logo-template-vector-icon-clothes-icon-shop-vector-png-image_12521626.png"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\images\\product1.jpg",
+      "PackagePath": "staticwebassets\\images\\product1.jpg"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\images\\product1.webp",
+      "PackagePath": "staticwebassets\\images\\product1.webp"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\images\\product2.jpg",
+      "PackagePath": "staticwebassets\\images\\product2.jpg"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\images\\product3.jpg",
+      "PackagePath": "staticwebassets\\images\\product3.jpg"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\images\\sg-11134201-22100-pfuexarvmoiv25.jpeg",
+      "PackagePath": "staticwebassets\\images\\sg-11134201-22100-pfuexarvmoiv25.jpeg"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\images\\sg-11134201-22110-fisljxxmefkvb8.jpeg",
+      "PackagePath": "staticwebassets\\images\\sg-11134201-22110-fisljxxmefkvb8.jpeg"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\images\\sg-11134201-22110-ko3rif1w03jvdf.jpeg",
+      "PackagePath": "staticwebassets\\images\\sg-11134201-22110-ko3rif1w03jvdf.jpeg"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\images\\sg-11134201-22110-sa0h4pqkiljv0c.jpeg",
+      "PackagePath": "staticwebassets\\images\\sg-11134201-22110-sa0h4pqkiljv0c.jpeg"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\images\\sg-11134201-22120-a5nepg13wmkvfa.jpeg",
+      "PackagePath": "staticwebassets\\images\\sg-11134201-22120-a5nepg13wmkvfa.jpeg"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\images\\sg-11134201-22120-nl6s2tl68rkva1.jpeg",
+      "PackagePath": "staticwebassets\\images\\sg-11134201-22120-nl6s2tl68rkva1.jpeg"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\images\\sg-11134201-7qvdk-lhn2gajb4mpg5d.jpeg",
+      "PackagePath": "staticwebassets\\images\\sg-11134201-7qvdk-lhn2gajb4mpg5d.jpeg"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\images\\shoeItem.png",
+      "PackagePath": "staticwebassets\\images\\shoeItem.png"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\images\\sweaterItem.webp",
+      "PackagePath": "staticwebassets\\images\\sweaterItem.webp"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\images\\trousersItem.png",
+      "PackagePath": "staticwebassets\\images\\trousersItem.png"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\images\\vn-11134201-7qukw-lesf14e86bnub4.jpeg",
+      "PackagePath": "staticwebassets\\images\\vn-11134201-7qukw-lesf14e86bnub4.jpeg"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\images\\vn-11134201-7r98o-lln7el69q9bwf7.jpeg",
+      "PackagePath": "staticwebassets\\images\\vn-11134201-7r98o-lln7el69q9bwf7.jpeg"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\images\\vn-11134202-7qukw-lewv16o6le8n26.jpeg",
+      "PackagePath": "staticwebassets\\images\\vn-11134202-7qukw-lewv16o6le8n26.jpeg"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\images\\vn-11134207-7qukw-lfwaapjk7awnb1.jpeg",
+      "PackagePath": "staticwebassets\\images\\vn-11134207-7qukw-lfwaapjk7awnb1.jpeg"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\images\\vn-11134207-7qukw-lgizffwhtomv56.jpeg",
+      "PackagePath": "staticwebassets\\images\\vn-11134207-7qukw-lgizffwhtomv56.jpeg"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\images\\vn-11134207-7qukw-lgk9xv9ev9brb2.jpeg",
+      "PackagePath": "staticwebassets\\images\\vn-11134207-7qukw-lgk9xv9ev9brb2.jpeg"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\images\\vn-11134207-7qukw-lhshacr4utoh47.jpeg",
+      "PackagePath": "staticwebassets\\images\\vn-11134207-7qukw-lhshacr4utoh47.jpeg"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\images\\vn-11134207-7qukw-lhx23jmp4khta2.jpeg",
+      "PackagePath": "staticwebassets\\images\\vn-11134207-7qukw-lhx23jmp4khta2.jpeg"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\images\\vn-11134207-7qukw-lk4qd0ve2y0k78.jpeg",
+      "PackagePath": "staticwebassets\\images\\vn-11134207-7qukw-lk4qd0ve2y0k78.jpeg"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\images\\vn-11134207-7qukw-lk7xwzac5fp0e8.jpeg",
+      "PackagePath": "staticwebassets\\images\\vn-11134207-7qukw-lk7xwzac5fp0e8.jpeg"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\images\\vn-11134207-7r98o-lkqk86doy0g00b.jpeg",
+      "PackagePath": "staticwebassets\\images\\vn-11134207-7r98o-lkqk86doy0g00b.jpeg"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\images\\vn-11134207-7r98o-lkuzehp4jjyjf6.jpeg",
+      "PackagePath": "staticwebassets\\images\\vn-11134207-7r98o-lkuzehp4jjyjf6.jpeg"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\images\\vn-11134207-7r98o-lldqbe77u7cmfd.jpeg",
+      "PackagePath": "staticwebassets\\images\\vn-11134207-7r98o-lldqbe77u7cmfd.jpeg"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\images\\vn-11134207-7r98o-llg8x85p8wco4e.jpeg",
+      "PackagePath": "staticwebassets\\images\\vn-11134207-7r98o-llg8x85p8wco4e.jpeg"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\images\\vn-11134207-7r98o-lllz4mdii8gf40.jpeg",
+      "PackagePath": "staticwebassets\\images\\vn-11134207-7r98o-lllz4mdii8gf40.jpeg"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\images\\vn-11134207-7r98o-llxar89o2nz391.jpeg",
+      "PackagePath": "staticwebassets\\images\\vn-11134207-7r98o-llxar89o2nz391.jpeg"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\images\\vn-11134207-7r98o-lm8dg3ikatwf3b.jpeg",
+      "PackagePath": "staticwebassets\\images\\vn-11134207-7r98o-lm8dg3ikatwf3b.jpeg"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\images\\vn-11134207-7r98o-lmjxqa2bnfmnea.jfif",
+      "PackagePath": "staticwebassets\\images\\vn-11134207-7r98o-lmjxqa2bnfmnea.jfif"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\images\\vn-11134207-7r98o-lmk1d8b4dmfz2c.jpeg",
+      "PackagePath": "staticwebassets\\images\\vn-11134207-7r98o-lmk1d8b4dmfz2c.jpeg"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\images\\vn-11134207-7r98o-lmqvnl6psmhr95.jpeg",
+      "PackagePath": "staticwebassets\\images\\vn-11134207-7r98o-lmqvnl6psmhr95.jpeg"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\images\\vn-11134207-7r98o-lmtwsvywbgtb23.jpeg",
+      "PackagePath": "staticwebassets\\images\\vn-11134207-7r98o-lmtwsvywbgtb23.jpeg"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\images\\vn-50009109-d1ddd14e0fa9b081a4b7a546d937306d.png",
+      "PackagePath": "staticwebassets\\images\\vn-50009109-d1ddd14e0fa9b081a4b7a546d937306d.png"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\js\\bootstrap.min.js",
+      "PackagePath": "staticwebassets\\js\\bootstrap.min.js"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\js\\contact.js",
+      "PackagePath": "staticwebassets\\js\\contact.js"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\js\\gmaps.js",
+      "PackagePath": "staticwebassets\\js\\gmaps.js"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\js\\html5shiv.js",
+      "PackagePath": "staticwebassets\\js\\html5shiv.js"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\js\\jquery.js",
+      "PackagePath": "staticwebassets\\js\\jquery.js"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\js\\jquery.prettyPhoto.js",
+      "PackagePath": "staticwebassets\\js\\jquery.prettyPhoto.js"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\js\\jquery.scrollUp.min.js",
+      "PackagePath": "staticwebassets\\js\\jquery.scrollUp.min.js"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\js\\main.js",
+      "PackagePath": "staticwebassets\\js\\main.js"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\js\\price-range.js",
+      "PackagePath": "staticwebassets\\js\\price-range.js"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\lib\\bootstrap\\LICENSE",
+      "PackagePath": "staticwebassets\\lib\\bootstrap"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.css"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.css.map"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.min.css"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.min.css.map"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.css"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.css.map"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.min.css"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.min.css.map"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.css"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.css.map"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.min.css"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.min.css.map"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.css"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.css.map"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.min.css"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.min.css.map"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.css"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.css.map"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.min.css"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.min.css.map"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.css"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.css.map"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.min.css"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.min.css.map"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.css"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.css.map"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.min.css"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.min.css.map"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.css"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.css.map"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.min.css"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.min.css.map"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.js",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.js"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.js.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.js.map"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.min.js",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.min.js"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.min.js.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.min.js.map"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.esm.js",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.esm.js"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.esm.js.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.esm.js.map"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.esm.min.js",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.esm.min.js"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.esm.min.js.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.esm.min.js.map"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.js",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.js"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.js.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.js.map"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.min.js",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.min.js"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.min.js.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.min.js.map"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\lib\\jquery-validation-unobtrusive\\LICENSE.txt",
+      "PackagePath": "staticwebassets\\lib\\jquery-validation-unobtrusive\\LICENSE.txt"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\lib\\jquery-validation-unobtrusive\\jquery.validate.unobtrusive.js",
+      "PackagePath": "staticwebassets\\lib\\jquery-validation-unobtrusive\\jquery.validate.unobtrusive.js"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\lib\\jquery-validation-unobtrusive\\jquery.validate.unobtrusive.min.js",
+      "PackagePath": "staticwebassets\\lib\\jquery-validation-unobtrusive\\jquery.validate.unobtrusive.min.js"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\lib\\jquery-validation\\LICENSE.md",
+      "PackagePath": "staticwebassets\\lib\\jquery-validation\\LICENSE.md"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\lib\\jquery-validation\\dist\\additional-methods.js",
+      "PackagePath": "staticwebassets\\lib\\jquery-validation\\dist\\additional-methods.js"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\lib\\jquery-validation\\dist\\additional-methods.min.js",
+      "PackagePath": "staticwebassets\\lib\\jquery-validation\\dist\\additional-methods.min.js"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\lib\\jquery-validation\\dist\\jquery.validate.js",
+      "PackagePath": "staticwebassets\\lib\\jquery-validation\\dist\\jquery.validate.js"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\lib\\jquery-validation\\dist\\jquery.validate.min.js",
+      "PackagePath": "staticwebassets\\lib\\jquery-validation\\dist\\jquery.validate.min.js"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\lib\\jquery\\LICENSE.txt",
+      "PackagePath": "staticwebassets\\lib\\jquery\\LICENSE.txt"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\lib\\jquery\\dist\\jquery.js",
+      "PackagePath": "staticwebassets\\lib\\jquery\\dist\\jquery.js"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\lib\\jquery\\dist\\jquery.min.js",
+      "PackagePath": "staticwebassets\\lib\\jquery\\dist\\jquery.min.js"
+    },
+    {
+      "Id": "D:\\PRN222\\Code\\ClotherS\\wwwroot\\lib\\jquery\\dist\\jquery.min.map",
+      "PackagePath": "staticwebassets\\lib\\jquery\\dist\\jquery.min.map"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.ClotherS.Microsoft.AspNetCore.StaticWebAssetEndpoints.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssetEndpoints.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.ClotherS.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.build.ClotherS.props",
+      "PackagePath": "build\\ClotherS.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildMultiTargeting.ClotherS.props",
+      "PackagePath": "buildMultiTargeting\\ClotherS.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildTransitive.ClotherS.props",
+      "PackagePath": "buildTransitive\\ClotherS.props"
+    }
+  ],
+  "ElementsToRemove": []
+}
