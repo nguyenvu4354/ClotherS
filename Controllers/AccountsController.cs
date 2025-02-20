@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ClotherS.Models;
 using ClotherS.Repositories;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ClotherS.Controllers
 {
@@ -23,6 +24,7 @@ namespace ClotherS.Controllers
         }
 
         // GET: Accounts
+        [Authorize(Roles = "1")]
         public async Task<IActionResult> Index()
         {
             var dataContext = _context.Accounts.Include(a => a.Role);
@@ -173,11 +175,12 @@ namespace ClotherS.Controllers
             if (account != null)
             {
                 var claims = new List<Claim>
-                {
-                    new Claim(ClaimTypes.Name, account.Email),
-                    new Claim("FullName", account.FirstName + " " + account.LastName),
-                    new Claim(ClaimTypes.Role, account.RoleId.ToString())
-                };
+        {
+                    new Claim(ClaimTypes.NameIdentifier, account.AccountId.ToString()),
+            new Claim(ClaimTypes.Name, account.Email),
+            new Claim("FullName", account.FirstName + " " + account.LastName),
+            new Claim(ClaimTypes.Role, account.RoleId.ToString()) // Lưu RoleId dưới dạng chuỗi
+        };
 
                 var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                 var authProperties = new AuthenticationProperties { IsPersistent = true };
@@ -185,9 +188,11 @@ namespace ClotherS.Controllers
                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
                 return RedirectToAction("Index", "Home");
             }
+
             ViewBag.Error = "Invalid email or password";
             return View();
         }
+
 
         // GET: Accounts/Register
         public IActionResult Register()

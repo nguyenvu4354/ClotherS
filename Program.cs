@@ -21,9 +21,15 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     .AddCookie(options =>
     {
         options.LoginPath = "/Accounts/Login";
-        options.LogoutPath = "/Accounts/Logout";
         options.AccessDeniedPath = "/Accounts/AccessDenied";
     });
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy => policy.RequireRole("1"));
+    options.AddPolicy("StaffOnly", policy => policy.RequireRole("2"));
+    options.AddPolicy("CustomerOnly", policy => policy.RequireRole("3"));
+});
 
 // Cấu hình DbContext
 builder.Services.AddDbContext<DataContext>(options =>
@@ -69,10 +75,6 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
-app.MapControllerRoute(
-    name: "Areas",
-    pattern: "{area:exists}/{controller=Product}/{action=Index}/{id?}");
-
 // Chạy ứng dụng
 app.Run();
 

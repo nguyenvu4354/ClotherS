@@ -9,20 +9,20 @@
                     <div class="col-sm-4">
                         <div class="product-image-wrapper">
                             <div class="single-products">
-                                <a asp-action="Details" asp-controller="Product" asp-route-id="@item.ProductId">
+                                <a asp-action="Details" asp-controller="Home" asp-route-id="@item.ProductId">
                                     <div class="productinfo text-center">
                                         <img src="~/images/@item.Image" alt="@item.ProductName" />
                                         <h2>$@item.Price</h2>
                                         <p>@item.ProductName</p>
                                     </div>
                                 </a>
-                                <a asp-action="Details" asp-controller="Product" asp-route-id="@item.ProductId">
-                                <div class="product-overlay">                                    
+                                <a asp-action="Details" asp-controller="Home" asp-route-id="@item.ProductId">
+                                    <div class="product-overlay">
                                         <div class="overlay-content">
                                             <h2>$@item.Price</h2>
                                             <p>@item.ProductName</p>
-                                        </div>                                   
-                                </div>
+                                        </div>
+                                    </div>
                                 </a>
                             </div>
                             <div class="choose">
@@ -37,7 +37,7 @@
             </div>
         </div>
 
-        
+        <!-- Sidebar -->
         <div class="col-sm-3">
             @Html.Partial("_SidebarPartial")
         </div>

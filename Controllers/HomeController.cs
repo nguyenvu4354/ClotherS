@@ -2,6 +2,7 @@
 using ClotherS.Models;
 using ClotherS.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace ClotherS.Controllers
 {
@@ -20,6 +21,23 @@ namespace ClotherS.Controllers
         {        
             var products = _dataContext.Products.ToList();
             return View(products); 
+        }
+        public IActionResult Details(int id)
+        {
+            var product = _dataContext.Products
+                .Include(p => p.Category)
+                .Include(p => p.Brand)
+                .FirstOrDefault(p => p.ProductId == id);
+
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            ViewBag.CategoryName = product.Category?.CategoryName ?? "Unknown";
+            ViewBag.BrandName = product.Brand?.BrandName ?? "Unknown";
+
+            return View(product);
         }
 
         public IActionResult Privacy()

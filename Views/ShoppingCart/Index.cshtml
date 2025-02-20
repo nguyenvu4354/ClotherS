@@ -26,6 +26,11 @@
         }
     </table>
     <a href="@Url.Action("ClearCart", "ShoppingCart")" class="btn btn-warning">Xóa toàn bộ</a>
+    <form method="post" asp-action="Checkout" asp-controller="ShoppingCart">
+        <button type="submit" class="btn btn-success">Confirm Order</button>
+    </form>
+
+
 }
 else
 {
