@@ -71,11 +71,12 @@ void SeedData(DataContext context)
     if (!context.Roles.Any())
     {
         var roles = new List<Role>
-        {
-            new Role { RoleName = "Admin" },
-            new Role { RoleName = "Customer" },
-            new Role { RoleName = "Staff" }
-        };
+{
+    new Role { RoleName = "Admin", Disable = false },
+    new Role { RoleName = "Customer", Disable = false },
+    new Role { RoleName = "Staff", Disable = false }
+};
+
 
         context.Roles.AddRange(roles);
         context.SaveChanges();

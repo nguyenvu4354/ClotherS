@@ -8,11 +8,10 @@ public class Order
     public DateTime OrderDate { get; set; }
     public DateTime? ReceiveDate { get; set; }
     public int AccountId { get; set; }
-    public string Status { get; set; } = "Pending"; // Mặc định là Pending
+    public string Status { get; set; } = "Pending"; 
 
-    public bool IsCart { get; set; } = true; // true: giỏ hàng, false: đơn đã đặt
+    public bool IsCart { get; set; } = true; 
 
-    // Quan hệ
     public Account Account { get; set; }
     public ICollection<OrderDetail> OrderDetails { get; set; }
 }
