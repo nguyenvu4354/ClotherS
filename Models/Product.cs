@@ -23,6 +23,6 @@ namespace ClotherS.Models
         // Quan hệ
         public Brand Brand { get; set; }
         public Category Category { get; set; }
-        public ICollection<OrderDetail> OrderDetails { get; set; } // Thêm thuộc tính này để thiết lập quan hệ
+        public ICollection<OrderDetail> OrderDetails { get; set; } 
     }
 }
