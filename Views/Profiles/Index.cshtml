@@ -11,7 +11,7 @@
     <div class="alert alert-success">@ViewBag.Success</div>
 }
 
-<form asp-action="Profile" method="post">
+<form asp-controller="Profiles" asp-action="Index" method="post">
     <input type="hidden" asp-for="AccountId" />
 
     <div class="form-group">

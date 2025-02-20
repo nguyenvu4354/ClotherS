@@ -1,38 +1,37 @@
 ﻿@model ClotherS.Models.Order
 
-<h2>Giỏ hàng của bạn</h2>
+<h2>Your Shopping Cart</h2>
 
 @if (Model.OrderDetails != null && Model.OrderDetails.Any())
 {
     <table class="table">
         <tr>
-            <th>Sản phẩm</th>
-            <th>Giá</th>
-            <th>Số lượng</th>
-            <th>Thành tiền</th>
-            <th>Thao tác</th>
+            <th>Product</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Total</th>
+            <th>Action</th>
         </tr>
         @foreach (var item in Model.OrderDetails)
         {
             <tr>
                 <td>@item.Product.ProductName</td>
-                <td>@item.Price</td>
+                <td>@item.Price.ToString("C")</td>
                 <td>@item.Quantity</td>
                 <td>@(item.Quantity * item.Price)</td>
                 <td>
-                    <a href="@Url.Action("RemoveFromCart", "ShoppingCart", new { productId = item.ProductId })" class="btn btn-danger">Xóa</a>
+                    <a href="@Url.Action("RemoveFromCart", "ShoppingCart", new { productId = item.ProductId })" class="btn btn-danger">Remove</a>
                 </td>
             </tr>
         }
     </table>
-    <a href="@Url.Action("ClearCart", "ShoppingCart")" class="btn btn-warning">Xóa toàn bộ</a>
+    <a href="@Url.Action("ClearCart", "ShoppingCart")" class="btn btn-warning">Clear Cart</a>
     <form method="post" asp-action="Checkout" asp-controller="ShoppingCart">
         <button type="submit" class="btn btn-success">Confirm Order</button>
     </form>
-
-
 }
 else
 {
-    <p>Giỏ hàng trống.</p>
+    <p>Your cart is empty.</p>
+    <a href="@Url.Action("Index", "Home")" class="btn btn-primary">Back to Home</a>
 }

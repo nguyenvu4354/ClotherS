@@ -38,8 +38,6 @@ namespace ClotherS.Controllers
             return View(cart ?? new Order { OrderDetails = new List<OrderDetail>() });
         }
 
-
-
         // Thêm sản phẩm vào giỏ hàng
         public IActionResult AddToCart(int productId, int quantity)
         {
@@ -108,7 +106,7 @@ namespace ClotherS.Controllers
                 var item = cart.OrderDetails.FirstOrDefault(od => od.ProductId == productId);
                 if (item != null)
                 {
-                    cart.OrderDetails.Remove(item);
+                    _context.OrderDetails.Remove(item);
                     _context.SaveChanges();
                 }
             }
@@ -131,7 +129,7 @@ namespace ClotherS.Controllers
 
             if (cart != null)
             {
-                cart.OrderDetails.Clear();
+                _context.OrderDetails.RemoveRange(cart.OrderDetails);
                 _context.SaveChanges();
             }
 
@@ -157,7 +155,6 @@ namespace ClotherS.Controllers
                 return RedirectToAction("Index");
             }
 
-            // Cập nhật trạng thái đơn hàng từ "giỏ hàng" thành "đã đặt hàng"
             cart.IsCart = false;
             cart.Status = "Processing";
             cart.OrderDate = DateTime.Now;
@@ -167,6 +164,7 @@ namespace ClotherS.Controllers
             TempData["Success"] = "Order placed successfully!";
             return RedirectToAction("OrderConfirmation");
         }
+
         public IActionResult OrderConfirmation()
         {
             var userId = GetUserId();
@@ -190,13 +188,11 @@ namespace ClotherS.Controllers
             return View(latestOrder);
         }
 
-
-        // Lấy ID người dùng từ Claims (giả sử bạn đã có Authentication)
+        // Lấy ID người dùng từ Claims
         private int? GetUserId()
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
             return userIdClaim != null ? int.Parse(userIdClaim.Value) : (int?)null;
         }
-
     }
 }
