@@ -17,7 +17,7 @@ namespace ClotherS.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.1")
+                .HasAnnotation("ProductVersion", "8.0.13")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -77,6 +77,7 @@ namespace ClotherS.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("RoleId")
+                        .IsRequired()
                         .HasColumnType("int");
 
                     b.HasKey("AccountId");
@@ -219,6 +220,9 @@ namespace ClotherS.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RoleId"));
 
+                    b.Property<bool>("Disable")
+                        .HasColumnType("bit");
+
                     b.Property<string>("RoleName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -264,7 +268,8 @@ namespace ClotherS.Migrations
                     b.HasOne("ClotherS.Models.Role", "Role")
                         .WithMany("Accounts")
                         .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("Role");
                 });
@@ -309,17 +314,12 @@ namespace ClotherS.Migrations
             modelBuilder.Entity("Order", b =>
                 {
                     b.HasOne("ClotherS.Models.Account", "Account")
-                        .WithMany("Orders")
+                        .WithMany()
                         .HasForeignKey("AccountId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Account");
-                });
-
-            modelBuilder.Entity("ClotherS.Models.Account", b =>
-                {
-                    b.Navigation("Orders");
                 });
 
             modelBuilder.Entity("ClotherS.Models.Brand", b =>

@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -53,8 +56,6 @@ namespace ClotherS.Controllers
         }
 
         // POST: Accounts/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("AccountId,Email,FirstName,LastName,Phone,Password,AccountImage,Address,Gender,Active,Description,RoleId,DateOfBirth,Disable")] Account account)
@@ -83,16 +84,11 @@ namespace ClotherS.Controllers
                 return NotFound();
             }
 
-            // Lấy danh sách RoleId và RoleName
             ViewBag.RoleId = new SelectList(_context.Roles, "RoleId", "RoleName", account.RoleId);
-
             return View(account);
         }
 
-
         // POST: Accounts/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("AccountId,Email,FirstName,LastName,Phone,Password,AccountImage,Address,Gender,Active,Description,RoleId,DateOfBirth,Disable")] Account account)
@@ -102,19 +98,8 @@ namespace ClotherS.Controllers
                 return NotFound();
             }
 
-            // Kiểm tra RoleId có được gửi về không
-            Console.WriteLine($"RoleId received: {account.RoleId}");
-
             if (!ModelState.IsValid)
             {
-                // In ra lỗi nếu có
-                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
-                foreach (var error in errors)
-                {
-                    Console.WriteLine(error);
-                }
-
-                // Load lại danh sách Role nếu có lỗi
                 ViewBag.RoleId = new SelectList(_context.Roles, "RoleId", "RoleName", account.RoleId);
                 return View(account);
             }
@@ -138,8 +123,6 @@ namespace ClotherS.Controllers
 
             return RedirectToAction(nameof(Index));
         }
-
-
 
         // GET: Accounts/Delete/5
         public async Task<IActionResult> Delete(int? id)
@@ -175,9 +158,134 @@ namespace ClotherS.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // GET: Accounts/Login
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        // POST: Accounts/Login
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Login(string email, string password)
+        {
+            var account = await _context.Accounts.FirstOrDefaultAsync(a => a.Email == email && a.Password == password);
+            if (account != null)
+            {
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, account.Email),
+                    new Claim("FullName", account.FirstName + " " + account.LastName),
+                    new Claim(ClaimTypes.Role, account.RoleId.ToString())
+                };
+
+                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                var authProperties = new AuthenticationProperties { IsPersistent = true };
+
+                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
+                return RedirectToAction("Index", "Home");
+            }
+            ViewBag.Error = "Invalid email or password";
+            return View();
+        }
+
+        // GET: Accounts/Register
+        public IActionResult Register()
+        {
+            return View();
+        }
+
+        // POST: Accounts/Register
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Register(Account account)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Add(account);
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Login");
+            }
+            return View(account);
+        }
+
+        // GET: Accounts/Logout
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return RedirectToAction("Login");
+        }
+
         private bool AccountExists(int id)
         {
             return _context.Accounts.Any(e => e.AccountId == id);
         }
+    
+    // GET: Accounts/Profile
+public async Task<IActionResult> Profile()
+        {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Login");
+            }
+
+            var email = User.Identity.Name;
+            var account = await _context.Accounts.Include(a => a.Role).FirstOrDefaultAsync(a => a.Email == email);
+
+            if (account == null)
+            {
+                return NotFound();
+            }
+
+            return View(account);
+        }
+
+        // POST: Accounts/Profile
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Profile([Bind("AccountId,Email,FirstName,LastName,Phone,AccountImage,Address,Gender,Description,DateOfBirth")] Account account)
+        {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Login");
+            }
+
+            var existingAccount = await _context.Accounts.FindAsync(account.AccountId);
+            if (existingAccount == null)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                existingAccount.FirstName = account.FirstName;
+                existingAccount.LastName = account.LastName;
+                existingAccount.Phone = account.Phone;
+                existingAccount.Address = account.Address;
+                existingAccount.Gender = account.Gender;
+                existingAccount.Description = account.Description;
+                existingAccount.DateOfBirth = account.DateOfBirth;
+
+                try
+                {
+                    _context.Update(existingAccount);
+                    await _context.SaveChangesAsync();
+                    ViewBag.Success = "Profile updated successfully!";
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!AccountExists(account.AccountId))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+            }
+
+            return View(existingAccount);
+        }
     }
-}
+    }

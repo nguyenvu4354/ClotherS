@@ -2,18 +2,28 @@
 using ClotherS.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddDistributedMemoryCache();
-builder.Services.AddSession(options => 
+builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(30); 
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
+
+// Cấu hình Authentication
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Accounts/Login";
+        options.LogoutPath = "/Accounts/Logout";
+        options.AccessDeniedPath = "/Accounts/AccessDenied";
+    });
 
 // Cấu hình DbContext
 builder.Services.AddDbContext<DataContext>(options =>
@@ -47,7 +57,8 @@ else
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
-// Cấu hình Session Middleware
+// Cấu hình Authentication và Session Middleware
+app.UseAuthentication();
 app.UseSession();
 
 // Cấu hình routing và Authorization
@@ -71,17 +82,15 @@ void SeedData(DataContext context)
     if (!context.Roles.Any())
     {
         var roles = new List<Role>
-{
-    new Role { RoleName = "Admin", Disable = false },
-    new Role { RoleName = "Customer", Disable = false },
-    new Role { RoleName = "Staff", Disable = false }
-};
-
+        {
+            new Role { RoleName = "Admin", Disable = false },
+            new Role { RoleName = "Customer", Disable = false },
+            new Role { RoleName = "Staff", Disable = false }
+        };
 
         context.Roles.AddRange(roles);
         context.SaveChanges();
     }
-
 
     // Seed dữ liệu cho bảng Product
     if (!context.Products.Any())
@@ -174,54 +183,6 @@ void SeedData(DataContext context)
                 RoleId = 3,
                 DateOfBirth = "1992-08-15",
                 Disable = false
-            },
-            new Account
-            {
-                Email = "user3@example.com",
-                FirstName = "Lê",
-                LastName = "Văn C",
-                Phone = "0777888999",
-                Password = "@1",
-                AccountImage = "avatar3.jpg",
-                Address = "Đà Nẵng",
-                Gender = "Male",
-                Active = true,
-                Description = "Người dùng mới",
-                RoleId = 1,
-                DateOfBirth = "2000-02-20",
-                Disable = false
-            },
-            new Account
-            {
-                Email = "user4@example.com",
-                FirstName = "Phạm",
-                LastName = "Thị D",
-                Phone = "0345678912",
-                Password = "@1",
-                AccountImage = "avatar4.jpg",
-                Address = "Hải Phòng",
-                Gender = "Female",
-                Active = false,
-                Description = "Chưa kích hoạt",
-                RoleId = 2,
-                DateOfBirth = "1988-11-30",
-                Disable = false
-            },
-            new Account
-            {
-                Email = "user5@example.com",
-                FirstName = "Hoàng",
-                LastName = "Văn E",
-                Phone = "0912345678",
-                Password = "@1",
-                AccountImage = "avatar5.jpg",
-                Address = "Cần Thơ",
-                Gender = "Male",
-                Active = true,
-                Description = "Khách hàng thân thiết",
-                RoleId = 3,
-                DateOfBirth = "1997-06-25",
-                Disable = false
             }
         };
 
@@ -230,4 +191,3 @@ void SeedData(DataContext context)
 
     context.SaveChanges();
 }
-
