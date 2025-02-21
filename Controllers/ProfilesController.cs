@@ -107,12 +107,56 @@ public class ProfilesController : Controller
             {
                 await profileImage.CopyToAsync(stream);
             }
-
-            // Cập nhật đường dẫn ảnh mà không ảnh hưởng đến các trường khác
             existingAccount.AccountImage = fileName;
             await _context.SaveChangesAsync();
         }
 
         return RedirectToAction(nameof(Index));
     }
+    public async Task<IActionResult> Orders()
+    {
+        if (!User.Identity.IsAuthenticated)
+        {
+            return RedirectToAction("Login", "Accounts");
+        }
+
+        var email = User.Identity.Name;
+        var account = await _context.Accounts.FirstOrDefaultAsync(a => a.Email == email);
+
+        if (account == null)
+        {
+            return NotFound();
+        }
+
+        var orders = await _context.Orders
+            .Where(o => o.AccountId == account.AccountId && !o.IsCart) 
+            .Include(o => o.OrderDetails)
+            .ThenInclude(od => od.Product)
+            .OrderByDescending(o => o.OrderDate)
+            .ToListAsync();
+
+        return View(orders);
+    }
+
+    public async Task<IActionResult> OrderDetails(int id)
+    {
+        if (!User.Identity.IsAuthenticated)
+        {
+            return RedirectToAction("Login", "Accounts");
+        }
+
+        var order = await _context.Orders
+            .Where(o => o.OId == id)
+            .Include(o => o.OrderDetails)
+            .ThenInclude(od => od.Product)
+            .FirstOrDefaultAsync();
+
+        if (order == null)
+        {
+            return NotFound();
+        }
+
+        return View(order);
+    }
+
 }

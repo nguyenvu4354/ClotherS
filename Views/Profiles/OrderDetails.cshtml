@@ -1,0 +1,39 @@
+﻿@model ClotherS.Models.Order
+
+@{
+    ViewData["Title"] = "Order Details";
+}
+
+<h2>Order Details - #@Model.OId</h2>
+
+<p><strong>Order Date:</strong> @Model.OrderDate.ToString("yyyy-MM-dd")</p>
+<p><strong>Receive Date:</strong> @(Model.ReceiveDate?.ToString("yyyy-MM-dd") ?? "Not received")</p>
+<p><strong>Status:</strong> @Model.Status</p>
+
+<h3>Products</h3>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Product</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Discount</th>
+            <th>Total</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var detail in Model.OrderDetails)
+        {
+            <tr>
+                <td>@detail.Product.ProductName</td>
+                <td>$@detail.Price</td>
+                <td>@detail.Quantity</td>
+                <td>@detail.Discount%</td>
+                <td>$@(detail.Price * detail.Quantity * (1 - detail.Discount / 100.0))</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-action="Orders" class="btn btn-secondary">Back to Orders</a>
