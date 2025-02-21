@@ -4,58 +4,122 @@
     ViewData["Title"] = "Profile";
 }
 
-<h2>Profile</h2>
+<h2 class="text-center mb-4 fw-bold text-primary">My Profile</h2>
 
 @if (ViewBag.Success != null)
 {
-    <div class="alert alert-success">@ViewBag.Success</div>
+    <div class="alert alert-success text-center">@ViewBag.Success</div>
 }
 
-<form asp-controller="Profiles" asp-action="Index" method="post">
-    <input type="hidden" asp-for="AccountId" />
+<div class="container">
+    <div class="row">
+        <!-- Ảnh đại diện -->
+        <div class="col-md-4 text-center">
+            <div class="card shadow-lg border-0 rounded-4 p-4">
+                <form asp-controller="Profiles" asp-action="UpdateProfileImage" method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="AccountId" value="@Model.AccountId" />
 
-    <div class="form-group">
-        <label asp-for="Email"></label>
-        <input asp-for="Email" class="form-control" readonly />
+                    <div class="position-relative">
+                        <label for="profileImageInput" class="image-upload-label">
+                            <img id="profilePreview"
+                                 src="@(string.IsNullOrEmpty(Model.AccountImage) ? "/images/default-avatar.png" : "/images/" + Model.AccountImage)"
+                                 class="img-fluid rounded-circle border border-3 shadow"
+                                 style="width: 200px; height: 200px; object-fit: cover; cursor: pointer; transition: transform 0.3s;"
+                                 alt="Profile Image"
+                                 title="Click to change profile picture" />
+                        </label>
+                        <input type="file" name="profileImage" id="profileImageInput" class="d-none" accept="image/*" />
+                    </div>
+
+                    <button type="submit" class="btn btn-primary mt-3 w-100 fw-bold">Update Image</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Thông tin cá nhân -->
+        <div class="col-md-8">
+            <form asp-controller="Profiles" asp-action="UpdateProfile" method="post" class="card shadow-lg border-0 rounded-4 p-4">
+                <input type="hidden" asp-for="AccountId" />
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="FirstName" class="fw-bold text-primary"></label>
+                            <input asp-for="FirstName" class="form-control rounded-3 border-primary" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="LastName" class="fw-bold text-primary"></label>
+                            <input asp-for="LastName" class="form-control rounded-3 border-primary" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group mt-3">
+                    <label asp-for="Email" class="fw-bold text-primary"></label>
+                    <input asp-for="Email" class="form-control rounded-3 border-primary bg-light" readonly />
+                </div>
+
+                <div class="form-group mt-3">
+                    <label asp-for="Phone" class="fw-bold text-primary"></label>
+                    <input asp-for="Phone" class="form-control rounded-3 border-primary" />
+                </div>
+
+                <div class="form-group mt-3">
+                    <label asp-for="Address" class="fw-bold text-primary"></label>
+                    <input asp-for="Address" class="form-control rounded-3 border-primary" />
+                </div>
+
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="Gender" class="fw-bold text-primary"></label>
+                            <select asp-for="Gender" class="form-control rounded-3 border-primary">
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="DateOfBirth" class="fw-bold text-primary"></label>
+                            <input asp-for="DateOfBirth" type="date" class="form-control rounded-3 border-primary" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group mt-3">
+                    <label asp-for="Description" class="fw-bold text-primary"></label>
+                    <textarea asp-for="Description" class="form-control rounded-3 border-primary" rows="3"></textarea>
+                </div>
+
+                <div class="text-end mt-4">
+                    <button type="submit" class="btn btn-success px-4 fw-bold shadow">Save Changes</button>
+                </div>
+            </form>
+        </div>
     </div>
+</div>
 
-    <div class="form-group">
-        <label asp-for="FirstName"></label>
-        <input asp-for="FirstName" class="form-control" />
-    </div>
+<script>
+    document.getElementById("profileImageInput").addEventListener("change", function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById("profilePreview").src = e.target.result;
+            }
+            reader.readAsDataURL(file);
+        }
+    });
 
-    <div class="form-group">
-        <label asp-for="LastName"></label>
-        <input asp-for="LastName" class="form-control" />
-    </div>
+    // Hiệu ứng khi di chuột vào ảnh đại diện
+    document.getElementById("profilePreview").addEventListener("mouseover", function() {
+        this.style.transform = "scale(1.1)";
+    });
 
-    <div class="form-group">
-        <label asp-for="Phone"></label>
-        <input asp-for="Phone" class="form-control" />
-    </div>
-
-    <div class="form-group">
-        <label asp-for="Address"></label>
-        <input asp-for="Address" class="form-control" />
-    </div>
-
-    <div class="form-group">
-        <label asp-for="Gender"></label>
-        <select asp-for="Gender" class="form-control">
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-        </select>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="Description"></label>
-        <textarea asp-for="Description" class="form-control"></textarea>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="DateOfBirth"></label>
-        <input asp-for="DateOfBirth" type="date" class="form-control" />
-    </div>
-
-    <button type="submit" class="btn btn-primary">Save</button>
-</form>
+    document.getElementById("profilePreview").addEventListener("mouseleave", function() {
+        this.style.transform = "scale(1)";
+    });
+</script>

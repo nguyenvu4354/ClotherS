@@ -1,9 +1,11 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authorization;
 using ClotherS.Models;
 using ClotherS.Repositories;
 
@@ -21,18 +23,14 @@ public class ProfilesController : Controller
     {
         if (!User.Identity.IsAuthenticated)
         {
-            Console.WriteLine("User is not authenticated. Redirecting to login.");
             return RedirectToAction("Login", "Accounts");
         }
 
         var email = User.Identity.Name;
-        Console.WriteLine($"Fetching profile for email: {email}");
-
         var account = await _context.Accounts.FirstOrDefaultAsync(a => a.Email == email);
 
         if (account == null)
         {
-            Console.WriteLine("Error: Account not found.");
             return NotFound();
         }
 
@@ -40,27 +38,28 @@ public class ProfilesController : Controller
     }
 
     [HttpPost]
-[ValidateAntiForgeryToken]
-public async Task<IActionResult> Index(int AccountId)
-{
-    if (!User.Identity.IsAuthenticated)
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> UpdateProfile([Bind("AccountId,FirstName,LastName,Phone,Address,Gender,Description,DateOfBirth")] Account model)
     {
-        return RedirectToAction("Login", "Accounts");
-    }
+        if (!User.Identity.IsAuthenticated)
+        {
+            return RedirectToAction("Login", "Accounts");
+        }
 
-    var existingAccount = await _context.Accounts.FindAsync(AccountId);
-    if (existingAccount == null)
-    {
-        return NotFound();
-    }
+        var existingAccount = await _context.Accounts.FindAsync(model.AccountId);
+        if (existingAccount == null)
+        {
+            return NotFound();
+        }
 
-    if (await TryUpdateModelAsync(
-        existingAccount,
-        "",
-        a => a.FirstName, a => a.LastName, a => a.Phone, 
-        a => a.Address, a => a.Gender, a => a.Description, 
-        a => a.DateOfBirth))
-    {
+        existingAccount.FirstName = model.FirstName;
+        existingAccount.LastName = model.LastName;
+        existingAccount.Phone = model.Phone;
+        existingAccount.Address = model.Address;
+        existingAccount.Gender = model.Gender;
+        existingAccount.Description = model.Description;
+        existingAccount.DateOfBirth = model.DateOfBirth;
+
         try
         {
             await _context.SaveChangesAsync();
@@ -68,19 +67,52 @@ public async Task<IActionResult> Index(int AccountId)
         }
         catch (DbUpdateConcurrencyException)
         {
-            if (!_context.Accounts.Any(e => e.AccountId == AccountId))
+            if (!_context.Accounts.Any(e => e.AccountId == model.AccountId))
             {
                 return NotFound();
             }
-            else
-            {
-                throw;
-            }
+            throw;
         }
+
+        return RedirectToAction(nameof(Index));
     }
 
-    return View(existingAccount);
-}
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> UpdateProfileImage(int AccountId, IFormFile profileImage)
+    {
+        if (!User.Identity.IsAuthenticated)
+        {
+            return RedirectToAction("Login", "Accounts");
+        }
 
+        var existingAccount = await _context.Accounts.FindAsync(AccountId);
+        if (existingAccount == null)
+        {
+            return NotFound();
+        }
 
+        if (profileImage != null && profileImage.Length > 0)
+        {
+            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images");
+            if (!Directory.Exists(uploadsFolder))
+            {
+                Directory.CreateDirectory(uploadsFolder);
+            }
+
+            var fileName = Guid.NewGuid().ToString() + Path.GetExtension(profileImage.FileName);
+            var filePath = Path.Combine(uploadsFolder, fileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await profileImage.CopyToAsync(stream);
+            }
+
+            // Cập nhật đường dẫn ảnh mà không ảnh hưởng đến các trường khác
+            existingAccount.AccountImage = fileName;
+            await _context.SaveChangesAsync();
+        }
+
+        return RedirectToAction(nameof(Index));
+    }
 }
