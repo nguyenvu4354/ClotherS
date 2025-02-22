@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -21,7 +20,6 @@ namespace ClotherS.Controllers
         }
 
         // GET: Accounts
-        [Authorize(Roles = "1")]
         public async Task<IActionResult> Index()
         {
             var dataContext = _context.Accounts.Include(a => a.Role);
@@ -61,6 +59,7 @@ namespace ClotherS.Controllers
         {
             if (ModelState.IsValid)
             {
+                account.Password = BCrypt.Net.BCrypt.HashPassword(account.Password);
                 _context.Add(account);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -105,6 +104,10 @@ namespace ClotherS.Controllers
 
             try
             {
+                if (!string.IsNullOrEmpty(account.Password))
+                {
+                    account.Password = BCrypt.Net.BCrypt.HashPassword(account.Password);
+                }
                 _context.Update(account);
                 await _context.SaveChangesAsync();
             }
