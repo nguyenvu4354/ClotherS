@@ -81,6 +81,7 @@ app.Run();
 // Phương thức SeedData để chèn dữ liệu mẫu
 void SeedData(DataContext context)
 {
+    // Seed dữ liệu cho bảng Role (nếu chưa có)
     if (!context.Roles.Any())
     {
         var roles = new List<Role>
@@ -94,7 +95,49 @@ void SeedData(DataContext context)
         context.SaveChanges();
     }
 
-    // Seed dữ liệu cho bảng Product
+    // Seed dữ liệu cho bảng Category
+    if (!context.Categories.Any())
+    {
+        var categories = new List<Category>
+        {
+            new Category { CategoryName = "Áo Thun" },
+            new Category { CategoryName = "Quần Jean" },
+            new Category { CategoryName = "Áo Khoác" },
+            new Category { CategoryName = "Giày Dép" },
+            new Category { CategoryName = "Túi Xách" },
+            new Category { CategoryName = "Phụ Kiện" },
+            new Category { CategoryName = "Đồng Hồ" },
+            new Category { CategoryName = "Đồ Lót" },
+            new Category { CategoryName = "Váy Đầm" },
+            new Category { CategoryName = "Áo Sơ Mi" }
+        };
+
+        context.Categories.AddRange(categories);
+        context.SaveChanges();
+    }
+
+    // Seed dữ liệu cho bảng Brand
+    if (!context.Brands.Any())
+    {
+        var brands = new List<Brand>
+        {
+            new Brand { BrandName = "Nike" },
+            new Brand { BrandName = "Adidas" },
+            new Brand { BrandName = "Puma" },
+            new Brand { BrandName = "Gucci" },
+            new Brand { BrandName = "Louis Vuitton" },
+            new Brand { BrandName = "Hermès" },
+            new Brand { BrandName = "Chanel" },
+            new Brand { BrandName = "Rolex" },
+            new Brand { BrandName = "Zara" },
+            new Brand { BrandName = "H&M" }
+        };
+
+        context.Brands.AddRange(brands);
+        context.SaveChanges();
+    }
+
+    // Seed dữ liệu cho bảng Product (nếu chưa có)
     if (!context.Products.Any())
     {
         var fakeProducts = new List<Product>
@@ -147,9 +190,10 @@ void SeedData(DataContext context)
         };
 
         context.Products.AddRange(fakeProducts);
+        context.SaveChanges();
     }
 
-    // Seed dữ liệu cho bảng Account
+    // Seed dữ liệu cho bảng Account (nếu chưa có)
     if (!context.Accounts.Any())
     {
         var fakeAccounts = new List<Account>
@@ -166,7 +210,7 @@ void SeedData(DataContext context)
                 Gender = "Male",
                 Active = true,
                 Description = "Khách hàng thường xuyên",
-                RoleId = 2,
+                RoleId = 1,
                 DateOfBirth = "1995-05-10",
                 Disable = false
             },
@@ -189,7 +233,7 @@ void SeedData(DataContext context)
         };
 
         context.Accounts.AddRange(fakeAccounts);
+        context.SaveChanges();
     }
-
-    context.SaveChanges();
 }
+
