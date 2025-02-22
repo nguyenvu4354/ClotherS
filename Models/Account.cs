@@ -34,6 +34,10 @@ namespace ClotherS.Models
         public string DateOfBirth { get; set; } = string.Empty;
         public bool Disable { get; set; } = false;
 
+        public string? ResetPasswordToken { get; set; }
+        public DateTime? ResetPasswordExpiry { get; set; }
+
+
         [ForeignKey("RoleId")]
         public virtual Role? Role { get; set; }
     }
