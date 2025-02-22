@@ -71,13 +71,14 @@
 							<li>
 								@if (User.Identity.IsAuthenticated)
 								{
-									<a href="@Url.Action("Logout", "Accounts")"><i class="fa fa-sign-out"></i> Logout</a>
+									<a href="@Url.Action("Logout", "Authentication")"><i class="fa fa-sign-out"></i> Logout</a>
 								}
 								else
 								{
-									<a href="@Url.Action("Login", "Accounts")"><i class="fa fa-lock"></i> Login</a>
+									<a href="@Url.Action("Login", "Authentication")"><i class="fa fa-lock"></i> Login</a>
 								}
 							</li>
+
 						</ul>
 					</div>
 				</div>

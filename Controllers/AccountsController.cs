@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ClotherS.Models;
 using ClotherS.Repositories;
-using Microsoft.AspNetCore.Authorization;
 
 namespace ClotherS.Controllers
 {
@@ -158,67 +155,6 @@ namespace ClotherS.Controllers
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        // GET: Accounts/Login
-        public IActionResult Login()
-        {
-            return View();
-        }
-
-        // POST: Accounts/Login
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(string email, string password)
-        {
-            var account = await _context.Accounts.FirstOrDefaultAsync(a => a.Email == email && a.Password == password);
-            if (account != null)
-            {
-                var claims = new List<Claim>
-        {
-                    new Claim(ClaimTypes.NameIdentifier, account.AccountId.ToString()),
-            new Claim(ClaimTypes.Name, account.Email),
-            new Claim("FullName", account.FirstName + " " + account.LastName),
-            new Claim(ClaimTypes.Role, account.RoleId.ToString()) // Lưu RoleId dưới dạng chuỗi
-        };
-
-                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                var authProperties = new AuthenticationProperties { IsPersistent = true };
-
-                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
-                return RedirectToAction("Index", "Home");
-            }
-
-            ViewBag.Error = "Invalid email or password";
-            return View();
-        }
-
-
-        // GET: Accounts/Register
-        public IActionResult Register()
-        {
-            return View();
-        }
-
-        // POST: Accounts/Register
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(Account account)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(account);
-                await _context.SaveChangesAsync();
-                return RedirectToAction("Login");
-            }
-            return View(account);
-        }
-
-        // GET: Accounts/Logout
-        public async Task<IActionResult> Logout()
-        {
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            return RedirectToAction("Login");
         }
 
         private bool AccountExists(int id)
