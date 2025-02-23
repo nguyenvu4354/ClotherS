@@ -1,6 +1,7 @@
 ﻿using ClotherS.Models;
 using ClotherS.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
 
@@ -63,6 +64,26 @@ namespace ClotherS.Controllers
 
             TempData["Success"] = "Cảm ơn bạn đã đánh giá sản phẩm!";
             return RedirectToAction("OrderDetails", "Profiles", new { id = orderDetail.OId });
+        }
+
+        public IActionResult Feedback(int detailId)
+        {
+            var feedback = _context.Feedbacks
+                .Include(f => f.Product)
+                .FirstOrDefault(f => f.DetailId == detailId);
+
+            if (feedback == null)
+            {
+                TempData["Error"] = "Không tìm thấy đánh giá!";
+                return RedirectToAction("OrderDetails", "Profiles");
+            }
+
+            ViewData["OrderId"] = _context.OrderDetails
+                .Where(od => od.DetailId == detailId)
+                .Select(od => od.OId)
+                .FirstOrDefault();
+
+            return View(feedback);
         }
 
     }

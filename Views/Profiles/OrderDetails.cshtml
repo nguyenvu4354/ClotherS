@@ -63,24 +63,25 @@
                         <span class="text-muted">Không thể hủy</span>
                     }
                 </td>
+
                 <td>
                     @if (!detail.IsReviewed)
                     {
-                        <a href="@Url.Action("Create", "Feedbacks", new { detailId = detail.DetailId })" class="btn btn-primary btn-sm">
+                        <a href="@Url.Action("Create", "Feedbacks", new { detailId = detail.DetailId })"
+                           class="btn btn-primary btn-sm">
                             Đánh giá
                         </a>
                     }
                     else
                     {
-                        <span class="text-muted">Đã đánh giá</span>
+                        <a href="@Url.Action("Feedback", "Feedbacks", new { detailId = detail.DetailId })"
+                           class="btn btn-info btn-sm">
+                            Xem đánh giá
+                        </a>
                     }
                 </td>
-
-
 
             </tr>
         }
     </tbody>
 </table>
-
-<a href="@Url.Action("Orders", "Profiles")" class="btn btn-secondary">Back to Orders</a>

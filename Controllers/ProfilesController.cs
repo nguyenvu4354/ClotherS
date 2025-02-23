@@ -140,26 +140,23 @@ public class ProfilesController : Controller
         return View(orders);
     }
 
-    public async Task<IActionResult> OrderDetails(int id)
+    public IActionResult OrderDetails(int id)
     {
-        if (!User.Identity.IsAuthenticated)
-        {
-            return RedirectToAction("Login", "Accounts");
-        }
-
-        var orderDetails = await _context.OrderDetails
-            .Where(od => od.OId == id)
-            .Include(od => od.Order)
+        var orderDetails = _context.OrderDetails
             .Include(od => od.Product)
-            .ToListAsync();
+            .Include(od => od.Feedbacks) // Load đánh giá
+            .Where(od => od.OId == id)
+            .ToList();
 
         if (orderDetails == null || !orderDetails.Any())
         {
-            return NotFound();
+            TempData["Error"] = "Không tìm thấy đơn hàng!";
+            return RedirectToAction("Orders");
         }
 
         return View(orderDetails);
     }
+
 
     [HttpPost]
     [ValidateAntiForgeryToken]
