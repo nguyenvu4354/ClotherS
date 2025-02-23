@@ -81,7 +81,6 @@ app.Run();
 // Phương thức SeedData để chèn dữ liệu mẫu
 void SeedData(DataContext context)
 {
-    // Seed dữ liệu cho bảng Role (nếu chưa có)
     if (!context.Roles.Any())
     {
         var roles = new List<Role>

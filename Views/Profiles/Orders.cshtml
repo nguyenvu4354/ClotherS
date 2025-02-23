@@ -4,6 +4,15 @@
     ViewData["Title"] = "My Orders";
 }
 
+<div class="d-flex justify-content-center align-items-center mb-4" style="display: flex; justify-content: center; gap: 50px;">
+    <h2 class="fw-bold mb-0">
+        <a asp-controller="Profiles" asp-action="Index" class="text-decoration-none title-link">Profile</a>
+    </h2>
+    <h2 class="fw-bold mb-0">
+        <a asp-action="Orders" class="text-decoration-none title-link">My Orders</a>
+    </h2>
+</div>
+
 <h2>My Orders</h2>
 
 @if (!Model.Any())
@@ -33,8 +42,20 @@ else
                         <a asp-action="OrderDetails" asp-route-id="@firstDetail.OId" class="btn btn-info">View</a>
                     </td>
                 </tr>
-
             }
         </tbody>
     </table>
 }
+
+<style>
+    .title-link {
+        color: #FE980F;
+        font-size: 3rem;
+        font-weight: bold;
+        transition: text-decoration 0.3s ease-in-out;
+    }
+
+        .title-link:hover {
+            text-decoration: underline;
+        }
+</style>

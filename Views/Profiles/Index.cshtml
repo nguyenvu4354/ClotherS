@@ -4,23 +4,26 @@
     ViewData["Title"] = "Profile";
 }
 
-<h2 class="text-center mb-4 fw-bold" style="color: #FE980F;">Profile</h2>
-<a asp-action="Orders" class="btn btn-primary">View My Orders</a>
-
+<div class="d-flex justify-content-center align-items-center mb-4" style="display: flex; justify-content: center; gap: 50px;">
+    <h2 class="fw-bold mb-0">
+        <a href="#" class="text-decoration-none title-link">Profile</a>
+    </h2>
+    <h2 class="fw-bold mb-0">
+        <a asp-action="Orders" class="text-decoration-none title-link">My Orders</a>
+    </h2>
+</div>
 
 @if (ViewBag.Success != null)
 {
-    <div class="alert alert-success text-center">@ViewBag.Success</div>
+    <div class="alert alert-success text-center" id="successAlert">@ViewBag.Success</div>
 }
 
 <div class="container">
     <div class="row">
-        <!-- Ảnh đại diện -->
         <div class="col-md-4 text-center">
             <div class="card shadow-lg border-0 rounded-4 p-4">
                 <form asp-controller="Profiles" asp-action="UpdateProfileImage" method="post" enctype="multipart/form-data">
                     <input type="hidden" name="AccountId" value="@Model.AccountId" />
-
                     <div class="position-relative p-3" style="border: 4px solid #FE980F; border-radius: 10px; display: inline-block;">
                         <label for="profileImageInput" class="image-upload-label d-block">
                             <img id="profilePreview"
@@ -32,13 +35,11 @@
                         </label>
                         <input type="file" name="profileImage" id="profileImageInput" class="d-none" accept="image/*" />
                     </div>
-
                     <button type="submit" class="btn btn-primary mt-3 w-100 fw-bold">Update Image</button>
                 </form>
             </div>
         </div>
 
-        <!-- Thông tin cá nhân -->
         <div class="col-md-8">
             <form asp-controller="Profiles" asp-action="UpdateProfile" method="post" class="card shadow-lg border-0 rounded-4 p-4">
                 <input type="hidden" asp-for="AccountId" />
@@ -104,35 +105,15 @@
     </div>
 </div>
 
-<script>
-    document.getElementById("profileImageInput").addEventListener("change", function(event) {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                document.getElementById("profilePreview").src = e.target.result;
-            }
-            reader.readAsDataURL(file);
+<style>
+    .title-link {
+        color: #FE980F;
+        font-size: 3rem;
+        font-weight: bold;
+        transition: text-decoration 0.3s ease-in-out;
+    }
+
+        .title-link:hover {
+            text-decoration: underline;
         }
-    });
-
-    // Hiệu ứng khi di chuột vào ảnh đại diện (thu nhỏ lại)
-    document.getElementById("profilePreview").addEventListener("mouseover", function() {
-        this.style.transform = "scale(0.9)";
-    });
-
-    document.getElementById("profilePreview").addEventListener("mouseleave", function() {
-        this.style.transform = "scale(1)";
-    });
-
-    // Tự động ẩn thông báo sau 3 giây
-    setTimeout(() => {
-        let successAlert = document.getElementById("successAlert");
-        if (successAlert) {
-            successAlert.style.transition = "opacity 0.5s";
-            successAlert.style.opacity = "0";
-            setTimeout(() => successAlert.remove(), 500);
-        }
-    }, 3000);
-</script>
-
+</style>
