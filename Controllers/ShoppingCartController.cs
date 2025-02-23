@@ -56,9 +56,7 @@ namespace ClotherS.Controllers
                 cart = new Order
                 {
                     AccountId = userId.Value,
-                    OrderDate = DateTime.Now,
                     IsCart = true,
-                    Status = "Pending",
                     OrderDetails = new List<OrderDetail>()
                 };
                 _context.Orders.Add(cart);
@@ -79,7 +77,9 @@ namespace ClotherS.Controllers
                         ProductId = productId,
                         Quantity = quantity,
                         Price = product.Price,
-                        Discount = product.Discount ?? 0
+                        Discount = product.Discount ?? 0,
+                        OrderDate = DateTime.Now,
+                        Status = "Pending"
                     });
                 }
             }
@@ -155,10 +155,13 @@ namespace ClotherS.Controllers
                 return RedirectToAction("Index");
             }
 
-            cart.IsCart = false;
-            cart.Status = "Processing";
-            cart.OrderDate = DateTime.Now;
+            foreach (var item in cart.OrderDetails)
+            {
+                item.Status = "Processing";
+                item.OrderDate = DateTime.Now;
+            }
 
+            cart.IsCart = false;
             _context.SaveChanges();
 
             TempData["Success"] = "Order placed successfully!";
@@ -175,7 +178,7 @@ namespace ClotherS.Controllers
 
             var latestOrder = _context.Orders
                 .Where(o => o.AccountId == userId && !o.IsCart)
-                .OrderByDescending(o => o.OrderDate)
+                .OrderByDescending(o => o.OrderDetails.Max(od => od.OrderDate))
                 .Include(o => o.OrderDetails)
                 .ThenInclude(od => od.Product)
                 .FirstOrDefault();

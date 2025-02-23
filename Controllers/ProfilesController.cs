@@ -113,6 +113,7 @@ public class ProfilesController : Controller
 
         return RedirectToAction(nameof(Index));
     }
+
     public async Task<IActionResult> Orders()
     {
         if (!User.Identity.IsAuthenticated)
@@ -128,12 +129,13 @@ public class ProfilesController : Controller
             return NotFound();
         }
 
-        var orders = await _context.Orders
-            .Where(o => o.AccountId == account.AccountId && !o.IsCart) 
-            .Include(o => o.OrderDetails)
-            .ThenInclude(od => od.Product)
-            .OrderByDescending(o => o.OrderDate)
-            .ToListAsync();
+        var orders = await _context.OrderDetails
+    .Where(od => od.Order.AccountId == account.AccountId && !od.Order.IsCart)
+    .Include(od => od.Order)
+    .Include(od => od.Product)
+    .OrderByDescending(od => od.OrderDate) 
+    .ToListAsync();
+
 
         return View(orders);
     }
@@ -145,18 +147,36 @@ public class ProfilesController : Controller
             return RedirectToAction("Login", "Accounts");
         }
 
-        var order = await _context.Orders
-            .Where(o => o.OId == id)
-            .Include(o => o.OrderDetails)
-            .ThenInclude(od => od.Product)
-            .FirstOrDefaultAsync();
+        var orderDetails = await _context.OrderDetails
+            .Where(od => od.OId == id)
+            .Include(od => od.Order)
+            .Include(od => od.Product)
+            .ToListAsync();
 
-        if (order == null)
+        if (orderDetails == null || !orderDetails.Any())
         {
             return NotFound();
         }
 
-        return View(order);
+        return View(orderDetails);
+    }
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DisableProductInOrder(int orderDetailId)
+    {
+        var orderDetail = await _context.OrderDetails
+            .Include(od => od.Order)
+            .FirstOrDefaultAsync(od => od.OId == orderDetailId);
+
+        if (orderDetail == null || orderDetail.Order.IsCart)
+        {
+            return NotFound();
+        }
+
+        orderDetail.Status = "Disabled"; // Cập nhật trạng thái thành "Disabled"
+        await _context.SaveChangesAsync();
+
+        return RedirectToAction(nameof(OrderDetails), new { id = orderDetail.Order.OId });
     }
 
 }

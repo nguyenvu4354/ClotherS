@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ClotherS.Models
@@ -25,10 +27,25 @@ namespace ClotherS.Models
         public int Quantity { get; set; }
 
         [Range(0, 100, ErrorMessage = "Discount must be between 0% and 100%")]
-        public int Discount { get; set; } = 0; 
+        public int Discount { get; set; } = 0;
+
+        [Required]
+        [Column(TypeName = "datetime2")]
+        public DateTime OrderDate { get; set; }
+
+        [Column(TypeName = "datetime2")]
+        public DateTime? ReceiveDate { get; set; }
+
+        [Required]
+        public string Status { get; set; } = "Pending";
+
+        public bool IsReviewed { get; set; } = false;
 
         public virtual Product Product { get; set; }
 
         public virtual Order Order { get; set; }
+
+        // Thêm danh sách Feedbacks
+        public virtual ICollection<Feedback>? Feedbacks { get; set; } = new List<Feedback>();
     }
 }

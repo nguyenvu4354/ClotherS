@@ -22,6 +22,7 @@ namespace ClotherS.Models
 
         [Required(ErrorMessage = "Password is required.")]
         public string Password { get; set; } = string.Empty;
+
         public string AccountImage { get; set; } = string.Empty;
         public string Address { get; set; } = string.Empty;
         public string Gender { get; set; } = string.Empty;
@@ -37,8 +38,11 @@ namespace ClotherS.Models
         public string? ResetPasswordToken { get; set; }
         public DateTime? ResetPasswordExpiry { get; set; }
 
-
         [ForeignKey("RoleId")]
         public virtual Role? Role { get; set; }
+
+
     }
 }
+
+

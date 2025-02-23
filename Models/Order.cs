@@ -1,8 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Collections.Generic;
-using ClotherS.Models;
-namespace ClotherS.Models  // ⚠️ THÊM DÒNG NÀY
+namespace ClotherS.Models
 {
     public class Order
     {
@@ -10,16 +8,8 @@ namespace ClotherS.Models  // ⚠️ THÊM DÒNG NÀY
         public int OId { get; set; }
 
         [Required]
-        public DateTime OrderDate { get; set; }
-
-        public DateTime? ReceiveDate { get; set; }
-
-        [Required]
         [ForeignKey("Account")]
         public int AccountId { get; set; }
-
-        [Required]
-        public string Status { get; set; } = "Pending";
 
         public bool IsCart { get; set; } = true;
 

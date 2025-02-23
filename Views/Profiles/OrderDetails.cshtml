@@ -1,14 +1,17 @@
-﻿@model ClotherS.Models.Order
+﻿@model List<ClotherS.Models.OrderDetail>
 
 @{
     ViewData["Title"] = "Order Details";
 }
 
-<h2>Order Details - #@Model.OId</h2>
+<h2>Order Details - #@Model.FirstOrDefault()?.OId</h2>
 
-<p><strong>Order Date:</strong> @Model.OrderDate.ToString("yyyy-MM-dd")</p>
-<p><strong>Receive Date:</strong> @(Model.ReceiveDate?.ToString("yyyy-MM-dd") ?? "Not received")</p>
-<p><strong>Status:</strong> @Model.Status</p>
+@if (Model.Any())
+{
+    <p><strong>Order Date:</strong> @Model.First().OrderDate.ToString("yyyy-MM-dd HH:mm:ss")</p>
+    <p><strong>Receive Date:</strong> @(Model.First().ReceiveDate?.ToString("yyyy-MM-dd HH:mm:ss") ?? "Not received")</p>
+    <p><strong>Status:</strong> @Model.First().Status</p>
+}
 
 <h3>Products</h3>
 
@@ -20,10 +23,12 @@
             <th>Quantity</th>
             <th>Discount</th>
             <th>Total</th>
+            <th>Action</th>
+            <th>Feedback</th>  @* Thêm cột Feedback *@
         </tr>
     </thead>
     <tbody>
-        @foreach (var detail in Model.OrderDetails)
+        @foreach (var detail in Model)
         {
             <tr>
                 <td>@detail.Product.ProductName</td>
@@ -31,6 +36,40 @@
                 <td>@detail.Quantity</td>
                 <td>@detail.Discount%</td>
                 <td>$@(detail.Price * detail.Quantity * (1 - detail.Discount / 100.0))</td>
+                <td>
+                    @if (detail.Status != "Disabled")
+                    {
+                        <form asp-action="DisableProductInOrder" method="post">
+                            <input type="hidden" name="orderDetailId" value="@detail.OId" />
+                            <button type="submit" class="btn btn-danger btn-sm">Cancel</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <span class="text-danger">Canceled</span>
+                    }
+                </td>
+                <td>
+                    @if (detail.Status != "Disabled" && !detail.IsReviewed)
+                    {
+                        <a href="@Url.Action("Create", "Feedbacks", new { orderDetailId = detail.OId })" class="btn btn-success btn-sm">
+                            Leave Feedback
+                        </a>
+                    }
+                    else
+                    {
+                        <span class="text-muted">
+                            @if (detail.Status == "Disabled")
+                            {
+                                <span>Product Disabled</span>
+                            }
+                            else
+                            {
+                                <span>Reviewed</span>
+                            }
+                        </span>
+                    }
+                </td>
             </tr>
         }
     </tbody>
