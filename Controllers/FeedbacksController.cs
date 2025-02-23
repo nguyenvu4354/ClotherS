@@ -1,77 +1,69 @@
 ﻿using ClotherS.Models;
 using ClotherS.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using System;
+using System.Linq;
 
-public class FeedbacksController : Controller
+namespace ClotherS.Controllers
 {
-    private readonly DataContext _context;
-
-    public FeedbacksController(DataContext context)
+    public class FeedbacksController : Controller
     {
-        _context = context;
-    }
+        private readonly DataContext _context;
 
-    // GET: Feedbacks/Create
-    public async Task<IActionResult> Create(int orderDetailId)
-    {
-        if (!User.Identity.IsAuthenticated)
+        public FeedbacksController(DataContext context)
         {
-            return RedirectToAction("Login", "Accounts");
+            _context = context;
         }
 
-        var orderDetail = await _context.OrderDetails
-            .Include(od => od.Order)
-            .FirstOrDefaultAsync(od => od.OId == orderDetailId);
-
-        if (orderDetail == null || orderDetail.Order.AccountId != GetCurrentUserId())
+        // Hiển thị form đánh giá
+        public IActionResult Create(int detailId)
         {
-            return NotFound();
+            var orderDetail = _context.OrderDetails
+                .FirstOrDefault(od => od.DetailId == detailId);
+
+            if (orderDetail == null || orderDetail.IsReviewed)
+            {
+                TempData["Error"] = "Không thể đánh giá đơn hàng này.";
+                return RedirectToAction("OrderDetails", "Profiles");
+            }
+
+            var feedback = new Feedback { DetailId = detailId, ProductId = orderDetail.ProductId };
+            return View(feedback);
         }
 
-        var feedback = new Feedback
+        [HttpPost]
+        public IActionResult Create(Feedback feedback)
         {
-            DetailId = orderDetailId,
-            ProductId = orderDetail.ProductId,
-            AccountId = GetCurrentUserId()
-        };
+            if (!ModelState.IsValid)
+            {
+                return View(feedback);
+            }
 
-        return View(feedback);
-    }
+            var orderDetail = _context.OrderDetails.FirstOrDefault(od => od.DetailId == feedback.DetailId);
+            if (orderDetail == null || orderDetail.IsReviewed)
+            {
+                TempData["Error"] = "Đơn hàng không hợp lệ hoặc đã được đánh giá.";
+                return RedirectToAction("OrderDetails", "Profiles");
+            }
 
-    // POST: Feedbacks/Create
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("Content,Rating,DetailId,ProductId,AccountId")] Feedback feedback)
-    {
-        if (!User.Identity.IsAuthenticated)
-        {
-            return RedirectToAction("Login", "Accounts");
-        }
+            // 🔹 Lấy AccountId từ Session hoặc Identity
+            var user = _context.Accounts.FirstOrDefault(a => a.Email == User.Identity.Name); // Nếu dùng Identity
+            if (user == null)
+            {
+                TempData["Error"] = "Tài khoản không hợp lệ.";
+                return RedirectToAction("OrderDetails", "Profiles");
+            }
 
-        if (ModelState.IsValid)
-        {
+            feedback.AccountId = user.AccountId; // Gán đúng AccountId
             feedback.CreatedAt = DateTime.Now;
 
-            _context.Add(feedback);
-            await _context.SaveChangesAsync();
-            return RedirectToAction("Orders", "Profiles"); 
+            _context.Feedbacks.Add(feedback);
+            orderDetail.IsReviewed = true; // Cập nhật trạng thái đã đánh giá
+            _context.SaveChanges();
+
+            TempData["Success"] = "Cảm ơn bạn đã đánh giá sản phẩm!";
+            return RedirectToAction("OrderDetails", "Profiles", new { id = orderDetail.OId });
         }
 
-        return View(feedback);
     }
-
-
-
-
-    // Helper method to get the current user's ID
-    private int GetCurrentUserId()
-    {
-        var email = User.Identity.Name;
-        var account = _context.Accounts.FirstOrDefault(a => a.Email == email);
-        return account?.AccountId ?? 0;
-    }
-
-
-
 }

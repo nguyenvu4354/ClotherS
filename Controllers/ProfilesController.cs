@@ -163,42 +163,40 @@ public class ProfilesController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> CancelOrder(int orderId)
+    public async Task<IActionResult> CancelOrder(int detailId)
     {
         if (!User.Identity.IsAuthenticated)
         {
             return RedirectToAction("Login", "Accounts");
         }
 
-        var order = await _context.Orders
-            .Include(o => o.OrderDetails)
-            .FirstOrDefaultAsync(o => o.OId == orderId);
+        var orderDetail = await _context.OrderDetails
+            .Include(od => od.Order)
+            .FirstOrDefaultAsync(od => od.DetailId == detailId);
 
-        if (order == null)
+        if (orderDetail == null)
         {
             return NotFound();
         }
 
-        // Chỉ cho phép hủy nếu trạng thái hiện tại là "Processing"
-        if (order.OrderDetails.Any(od => od.Status != "Processing"))
+        if (orderDetail.Status != "Processing")
         {
-            TempData["Error"] = "Đơn hàng không thể hủy vì không ở trạng thái Processing!";
-            return RedirectToAction("OrderDetails", new { id = orderId });
+            TempData["Error"] = "Chỉ có thể hủy đơn hàng khi đang ở trạng thái Processing!";
+            return RedirectToAction("OrderDetails", new { id = orderDetail.OId });
         }
 
-        // Cập nhật trạng thái của tất cả OrderDetails trong đơn hàng
-        foreach (var detail in order.OrderDetails)
+        orderDetail.Status = "Disabled";
+        var allDetails = await _context.OrderDetails.Where(od => od.OId == orderDetail.OId).ToListAsync();
+        if (allDetails.All(od => od.Status == "Disabled"))
         {
-            detail.Status = "Disabled";
+            orderDetail.Order.IsCart = false;
         }
 
         await _context.SaveChangesAsync();
 
         TempData["Success"] = "Đơn hàng đã bị hủy thành công!";
-        return RedirectToAction("OrderDetails", new { id = orderId });
+        return RedirectToAction("OrderDetails", new { id = orderDetail.OId });
     }
-
-
 
 
 }

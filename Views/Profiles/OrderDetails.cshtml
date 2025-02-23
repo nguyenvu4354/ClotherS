@@ -48,9 +48,9 @@
                     @if (detail.Status == "Processing")
                     {
                         <form asp-action="CancelOrder" method="post">
-                            <input type="hidden" name="orderId" value="@detail.OId" />
-                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này không?');">
-                                Hủy đơn hàng
+                            <input type="hidden" name="detailId" value="@detail.DetailId" />
+                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Bạn có chắc chắn muốn hủy mục đơn hàng này không?');">
+                                Hủy mục đơn hàng
                             </button>
                         </form>
                     }
@@ -64,21 +64,20 @@
                     }
                 </td>
                 <td>
-                    @if (detail.Status == "Success" && !detail.IsReviewed)
+                    @if (!detail.IsReviewed)
                     {
-                        <a href="@Url.Action("Create", "Feedbacks", new { orderDetailId = detail.DetailId })" class="btn btn-success btn-sm">
-                            Leave Feedback
+                        <a href="@Url.Action("Create", "Feedbacks", new { detailId = detail.DetailId })" class="btn btn-primary btn-sm">
+                            Đánh giá
                         </a>
-                    }
-                    else if (detail.Status == "Disabled")
-                    {
-                        <span class="text-muted">Order Canceled</span>
                     }
                     else
                     {
-                        <span class="text-muted">Reviewed</span>
+                        <span class="text-muted">Đã đánh giá</span>
                     }
                 </td>
+
+
+
             </tr>
         }
     </tbody>
