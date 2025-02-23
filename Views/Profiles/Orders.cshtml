@@ -17,8 +17,6 @@ else
             <tr>
                 <th>Order ID</th>
                 <th>Order Date</th>
-                <th>Receive Date</th>
-                <th>Status</th>
                 <th>Total Price</th>
                 <th>Details</th>
             </tr>
@@ -30,8 +28,6 @@ else
                 <tr>
                     <td>@firstDetail.OId</td>
                     <td>@firstDetail.OrderDate.ToString("yyyy-MM-dd")</td>
-                    <td>@(firstDetail.ReceiveDate?.ToString("yyyy-MM-dd") ?? "Not received")</td>
-                    <td>@firstDetail.Status</td>
                     <td>$@(group.Sum(d => d.Price * d.Quantity * (1 - d.Discount / 100.0)))</td>
                     <td>
                         <a asp-action="OrderDetails" asp-route-id="@firstDetail.OId" class="btn btn-info">View</a>

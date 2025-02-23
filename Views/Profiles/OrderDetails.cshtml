@@ -4,27 +4,29 @@
     ViewData["Title"] = "Order Details";
 }
 
-<h2>Order Details - #@Model.FirstOrDefault()?.OId</h2>
+<h2 class="mb-4">Order Details</h2>
 
-@if (Model.Any())
+@if (TempData["Success"] != null)
 {
-    <p><strong>Order Date:</strong> @Model.First().OrderDate.ToString("yyyy-MM-dd HH:mm:ss")</p>
-    <p><strong>Receive Date:</strong> @(Model.First().ReceiveDate?.ToString("yyyy-MM-dd HH:mm:ss") ?? "Not received")</p>
-    <p><strong>Status:</strong> @Model.First().Status</p>
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
 }
 
-<h3>Products</h3>
-
-<table class="table">
-    <thead>
+<table class="table table-hover table-bordered">
+    <thead class="table-dark">
         <tr>
             <th>Product</th>
             <th>Price</th>
             <th>Quantity</th>
             <th>Discount</th>
             <th>Total</th>
+            <th>Receive Date</th>
+            <th>Status</th>
             <th>Action</th>
-            <th>Feedback</th>  @* Thêm cột Feedback *@
+            <th>Feedback</th>
         </tr>
     </thead>
     <tbody>
@@ -36,38 +38,45 @@
                 <td>@detail.Quantity</td>
                 <td>@detail.Discount%</td>
                 <td>$@(detail.Price * detail.Quantity * (1 - detail.Discount / 100.0))</td>
+                <td>@(detail.ReceiveDate?.ToString("yyyy-MM-dd HH:mm:ss") ?? "Not received")</td>
                 <td>
-                    @if (detail.Status != "Disabled")
+                    <span class="badge @(detail.Status == "Processing" ? "bg-primary" : detail.Status == "Success" ? "bg-success" : detail.Status == "Disabled" ? "bg-danger" : "bg-warning text-dark")">
+                        @detail.Status
+                    </span>
+                </td>
+                <td>
+                    @if (detail.Status == "Processing")
                     {
-                        <form asp-action="DisableProductInOrder" method="post">
-                            <input type="hidden" name="orderDetailId" value="@detail.OId" />
-                            <button type="submit" class="btn btn-danger btn-sm">Cancel</button>
+                        <form asp-action="CancelOrder" method="post">
+                            <input type="hidden" name="orderId" value="@detail.OId" />
+                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này không?');">
+                                Hủy đơn hàng
+                            </button>
                         </form>
+                    }
+                    else if (detail.Status == "Disabled")
+                    {
+                        <span class="text-muted">Đã hủy</span>
                     }
                     else
                     {
-                        <span class="text-danger">Canceled</span>
+                        <span class="text-muted">Không thể hủy</span>
                     }
                 </td>
                 <td>
-                    @if (detail.Status != "Disabled" && !detail.IsReviewed)
+                    @if (detail.Status == "Success" && !detail.IsReviewed)
                     {
-                        <a href="@Url.Action("Create", "Feedbacks", new { orderDetailId = detail.OId })" class="btn btn-success btn-sm">
+                        <a href="@Url.Action("Create", "Feedbacks", new { orderDetailId = detail.DetailId })" class="btn btn-success btn-sm">
                             Leave Feedback
                         </a>
                     }
+                    else if (detail.Status == "Disabled")
+                    {
+                        <span class="text-muted">Order Canceled</span>
+                    }
                     else
                     {
-                        <span class="text-muted">
-                            @if (detail.Status == "Disabled")
-                            {
-                                <span>Product Disabled</span>
-                            }
-                            else
-                            {
-                                <span>Reviewed</span>
-                            }
-                        </span>
+                        <span class="text-muted">Reviewed</span>
                     }
                 </td>
             </tr>
@@ -75,4 +84,4 @@
     </tbody>
 </table>
 
-<a asp-action="Orders" class="btn btn-secondary">Back to Orders</a>
+<a href="@Url.Action("Orders", "Profiles")" class="btn btn-secondary">Back to Orders</a>

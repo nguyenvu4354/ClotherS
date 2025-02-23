@@ -160,23 +160,45 @@ public class ProfilesController : Controller
 
         return View(orderDetails);
     }
+
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DisableProductInOrder(int orderDetailId)
+    public async Task<IActionResult> CancelOrder(int orderId)
     {
-        var orderDetail = await _context.OrderDetails
-            .Include(od => od.Order)
-            .FirstOrDefaultAsync(od => od.OId == orderDetailId);
+        if (!User.Identity.IsAuthenticated)
+        {
+            return RedirectToAction("Login", "Accounts");
+        }
 
-        if (orderDetail == null || orderDetail.Order.IsCart)
+        var order = await _context.Orders
+            .Include(o => o.OrderDetails)
+            .FirstOrDefaultAsync(o => o.OId == orderId);
+
+        if (order == null)
         {
             return NotFound();
         }
 
-        orderDetail.Status = "Disabled"; // Cập nhật trạng thái thành "Disabled"
+        // Chỉ cho phép hủy nếu trạng thái hiện tại là "Processing"
+        if (order.OrderDetails.Any(od => od.Status != "Processing"))
+        {
+            TempData["Error"] = "Đơn hàng không thể hủy vì không ở trạng thái Processing!";
+            return RedirectToAction("OrderDetails", new { id = orderId });
+        }
+
+        // Cập nhật trạng thái của tất cả OrderDetails trong đơn hàng
+        foreach (var detail in order.OrderDetails)
+        {
+            detail.Status = "Disabled";
+        }
+
         await _context.SaveChangesAsync();
 
-        return RedirectToAction(nameof(OrderDetails), new { id = orderDetail.Order.OId });
+        TempData["Success"] = "Đơn hàng đã bị hủy thành công!";
+        return RedirectToAction("OrderDetails", new { id = orderId });
     }
+
+
+
 
 }
