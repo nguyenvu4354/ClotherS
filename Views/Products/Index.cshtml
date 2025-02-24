@@ -1,101 +1,62 @@
-﻿@model IEnumerable<ClotherS.Models.Product>
+﻿@using X.PagedList
+@using X.PagedList.Mvc.Core
+@model X.PagedList.IPagedList<ClotherS.Models.Product>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Product Management";
 }
 
-<h1>Management Product</h1>
+<div class="container mt-4">
+    <h1 class="text-center text-primary">Product Management</h1>
+    <p class="text-right">
+        <a asp-action="Create" class="btn btn-success">+ Add New Product</a>
+    </p>
 
-<p>
-    <a asp-action="Create">New Product</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.ProductName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Quantity)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Price)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Image)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Material)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Size)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Discount)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Disable)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Status)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Brand)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Category)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.ProductName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Quantity)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Price)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Image)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Material)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Size)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Discount)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Disable)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Status)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Brand.BrandId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Category.CategoryId)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.ProductId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.ProductId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.ProductId">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+    <div class="table-responsive">
+        <table class="table table-hover table-striped border">
+            <thead class="bg-dark text-light">
+                <tr>
+                    <th>Product Name</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Image</th>
+                    <th>Material</th>
+                    <th>Size</th>
+                    <th>Discount</th>
+                    <th>Description</th>
+                    <th>Status</th>
+                    <th>Brand</th>
+                    <th>Category</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.ProductName</td>
+                        <td>@item.Quantity</td>
+                        <td class="text-success font-weight-bold">$@item.Price</td>
+                        <td><img src="@Url.Content("~/images/" + item.Image)" class="img-thumbnail" width="80" height="80"></td>
+                        <td>@item.Material</td>
+                        <td>@item.Size</td>
+                        <td class="text-danger">@item.Discount%</td>
+                        <td>@item.Description</td>
+                        <td>@item.Status</td>
+                        <td>@item.Brand.BrandName</td>
+                        <td>@item.Category.CategoryName</td>
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@item.ProductId" class="btn btn-warning btn-sm">Edit</a>
+                            <a asp-action="Details" asp-route-id="@item.ProductId" class="btn btn-info btn-sm">Details</a>
+                            <a asp-action="Delete" asp-route-id="@item.ProductId" class="btn btn-danger btn-sm">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="pagination">
+        @Html.PagedListPager(Model, page => Url.Action("Index", new { page }))
+    </div>
+</div>

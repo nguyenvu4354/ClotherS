@@ -87,7 +87,8 @@ void SeedData(DataContext context)
         {
             new Role { RoleName = "Admin", Disable = false },
             new Role { RoleName = "Customer", Disable = false },
-            new Role { RoleName = "Staff", Disable = false }
+            new Role { RoleName = "Staff", Disable = false },
+            new Role { RoleName = "Shipper", Disable = false }
         };
 
         context.Roles.AddRange(roles);

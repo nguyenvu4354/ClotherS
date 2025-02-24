@@ -21,7 +21,7 @@
         {
             // Xử lý đường dẫn hình ảnh
             var imagePath = string.IsNullOrEmpty(order.Account?.AccountImage)
-            ? "/images/default-avatar.png" // Ảnh mặc định
+            ? "/images/default-avatar.png" 
             : Url.Content("~/images/" + order.Account.AccountImage);
 
             <tr>
