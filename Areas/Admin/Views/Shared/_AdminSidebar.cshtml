@@ -1,0 +1,53 @@
+﻿<div class="left-sidebar bg-light p-3 border rounded">
+    <h2 class="text-center text-dark">Admin Panel</h2>
+
+    <!-- Product Management -->
+    <h3 class="text-primary">Products</h3>
+    <div class="list-group">
+        <a asp-action="Index" asp-controller="Products" class="list-group-item list-group-item-action">All Products</a>
+        <a asp-action="Create" asp-controller="Products" class="list-group-item list-group-item-action">Add New Product</a>
+    </div>
+
+    <!-- Order Management -->
+    <h3 class="text-success mt-3">Orders</h3>
+    <div class="list-group">
+        <a asp-action="Index" asp-controller="Orders" class="list-group-item list-group-item-action">All Orders</a>
+        <a asp-action="Pending" asp-controller="Orders" class="list-group-item list-group-item-action">Pending Orders</a>
+    </div>
+
+    <!-- User Management -->
+    <h3 class="text-danger mt-3">Users</h3>
+    <div class="list-group">
+        <a asp-action="Index" asp-controller="Users" class="list-group-item list-group-item-action">All Users</a>
+        <a asp-action="Create" asp-controller="Users" class="list-group-item list-group-item-action">Add New User</a>
+    </div>
+
+    <!-- Category Management -->
+    <h3 class="text-warning mt-3">Categories</h3>
+    <div class="list-group">
+        <a asp-action="Index" asp-controller="Categories" class="list-group-item list-group-item-action">All Categories</a>
+        <a asp-action="Create" asp-controller="Categories" class="list-group-item list-group-item-action">Add New Category</a>
+    </div>
+
+    <!-- Brand Management -->
+    <h3 class="text-info mt-3">Brands</h3>
+    <div class="list-group">
+        <a asp-action="Index" asp-controller="Brands" class="list-group-item list-group-item-action">All Brands</a>
+        <a asp-action="Create" asp-controller="Brands" class="list-group-item list-group-item-action">Add New Brand</a>
+    </div>
+
+    <!-- Price Range Filter -->
+    <div class="price-range mt-4">
+        <h3 class="text-dark">Price Range</h3>
+        <div class="well text-center">
+            <input type="text" class="span2" value="" data-slider-min="0" data-slider-max="1000" data-slider-step="10" data-slider-value="[100,500]" id="sl2"><br />
+            <b class="pull-left">$ 0</b> <b class="pull-right">$ 1000</b>
+        </div>
+    </div>
+
+    <!-- Shipping Section -->
+    <div class="shipping text-center mt-4">
+        <h3 class="text-secondary">Shipping</h3>
+        <img src="images/home/shipping.jpg" alt="Shipping" class="img-fluid">
+    </div>
+</div>

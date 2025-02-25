@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using ClotherS.Models;
 using ClotherS.Repositories;
 using X.PagedList;
-using X.PagedList.Mvc.Core;
 namespace ClotherS.Controllers
 {
     public class ProductsController : Controller

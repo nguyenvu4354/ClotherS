@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using ClotherS.Models;
-using System.Linq;
 using ClotherS.Repositories;
 
 namespace ClotherS.Controllers

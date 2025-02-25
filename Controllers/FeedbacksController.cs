@@ -2,8 +2,7 @@
 using ClotherS.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Linq;
+
 
 namespace ClotherS.Controllers
 {
