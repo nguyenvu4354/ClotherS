@@ -1,0 +1,10 @@
+﻿/* wwwroot/css/product-details.css */
+.product-name-hover {
+    display: inline-block;
+    transition: transform 0.3s ease-in-out;
+}
+
+    .product-name-hover:hover {
+        transform: scale(1.2);
+        color: #ff8000; /* Đổi màu khi hover */
+    }

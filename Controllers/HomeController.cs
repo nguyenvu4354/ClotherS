@@ -37,8 +37,20 @@ namespace ClotherS.Controllers
             ViewBag.CategoryName = product.Category?.CategoryName ?? "Unknown";
             ViewBag.BrandName = product.Brand?.BrandName ?? "Unknown";
 
+            // Lấy danh sách feedback của sản phẩm
+            var feedbacks = _dataContext.Feedbacks
+                .Include(f => f.Account) // Nếu bạn muốn hiển thị tên người dùng
+                .Where(f => f.ProductId == id && (f.Disable == false || f.Disable == null))
+                .OrderByDescending(f => f.CreatedAt)
+                .ToList();
+
+            ViewBag.Feedbacks = feedbacks; 
+
+            ViewBag.AverageRating = feedbacks.Any() ? feedbacks.Average(f => f.Rating) : 0;
+            ViewBag.TotalReviews = feedbacks.Count;
             return View(product);
         }
+
 
         public IActionResult Privacy()
         {
@@ -60,23 +72,5 @@ namespace ClotherS.Controllers
             _logger.LogError("Có lỗi xảy ra!");
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
-
-        public IActionResult Search(string query)
-        {
-            if (string.IsNullOrEmpty(query))
-            {
-                return RedirectToAction("Index");
-            }
-
-            var products = _dataContext.Products
-                .Where(p => p.ProductName.Contains(query) || p.Description.Contains(query))
-                .Include(p => p.Category)
-                .Include(p => p.Brand)
-                .ToList();
-
-            ViewBag.SearchQuery = query;
-            return View("Index", products);
-        }
-
     }
 }

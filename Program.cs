@@ -26,6 +26,8 @@ builder.Services.AddIdentity<Account, Role>()
     .AddEntityFrameworkStores<DataContext>()
     .AddDefaultTokenProviders();
 
+// **5. Đăng ký DataSeeder**
+builder.Services.AddScoped<DataSeeder>();
 
 // **6. Cấu hình Authentication & Cookie**
 builder.Services.ConfigureApplicationCookie(options =>
@@ -47,38 +49,12 @@ builder.Services.AddAuthorization(options =>
 // **8. Xây dựng ứng dụng**
 var app = builder.Build();
 
-// **9. Tạo Role & Admin mặc định**
+// **9. Gọi DataSeeder để tạo Role & Admin mặc định**
 using (var scope = app.Services.CreateScope())
 {
-    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<Role>>();
-    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<Account>>();
-
-    // Danh sách Role cần tạo
-    string[] roles = { "Admin", "Staff", "Customer" };
-
-    foreach (var role in roles)
-    {
-        if (!await roleManager.RoleExistsAsync(role))
-        {
-            await roleManager.CreateAsync(new Role { Name = role });
-        }
-    }
-
-    // Tạo tài khoản Admin mặc định
-    string adminEmail = "admin@example.com";
-    string adminPassword = "Admin@123";
-
-    var adminUser = await userManager.FindByEmailAsync(adminEmail);
-    if (adminUser == null)
-    {
-        adminUser = new Account { UserName = adminEmail, Email = adminEmail };
-        var result = await userManager.CreateAsync(adminUser, adminPassword);
-
-        if (result.Succeeded)
-        {
-            await userManager.AddToRoleAsync(adminUser, "Admin");
-        }
-    }
+    var dataSeeder = scope.ServiceProvider.GetRequiredService<DataSeeder>();
+    await dataSeeder.SeedRolesAndAdminAsync();
+    await dataSeeder.SeedBrandsCategoriesProductsAsync();
 }
 
 // **10. Cấu hình xử lý lỗi**

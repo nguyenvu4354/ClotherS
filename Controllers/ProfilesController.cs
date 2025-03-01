@@ -28,6 +28,7 @@ public class ProfilesController : Controller
             await _signInManager.SignOutAsync();
             return RedirectToAction("Login", "Accounts");
         }
+        ViewData["ActivePage"] = "Profile";
         return View(user);
     }
 
@@ -114,7 +115,7 @@ public class ProfilesController : Controller
             .Include(od => od.Product)
             .OrderByDescending(od => od.OrderDate)
             .ToListAsync();
-
+        ViewData["ActivePage"] = "Orders";
         return View(orders);
     }
 
@@ -180,4 +181,43 @@ public class ProfilesController : Controller
         TempData["Success"] = "Đơn hàng đã bị hủy thành công!";
         return RedirectToAction("OrderDetails", new { id = orderDetail.OId });
     }
+    public IActionResult ChangePassword()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ChangePassword(string currentPassword, string newPassword, string confirmPassword)
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+        {
+            await _signInManager.SignOutAsync();
+            return RedirectToAction("Login", "Accounts");
+        }
+
+        if (newPassword != confirmPassword)
+        {
+            ModelState.AddModelError("", "New password and confirmation password do not match.");
+            return View();
+        }
+
+        var result = await _userManager.ChangePasswordAsync(user, currentPassword, newPassword);
+        if (result.Succeeded)
+        {
+            await _signInManager.RefreshSignInAsync(user);
+            TempData["Success"] = "Password changed successfully!";
+            return RedirectToAction(nameof(Index));
+        }
+
+        foreach (var error in result.Errors)
+        {
+            ModelState.AddModelError("", error.Description);
+        }
+        ViewData["ActivePage"] = "ChangePassword";
+        return View();
+    }
+
+
 }

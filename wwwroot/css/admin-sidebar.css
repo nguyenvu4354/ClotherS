@@ -1,0 +1,56 @@
+﻿/* Sidebar Styles */
+.left-sidebar {
+    width: 250px;
+    background: #fdb45e; 
+    padding: 15px;
+    border-radius: 8px;
+    position: fixed;
+    height: 100vh;
+    overflow-y: auto;
+    transition: transform 0.3s ease-in-out;
+}
+
+/* Chỉnh tiêu đề ADMIN DASHBOARD */
+.admin-title {
+    text-align: center;
+    color: #007bff; 
+    font-size: 24px; 
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+}
+
+.sidebar-menu {
+    list-style: none;
+    padding: 0;
+}
+
+    .sidebar-menu .menu-item {
+        cursor: pointer;
+        padding: 10px;
+        border-radius: 5px;
+        margin-bottom: 5px;
+        background: #e9ecef;
+        transition: 0.3s;
+    }
+
+        .sidebar-menu .menu-item:hover {
+            background: #ddd;
+        }
+
+.submenu {
+    display: none;
+    list-style: none;
+    padding-left: 15px;
+}
+
+    .submenu a {
+        display: block;
+        padding: 8px;
+        text-decoration: none;
+        color: #007bff;
+    }
+
+        .submenu a:hover {
+            text-decoration: underline;
+        }

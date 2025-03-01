@@ -4,16 +4,9 @@
     ViewData["Title"] = "Order Details";
 }
 
-<div class="d-flex justify-content-center align-items-center mb-4" style="display: flex; justify-content: center; gap: 50px;">
-    <h2 class="fw-bold mb-0">
-        <a asp-controller="Profiles" asp-action="Index" class="text-decoration-none title-link">Profile</a>
-    </h2>
-    <h2 class="fw-bold mb-0">
-        <a asp-action="Orders" class="text-decoration-none title-link">My Orders</a>
-    </h2>
-</div>
+<partial name="_ProfileNavigation" />
 
-<h2 class="mb-4">Order Details</h2>
+<h2 class="mb-4 text-center">Order Details</h2>
 
 @if (TempData["Success"] != null)
 {
@@ -24,84 +17,86 @@
     <div class="alert alert-danger">@TempData["Error"]</div>
 }
 
-<table class="table table-hover table-bordered">
-    <thead class="table-dark">
-        <tr>
-            <th>Product</th>
-            <th>Price</th>
-            <th>Quantity</th>
-            <th>Discount</th>
-            <th>Total</th>
-            <th>Receive Date</th>
-            <th>Status</th>
-            <th>Action</th>
-            <th>Feedback</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var detail in Model)
-        {
+<div class="table-responsive">
+    <table class="table table-hover table-bordered">
+        <thead class="table-dark text-center">
             <tr>
-                <td>@detail.Product.ProductName</td>
-                <td>$@detail.Price</td>
-                <td>@detail.Quantity</td>
-                <td>@detail.Discount%</td>
-                <td>$@(detail.Price * detail.Quantity * (1 - detail.Discount / 100.0))</td>
-                <td>@(detail.ReceiveDate?.ToString("yyyy-MM-dd HH:mm:ss") ?? "Not received")</td>
-                <td>
-                    <span class="badge @(detail.Status == "Processing" ? "bg-primary" : detail.Status == "Success" ? "bg-success" : detail.Status == "Disabled" ? "bg-danger" : "bg-warning text-dark")">
-                        @detail.Status
-                    </span>
-                </td>
-                <td>
-                    @if (detail.Status == "Processing")
-                    {
-                        <form asp-action="CancelOrder" method="post">
-                            <input type="hidden" name="detailId" value="@detail.DetailId" />
-                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Bạn có chắc chắn muốn hủy mục đơn hàng này không?');">
-                                Hủy mục đơn hàng
-                            </button>
-                        </form>
-                    }
-                    else if (detail.Status == "Disabled")
-                    {
-                        <span class="text-muted">Đã hủy</span>
-                    }
-                    else
-                    {
-                        <span class="text-muted">Không thể hủy</span>
-                    }
-                </td>
-                <td>
-                    @if (!detail.IsReviewed)
-                    {
-                        <a href="@Url.Action("Create", "Feedbacks", new { detailId = detail.DetailId })"
-                           class="btn btn-primary btn-sm">
-                            Đánh giá
-                        </a>
-                    }
-                    else
-                    {
-                        <a href="@Url.Action("Feedback", "Feedbacks", new { detailId = detail.DetailId })"
-                           class="btn btn-info btn-sm">
-                            Xem đánh giá
-                        </a>
-                    }
-                </td>
+                <th>Product Image</th>
+                <th>Product Information</th>
+                <th>Order Status & Actions</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
 
-<style>
-    .title-link {
-        color: #FE980F;
-        font-size: 3rem;
-        font-weight: bold;
-        transition: text-decoration 0.3s ease-in-out;
-    }
+        <tbody>
+            @foreach (var detail in Model)
+            {
+                <tr>
+                    <!-- Column 1: Product Image -->
+                    <td class="align-middle text-center">
+                        <img src="~/images/@detail.Product.Image"
+                             alt="Product Image"
+                             class="img-thumbnail"
+                             style="width: 100px; height: 100px; object-fit: cover;" />
+                    </td>
 
-        .title-link:hover {
-            text-decoration: underline;
-        }
-</style>
+                    <!-- Column 2: Product Details -->
+                    <td class="align-middle">
+                        <p><strong>@detail.Product.ProductName</strong></p>
+                        <p>Price: <strong>$@detail.Price</strong></p>
+                        <p>Quantity: <strong>@detail.Quantity</strong></p>
+                        <p>Discount: <strong>@detail.Discount%</strong></p>
+                        <p>Total: <strong class="text-success">$@(detail.Price * detail.Quantity * (1 - detail.Discount / 100.0))</strong></p>
+                        <p>Receive Date: <strong>@(detail.ReceiveDate?.ToString("yyyy-MM-dd HH:mm:ss") ?? "Not received")</strong></p>
+                    </td>
+
+                    <!-- Column 3: Order Status, Cancel & Review -->
+                    <td class="align-middle text-center">
+                        <!-- Order Status Badge -->
+                        <p>
+                            <span class="badge @(detail.Status == "Processing" ? "bg-primary" : detail.Status == "Success" ? "bg-success" : detail.Status == "Disabled" ? "bg-danger" : "bg-warning text-dark")">
+                                @detail.Status
+                            </span>
+                        </p>
+
+                        <!-- Cancel Order Button -->
+                        @if (detail.Status == "Processing")
+                        {
+                            <form asp-action="CancelOrder" method="post" class="d-inline">
+                                <input type="hidden" name="detailId" value="@detail.DetailId" />
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to cancel this order item?');">
+                                     Cancel Order
+                                </button>
+                            </form>
+                        }
+                        else if (detail.Status == "Disabled")
+                        {
+                            <p class="text-muted">Cancelled</p>
+                        }
+                        else
+                        {
+                            <p class="text-muted">Cannot cancel</p>
+                        }
+
+                        <!-- Review / View Review Button -->
+                        <p class="mt-2">
+                            @if (!detail.IsReviewed)
+                            {
+                                <a href="@Url.Action("Create", "Feedbacks", new { detailId = detail.DetailId })"
+                                   class="btn btn-primary btn-sm">
+                                     Leave a Review
+                                </a>
+                            }
+                            else
+                            {
+                                <a href="@Url.Action("Feedback", "Feedbacks", new { detailId = detail.DetailId })"
+                                   class="btn btn-info btn-sm">
+                                     View Review
+                                </a>
+                            }
+                        </p>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

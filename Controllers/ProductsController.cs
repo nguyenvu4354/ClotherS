@@ -16,28 +16,31 @@ namespace ClotherS.Controllers
         }
 
         // GET: Products
-     
+
         public async Task<IActionResult> Index(int? page, string searchString)
         {
-            int pageSize = 5; // Số sản phẩm mỗi trang
-            int pageNumber = page ?? 1; // Mặc định trang đầu tiên
+            int pageSize = 5;
+            int pageNumber = page ?? 1;
 
             var products = _context.Products
                 .Include(p => p.Brand)
                 .Include(p => p.Category)
-                .AsQueryable(); // Chuyển sang IQueryable để lọc
+                .AsQueryable();
 
-            // Nếu có từ khóa tìm kiếm, lọc sản phẩm theo tên
+            // Tìm kiếm theo tên sản phẩm
             if (!string.IsNullOrEmpty(searchString))
             {
                 products = products.Where(p => p.ProductName.Contains(searchString));
             }
 
-            // Sắp xếp dữ liệu và phân trang
-            var pagedList = await products.OrderBy(p => p.ProductId).ToPagedListAsync(pageNumber, pageSize);
+            // Sắp xếp và phân trang
+            var pagedList = await products.OrderBy(p => p.ProductId)
+                                          .ToPagedListAsync(pageNumber, pageSize);
 
+            ViewBag.SearchString = searchString; 
             return View(pagedList);
         }
+
 
 
 
@@ -173,39 +176,6 @@ namespace ClotherS.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-        [HttpGet]
-        public async Task<IActionResult> Search(string searchString)
-        {
-            var products = _context.Products
-                .Include(p => p.Brand)
-                .Include(p => p.Category)
-                .AsQueryable();
-
-            if (!string.IsNullOrEmpty(searchString))
-            {
-                products = products.Where(p => p.ProductName.Contains(searchString));
-            }
-
-            var result = await products.OrderBy(p => p.ProductId)
-                .Select(p => new
-                {
-                    p.ProductId,
-                    p.ProductName,
-                    p.Quantity,
-                    p.Price,
-                    p.Image,
-                    p.Material,
-                    p.Size,
-                    p.Discount,
-                    p.Description,
-                    p.Status,
-                    BrandName = p.Brand.BrandName,
-                    CategoryName = p.Category.CategoryName
-                }).ToListAsync();
-
-            return Json(result);
-        }
-
 
     }
 }

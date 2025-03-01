@@ -8,7 +8,6 @@ namespace ClotherS.Models
         public int BrandId { get; set; }
         public string BrandName { get; set; }
 
-        // Quan hệ
         public ICollection<Product> Products { get; set; }
     }
 

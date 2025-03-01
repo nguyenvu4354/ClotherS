@@ -71,11 +71,18 @@ namespace ClotherS.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("FirstName,LastName,Address,Gender,Active,Description,DateOfBirth,Disable,UserName,Email,PhoneNumber,PasswordHash")] Account account, string roleName)
         {
+            if (await _userManager.FindByNameAsync(account.UserName) != null)
+            {
+                ModelState.AddModelError("UserName", "Username already exists.");
+            }
+            if (await _userManager.FindByEmailAsync(account.Email) != null)
+            {
+                ModelState.AddModelError("Email", "Email already exists.");
+            }
+
             if (ModelState.IsValid)
             {
-                // Đặt hình ảnh mặc định
                 account.AccountImage = "default.png";
-
                 var passwordHasher = new PasswordHasher<Account>();
                 account.PasswordHash = passwordHasher.HashPassword(account, account.PasswordHash);
                 account.AccessFailedCount = 0;
