@@ -8,7 +8,8 @@
 
 <p><strong>Khách hàng:</strong> @(Model.Account != null ? $"{Model.Account.FirstName} {Model.Account.LastName}" : "Không xác định")</p>
 <p><strong>Email:</strong> @(Model.Account?.Email ?? "Không có email")</p>
-<p><strong>Số điện thoại:</strong> @(Model.Account?.Phone ?? "Không có số điện thoại")</p>
+<p><strong>Số điện thoại:</strong> @(Model.Account?.PhoneNumber ?? "Không có số điện thoại")</p>
+
 
 <h4>Danh sách sản phẩm</h4>
 <table class="table">

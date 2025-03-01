@@ -1,9 +1,11 @@
 ﻿using ClotherS.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace ClotherS.Repositories
 {
-    public class DataContext : DbContext
+    public class DataContext : IdentityDbContext<Account, Role, int>
     {
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
@@ -12,8 +14,6 @@ namespace ClotherS.Repositories
         public DbSet<Brand> Brands { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Product> Products { get; set; }
-        public DbSet<Role> Roles { get; set; }
-        public DbSet<Account> Accounts { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderDetail> OrderDetails { get; set; }
         public DbSet<Feedback> Feedbacks { get; set; }
@@ -50,12 +50,9 @@ namespace ClotherS.Repositories
                 .HasForeignKey(od => od.OId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Cấu hình quan hệ giữa Account và Role
-            modelBuilder.Entity<Account>()
-                .HasOne(a => a.Role)
-                .WithMany(r => r.Accounts)
-                .HasForeignKey(a => a.RoleId)
-                .OnDelete(DeleteBehavior.Restrict);
+            // Cấu hình quan hệ giữa Account và Role (thông qua bảng trung gian IdentityUserRole<int>)
+            modelBuilder.Entity<IdentityUserRole<int>>()
+                .HasKey(ur => new { ur.UserId, ur.RoleId });
 
             // Cấu hình quan hệ giữa Feedback và Account
             modelBuilder.Entity<Feedback>()
@@ -70,13 +67,13 @@ namespace ClotherS.Repositories
                 .WithMany()
                 .HasForeignKey(f => f.ProductId)
                 .OnDelete(DeleteBehavior.Restrict);
+
             // Cấu hình quan hệ giữa Feedback và OrderDetail
             modelBuilder.Entity<Feedback>()
                 .HasOne(f => f.OrderDetail)
                 .WithMany(od => od.Feedbacks)
                 .HasForeignKey(f => f.DetailId)
                 .OnDelete(DeleteBehavior.Restrict);
-
         }
     }
 }

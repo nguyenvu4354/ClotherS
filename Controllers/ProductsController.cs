@@ -16,7 +16,8 @@ namespace ClotherS.Controllers
         }
 
         // GET: Products
-        public async Task<IActionResult> Index(int? page)
+     
+        public async Task<IActionResult> Index(int? page, string searchString)
         {
             int pageSize = 5; // Số sản phẩm mỗi trang
             int pageNumber = page ?? 1; // Mặc định trang đầu tiên
@@ -24,10 +25,21 @@ namespace ClotherS.Controllers
             var products = _context.Products
                 .Include(p => p.Brand)
                 .Include(p => p.Category)
-                .OrderBy(p => p.ProductId); // Đảm bảo dữ liệu được sắp xếp
+                .AsQueryable(); // Chuyển sang IQueryable để lọc
 
-            return View(await products.ToPagedListAsync(pageNumber, pageSize));
+            // Nếu có từ khóa tìm kiếm, lọc sản phẩm theo tên
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                products = products.Where(p => p.ProductName.Contains(searchString));
+            }
+
+            // Sắp xếp dữ liệu và phân trang
+            var pagedList = await products.OrderBy(p => p.ProductId).ToPagedListAsync(pageNumber, pageSize);
+
+            return View(pagedList);
         }
+
+
 
         // GET: Products/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -161,10 +173,39 @@ namespace ClotherS.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-
-        private bool ProductExists(int id)
+        [HttpGet]
+        public async Task<IActionResult> Search(string searchString)
         {
-            return _context.Products.Any(e => e.ProductId == id);
+            var products = _context.Products
+                .Include(p => p.Brand)
+                .Include(p => p.Category)
+                .AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                products = products.Where(p => p.ProductName.Contains(searchString));
+            }
+
+            var result = await products.OrderBy(p => p.ProductId)
+                .Select(p => new
+                {
+                    p.ProductId,
+                    p.ProductName,
+                    p.Quantity,
+                    p.Price,
+                    p.Image,
+                    p.Material,
+                    p.Size,
+                    p.Discount,
+                    p.Description,
+                    p.Status,
+                    BrandName = p.Brand.BrandName,
+                    CategoryName = p.Category.CategoryName
+                }).ToListAsync();
+
+            return Json(result);
         }
+
+
     }
 }

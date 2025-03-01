@@ -60,5 +60,23 @@ namespace ClotherS.Controllers
             _logger.LogError("Có lỗi xảy ra!");
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
+        public IActionResult Search(string query)
+        {
+            if (string.IsNullOrEmpty(query))
+            {
+                return RedirectToAction("Index");
+            }
+
+            var products = _dataContext.Products
+                .Where(p => p.ProductName.Contains(query) || p.Description.Contains(query))
+                .Include(p => p.Category)
+                .Include(p => p.Brand)
+                .ToList();
+
+            ViewBag.SearchQuery = query;
+            return View("Index", products);
+        }
+
     }
 }

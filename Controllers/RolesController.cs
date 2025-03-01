@@ -1,41 +1,26 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using ClotherS.Models;
-using ClotherS.Repositories;
+using System.Threading.Tasks;
 
 namespace ClotherS.Controllers
 {
+    [Authorize(Roles = "Admin")] // Chỉ Admin mới có quyền quản lý Role
     public class RolesController : Controller
     {
-        private readonly DataContext _context;
+        private readonly RoleManager<IdentityRole<int>> _roleManager;
 
-        public RolesController(DataContext context)
+        public RolesController(RoleManager<IdentityRole<int>> roleManager)
         {
-            _context = context;
+            _roleManager = roleManager;
         }
 
         // GET: Roles
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Roles.ToListAsync());
-        }
-
-        // GET: Roles/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var role = await _context.Roles
-                .FirstOrDefaultAsync(m => m.RoleId == id);
-            if (role == null)
-            {
-                return NotFound();
-            }
-
-            return View(role);
+            var roles = await _roleManager.Roles.ToListAsync();
+            return View(roles);
         }
 
         // GET: Roles/Create
@@ -45,82 +30,40 @@ namespace ClotherS.Controllers
         }
 
         // POST: Roles/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("RoleId,RoleName")] Role role)
+        public async Task<IActionResult> Create(string roleName)
         {
-            if (ModelState.IsValid)
+            if (string.IsNullOrEmpty(roleName))
             {
-                _context.Add(role);
-                await _context.SaveChangesAsync();
+                ModelState.AddModelError("", "Role name is required.");
+                return View();
+            }
+
+            var roleExists = await _roleManager.RoleExistsAsync(roleName);
+            if (roleExists)
+            {
+                ModelState.AddModelError("", "This role already exists.");
+                return View();
+            }
+
+            var result = await _roleManager.CreateAsync(new IdentityRole<int> { Name = roleName });
+            if (result.Succeeded)
+            {
                 return RedirectToAction(nameof(Index));
             }
-            return View(role);
-        }
 
-        // GET: Roles/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
+            foreach (var error in result.Errors)
             {
-                return NotFound();
+                ModelState.AddModelError("", error.Description);
             }
-
-            var role = await _context.Roles.FindAsync(id);
-            if (role == null)
-            {
-                return NotFound();
-            }
-            return View(role);
-        }
-
-        // POST: Roles/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("RoleId,RoleName")] Role role)
-        {
-            if (id != role.RoleId)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(role);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!RoleExists(role.RoleId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(role);
+            return View();
         }
 
         // GET: Roles/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var role = await _context.Roles
-                .FirstOrDefaultAsync(m => m.RoleId == id);
+            var role = await _roleManager.FindByIdAsync(id.ToString());
             if (role == null)
             {
                 return NotFound();
@@ -134,21 +77,12 @@ namespace ClotherS.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var role = await _context.Roles.FindAsync(id);
+            var role = await _roleManager.FindByIdAsync(id.ToString());
             if (role != null)
             {
-                role.Disable = true; // Thay vì xóa, chuyển trạng thái Disable thành true
-                _context.Roles.Update(role);
-                await _context.SaveChangesAsync();
+                await _roleManager.DeleteAsync(role);
             }
-
             return RedirectToAction(nameof(Index));
-        }
-
-
-        private bool RoleExists(int id)
-        {
-            return _context.Roles.Any(e => e.RoleId == id);
         }
     }
 }

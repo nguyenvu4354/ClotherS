@@ -1,104 +1,142 @@
 ﻿@model ClotherS.Models.Account
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit Account";
+    var roles = ViewBag.Roles as List<ClotherS.Models.Role>;
+    var currentRole = ViewBag.CurrentRole as string;
 }
 
-<h1>Edit</h1>
-
-<h4>Account</h4>
+<h1>Edit Account</h1>
 <hr />
+
 <div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="AccountId" />
+    <!-- Cột hình ảnh -->
+    <div class="col-md-5 text-center">
+        <div class="card shadow-lg border-0 rounded-4 p-4">
+            <form asp-action="UpdateProfileImage" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="id" value="@Model.Id" />
+
+                <div class="position-relative p-3" style="border: 4px solid #FE980F; border-radius: 10px; display: inline-block;">
+                    <label for="profileImageInput" class="image-upload-label d-block">
+                        <img id="profilePreview"
+                             src="@(string.IsNullOrEmpty(Model.AccountImage) ? "/images/default-avatar.png" : "/images/" + Model.AccountImage)"
+                             class="img-fluid rounded-circle shadow"
+                             style="width: 200px; height: 200px; object-fit: cover; cursor: pointer; transition: transform 0.3s;"
+                             alt="Profile Image"
+                             title="Click to change profile picture" />
+                    </label>
+                    <input type="file" name="file" id="profileImageInput" class="d-none" accept="image/*" />
+                </div>
+
+                <button type="submit" class="btn btn-primary mt-3 w-100 fw-bold">Update Image</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Cột thông tin -->
+    <div class="col-md-7">
+        <form asp-action="Edit" method="post">
+            <input type="hidden" asp-for="Id" />
+
+            <!-- Hàng FirstName & LastName -->
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="FirstName" class="control-label"></label>
+                        <input asp-for="FirstName" class="form-control" />
+                        <span asp-validation-for="FirstName" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="LastName" class="control-label"></label>
+                        <input asp-for="LastName" class="form-control" />
+                        <span asp-validation-for="LastName" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="UserName" class="control-label"></label>
+                <input asp-for="UserName" class="form-control" />
+                <span asp-validation-for="UserName" class="text-danger"></span>
+            </div>
+
             <div class="form-group">
                 <label asp-for="Email" class="control-label"></label>
                 <input asp-for="Email" class="form-control" />
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
+
             <div class="form-group">
-                <label asp-for="FirstName" class="control-label"></label>
-                <input asp-for="FirstName" class="form-control" />
-                <span asp-validation-for="FirstName" class="text-danger"></span>
+                <label asp-for="PhoneNumber" class="control-label"></label>
+                <input asp-for="PhoneNumber" class="form-control" />
+                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="LastName" class="control-label"></label>
-                <input asp-for="LastName" class="form-control" />
-                <span asp-validation-for="LastName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Phone" class="control-label"></label>
-                <input asp-for="Phone" class="form-control" />
-                <span asp-validation-for="Phone" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Password" class="control-label"></label>
-                <input asp-for="Password" class="form-control" />
-                <span asp-validation-for="Password" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="AccountImage" class="control-label"></label>
-                <input asp-for="AccountImage" class="form-control" />
-                <span asp-validation-for="AccountImage" class="text-danger"></span>
-            </div>
+
             <div class="form-group">
                 <label asp-for="Address" class="control-label"></label>
                 <input asp-for="Address" class="form-control" />
                 <span asp-validation-for="Address" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Gender" class="control-label"></label>
-                <input asp-for="Gender" class="form-control" />
-                <span asp-validation-for="Gender" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Active" class="control-label"></label>
-                <input asp-for="Active" class="form-control" />
-                <span asp-validation-for="Active" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="RoleId" class="control-label"></label>
-                <select asp-for="RoleId" class="form-control" asp-items="ViewBag.RoleId"></select>
-                <span asp-validation-for="RoleId" class="text-danger"></span>
-            </div>
+
             <div class="form-group">
                 <label asp-for="DateOfBirth" class="control-label"></label>
-                <input asp-for="DateOfBirth" class="form-control" />
+                <input asp-for="DateOfBirth" type="date" class="form-control" />
                 <span asp-validation-for="DateOfBirth" class="text-danger"></span>
             </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="Disable" /> @Html.DisplayNameFor(model => model.Disable)
-                </label>
-            </div>
+
             <div class="form-group">
-                <label asp-for="ResetPasswordToken" class="control-label"></label>
-                <input asp-for="ResetPasswordToken" class="form-control" />
-                <span asp-validation-for="ResetPasswordToken" class="text-danger"></span>
+                <label asp-for="PasswordHash" class="control-label">New Password</label>
+                <input asp-for="PasswordHash" type="password" class="form-control" placeholder="Leave blank if unchanged" />
+                <span asp-validation-for="PasswordHash" class="text-danger"></span>
             </div>
+
             <div class="form-group">
-                <label asp-for="ResetPasswordExpiry" class="control-label"></label>
-                <input asp-for="ResetPasswordExpiry" class="form-control" />
-                <span asp-validation-for="ResetPasswordExpiry" class="text-danger"></span>
+                <label>Role</label>
+                <select name="roleName" class="form-control">
+                    @foreach (var role in roles.Where(r => r.Name != "Admin"))
+                    {
+                        <option value="@role.Name" selected="@(role.Name == currentRole ? "selected" : null)">
+                            @role.Name
+                        </option>
+                    }
+                </select>
             </div>
+
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <label asp-for="Active" class="control-label"></label>
+                <select asp-for="Active" class="form-control">
+                    <option value="true">True</option>
+                    <option value="false">False</option>
+                </select>
+                <span asp-validation-for="Active" class="text-danger"></span>
+            </div>
+
+            <!-- Nút Submit & Back to List -->
+            <div class="form-group mt-3">
+                <input type="submit" value="Save Changes" class="btn btn-success fw-bold" />
+                <a asp-action="Index" class="btn btn-outline-secondary fw-bold">Back to List</a>
             </div>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        document.getElementById('profileImageInput').addEventListener('change', function (event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById('profilePreview').src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

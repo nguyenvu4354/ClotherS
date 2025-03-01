@@ -1,23 +1,24 @@
-﻿using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using ClotherS.Models;
 using System.Net.Mail;
 using System.Net;
-using ClotherS.Repositories;
+
 
 namespace ClotherS.Controllers
 {
     public class AuthenticationController : Controller
     {
-        private readonly DataContext _context;
+        private readonly UserManager<Account> _userManager;
+        private readonly SignInManager<Account> _signInManager;
+        private readonly RoleManager<Role> _roleManager;
         private readonly IConfiguration _config;
 
-        public AuthenticationController(DataContext context, IConfiguration config)
+        public AuthenticationController(UserManager<Account> userManager, SignInManager<Account> signInManager, RoleManager<Role> roleManager, IConfiguration config)
         {
-            _context = context;
+            _userManager = userManager;
+            _signInManager = signInManager;
+            _roleManager = roleManager;
             _config = config;
         }
 
@@ -30,22 +31,16 @@ namespace ClotherS.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(string email, string password)
         {
-            var account = await _context.Accounts.FirstOrDefaultAsync(a => a.Email == email);
-
-            if (account != null && BCrypt.Net.BCrypt.Verify(password, account.Password))
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
             {
-                var claims = new List<Claim>
-                {
-                    new Claim(ClaimTypes.NameIdentifier, account.AccountId.ToString()),
-                    new Claim(ClaimTypes.Name, account.Email),
-                    new Claim("FullName", account.FirstName + " " + account.LastName),
-                    new Claim(ClaimTypes.Role, account.RoleId.ToString())
-                };
+                ViewBag.Error = "Invalid email or password";
+                return View();
+            }
 
-                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                var authProperties = new AuthenticationProperties { IsPersistent = true };
-
-                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
+            var result = await _signInManager.PasswordSignInAsync(user, password, true, lockoutOnFailure: false);
+            if (result.Succeeded)
+            {
                 return RedirectToAction("Index", "Home");
             }
 
@@ -53,35 +48,56 @@ namespace ClotherS.Controllers
             return View();
         }
 
+        [HttpGet]
         public IActionResult Register()
         {
+            ViewBag.Roles = _roleManager.Roles.ToList();
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(Account account)
+        public async Task<IActionResult> Register([Bind("UserName,FirstName,LastName,Email,PhoneNumber,Address,DateOfBirth,Active,PasswordHash")] Account account, string roleName)
         {
-            var existingAccount = await _context.Accounts.FirstOrDefaultAsync(a => a.Email == account.Email);
-            if (existingAccount != null)
-            {
-                ModelState.AddModelError("Email", "Email đã tồn tại.");
-                return View(account);
-            }
-
             if (ModelState.IsValid)
             {
-                account.Password = BCrypt.Net.BCrypt.HashPassword(account.Password);
-                _context.Add(account);
-                await _context.SaveChangesAsync();
-                return RedirectToAction("Login");
+                var user = new Account
+                {
+                    UserName = account.UserName,
+                    FirstName = account.FirstName,
+                    LastName = account.LastName,
+                    Email = account.Email,
+                    PhoneNumber = account.PhoneNumber,
+                    Address = account.Address,
+                    DateOfBirth = account.DateOfBirth,
+                    Active = true,
+                    SecurityStamp = Guid.NewGuid().ToString()
+                };
+
+                var result = await _userManager.CreateAsync(user, account.PasswordHash);
+                if (result.Succeeded)
+                {
+                    await _userManager.AddToRoleAsync(user, "CUSTOMER");
+                    await _userManager.AddToRoleAsync(user, roleName);
+                    return RedirectToAction("Login");
+                }
+                else
+                {
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+                }
             }
+
+            ViewBag.Roles = _roleManager.Roles.ToList();
             return View(account);
         }
 
+
         public async Task<IActionResult> Logout()
         {
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            await _signInManager.SignOutAsync();
             return RedirectToAction("Login");
         }
 
@@ -94,18 +110,15 @@ namespace ClotherS.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ForgotPassword(string email)
         {
-            var account = await _context.Accounts.FirstOrDefaultAsync(a => a.Email == email);
-            if (account == null)
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
             {
                 ViewBag.Message = "Email không tồn tại.";
                 return View();
             }
 
-            account.ResetPasswordToken = Guid.NewGuid().ToString();
-            account.ResetPasswordExpiry = DateTime.UtcNow.AddHours(1);
-            await _context.SaveChangesAsync();
-
-            var resetLink = Url.Action("ResetPassword", "Authentication", new { token = account.ResetPasswordToken }, Request.Scheme);
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var resetLink = Url.Action("ResetPassword", "Authentication", new { token, email = user.Email }, Request.Scheme);
 
             var smtpServer = _config["EmailSettings:SmtpServer"];
             var smtpPort = int.Parse(_config["EmailSettings:SmtpPort"]);
@@ -144,39 +157,52 @@ namespace ClotherS.Controllers
             return View();
         }
 
-        public async Task<IActionResult> ResetPassword(string token)
+        public IActionResult ResetPassword(string token, string email)
         {
-            var account = await _context.Accounts.FirstOrDefaultAsync(a => a.ResetPasswordToken == token && a.ResetPasswordExpiry > DateTime.UtcNow);
-            if (account == null)
+            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(token))
             {
-                return NotFound("Token không hợp lệ hoặc đã hết hạn.");
+                return BadRequest("Token hoặc Email không hợp lệ.");
             }
 
-            return View(new ResetPasswordViewModel { Token = token });
+            ViewBag.Token = token;
+            ViewBag.Email = email;
+            return View();
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+        public async Task<IActionResult> ResetPassword(string token, string email, string newPassword, string confirmPassword)
         {
-            if (model.NewPassword != model.ConfirmPassword)
+            if (string.IsNullOrEmpty(email))
             {
-                ModelState.AddModelError("ConfirmPassword", "Mật khẩu xác nhận không khớp.");
-                return View(model);
+                ViewBag.Error = "Email không hợp lệ.";
+                return View();
             }
 
-            var account = await _context.Accounts.FirstOrDefaultAsync(a => a.ResetPasswordToken == model.Token && a.ResetPasswordExpiry > DateTime.UtcNow);
-            if (account == null)
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
             {
-                return NotFound("Token không hợp lệ hoặc đã hết hạn.");
+                ViewBag.Error = "Không tìm thấy người dùng.";
+                return View();
             }
 
-            account.Password = BCrypt.Net.BCrypt.HashPassword(model.NewPassword);
-            account.ResetPasswordToken = null;
-            account.ResetPasswordExpiry = null;
-            await _context.SaveChangesAsync();
+            if (newPassword != confirmPassword)
+            {
+                ViewBag.Error = "Mật khẩu xác nhận không khớp.";
+                return View();
+            }
 
-            return RedirectToAction("Login");
+            var result = await _userManager.ResetPasswordAsync(user, token, newPassword);
+            if (result.Succeeded)
+            {
+                return RedirectToAction("Login");
+            }
+
+            ViewBag.Error = string.Join(", ", result.Errors.Select(e => e.Description));
+            return View();
         }
+
+
     }
 }

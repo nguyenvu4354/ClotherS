@@ -6,57 +6,60 @@
     ViewData["Title"] = "Product Management";
 }
 
-<div class="container mt-4">
-    <h1 class="text-center text-primary">Product Management</h1>
-    <p class="text-right">
-        <a asp-action="Create" class="btn btn-success">+ Add New Product</a>
-    </p>
+<h1 style="color: #fdb45e;">Product Management</h1>
 
-    <div class="table-responsive">
-        <table class="table table-hover table-striped border">
-            <thead class="bg-dark text-light">
-                <tr>
-                    <th>Product Name</th>
-                    <th>Quantity</th>
-                    <th>Price</th>
-                    <th>Image</th>
-                    <th>Material</th>
-                    <th>Size</th>
-                    <th>Discount</th>
-                    <th>Description</th>
-                    <th>Status</th>
-                    <th>Brand</th>
-                    <th>Category</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model)
-                {
-                    <tr>
-                        <td>@item.ProductName</td>
-                        <td>@item.Quantity</td>
-                        <td class="text-success font-weight-bold">$@item.Price</td>
-                        <td><img src="@Url.Content("~/images/" + item.Image)" class="img-thumbnail" width="80" height="80"></td>
-                        <td>@item.Material</td>
-                        <td>@item.Size</td>
-                        <td class="text-danger">@item.Discount%</td>
-                        <td>@item.Description</td>
-                        <td>@item.Status</td>
-                        <td>@item.Brand.BrandName</td>
-                        <td>@item.Category.CategoryName</td>
-                        <td>
-                            <a asp-action="Edit" asp-route-id="@item.ProductId" class="btn btn-warning btn-sm">Edit</a>
-                            <a asp-action="Details" asp-route-id="@item.ProductId" class="btn btn-info btn-sm">Details</a>
-                            <a asp-action="Delete" asp-route-id="@item.ProductId" class="btn btn-danger btn-sm">Delete</a>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-    
-    <div class="pagination">
-        @Html.PagedListPager(Model, page => Url.Action("Index", new { page }))
-    </div>
+<p style="text-align: right;">
+    <a asp-action="Create" class="btn btn-success">+ Add New Product</a>
+</p>
+<!-- Ô tìm kiếm -->
+<input type="text" id="searchBox" placeholder="Search products..." style="padding: 8px; width: 100%; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 5px;">
+
+<!-- Bảng sản phẩm -->
+<table class="table border">
+    <thead>
+        <tr>
+            <th>Product Name</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Image</th>
+            <th>Material</th>
+            <th>Size</th>
+            <th>Discount</th>
+            <th>Description</th>
+            <th>Status</th>
+            <th>Brand</th>
+            <th>Category</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody id="productTableBody">
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.ProductName</td>
+                <td>@item.Quantity</td>
+                <td class="text-success font-weight-bold">$@item.Price</td>
+                <td><img src="@Url.Content("~/images/" + item.Image)" class="img-thumbnail" width="80" height="80"></td>
+                <td>@item.Material</td>
+                <td>@item.Size</td>
+                <td class="text-danger">@item.Discount%</td>
+                <td>@item.Description</td>
+                <td>@item.Status</td>
+                <td>@item.Brand.BrandName</td>
+                <td>@item.Category.CategoryName</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.ProductId" class="btn btn-warning btn-sm">Edit</a>
+                    <a asp-action="Details" asp-route-id="@item.ProductId" class="btn btn-info btn-sm">Details</a>
+                    <a asp-action="Delete" asp-route-id="@item.ProductId" class="btn btn-danger btn-sm">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div id="pagination">
+    @Html.PagedListPager(Model, page => Url.Action("Index", new { page }))
 </div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="~/js/product-search.js"></script>

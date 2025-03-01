@@ -1,90 +1,79 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ClotherS.Models;
+using System.Security.Claims;
 using ClotherS.Repositories;
 
 [Authorize]
 public class ProfilesController : Controller
 {
+    private readonly UserManager<Account> _userManager;
+    private readonly SignInManager<Account> _signInManager;
     private readonly DataContext _context;
 
-    public ProfilesController(DataContext context)
+    public ProfilesController(UserManager<Account> userManager, SignInManager<Account> signInManager, DataContext context)
     {
+        _userManager = userManager;
+        _signInManager = signInManager;
         _context = context;
     }
 
     public async Task<IActionResult> Index()
     {
-        if (!User.Identity.IsAuthenticated)
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
         {
+            await _signInManager.SignOutAsync();
             return RedirectToAction("Login", "Accounts");
         }
-
-        var email = User.Identity.Name;
-        var account = await _context.Accounts.FirstOrDefaultAsync(a => a.Email == email);
-
-        if (account == null)
-        {
-            return NotFound();
-        }
-
-        return View(account);
+        return View(user);
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> UpdateProfile([Bind("AccountId,FirstName,LastName,Phone,Address,Gender,Description,DateOfBirth")] Account model)
+    public async Task<IActionResult> UpdateProfile([Bind("Id,FirstName,LastName,PhoneNumber,Address,Gender,Description,DateOfBirth")] Account model)
     {
-        if (!User.Identity.IsAuthenticated)
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
         {
+            await _signInManager.SignOutAsync();
             return RedirectToAction("Login", "Accounts");
         }
 
-        var existingAccount = await _context.Accounts.FindAsync(model.AccountId);
-        if (existingAccount == null)
-        {
-            return NotFound();
-        }
+        user.FirstName = model.FirstName;
+        user.LastName = model.LastName;
+        user.PhoneNumber = model.PhoneNumber;
+        user.Address = model.Address;
+        user.Gender = model.Gender;
+        user.Description = model.Description;
+        user.DateOfBirth = model.DateOfBirth;
 
-        existingAccount.FirstName = model.FirstName;
-        existingAccount.LastName = model.LastName;
-        existingAccount.Phone = model.Phone;
-        existingAccount.Address = model.Address;
-        existingAccount.Gender = model.Gender;
-        existingAccount.Description = model.Description;
-        existingAccount.DateOfBirth = model.DateOfBirth;
-
-        try
+        var result = await _userManager.UpdateAsync(user);
+        if (result.Succeeded)
         {
-            await _context.SaveChangesAsync();
             ViewBag.Success = "Profile updated successfully!";
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (!_context.Accounts.Any(e => e.AccountId == model.AccountId))
-            {
-                return NotFound();
-            }
-            throw;
+            return RedirectToAction(nameof(Index));
         }
 
-        return RedirectToAction(nameof(Index));
+        foreach (var error in result.Errors)
+        {
+            ModelState.AddModelError("", error.Description);
+        }
+
+        return View("Index", user);
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> UpdateProfileImage(int AccountId, IFormFile profileImage)
+    public async Task<IActionResult> UpdateProfileImage(IFormFile profileImage)
     {
-        if (!User.Identity.IsAuthenticated)
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
         {
+            await _signInManager.SignOutAsync();
             return RedirectToAction("Login", "Accounts");
-        }
-
-        var existingAccount = await _context.Accounts.FindAsync(AccountId);
-        if (existingAccount == null)
-        {
-            return NotFound();
         }
 
         if (profileImage != null && profileImage.Length > 0)
@@ -95,15 +84,16 @@ public class ProfilesController : Controller
                 Directory.CreateDirectory(uploadsFolder);
             }
 
-            var fileName = Guid.NewGuid().ToString() + Path.GetExtension(profileImage.FileName);
+            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(profileImage.FileName)}";
             var filePath = Path.Combine(uploadsFolder, fileName);
 
             using (var stream = new FileStream(filePath, FileMode.Create))
             {
                 await profileImage.CopyToAsync(stream);
             }
-            existingAccount.AccountImage = fileName;
-            await _context.SaveChangesAsync();
+
+            user.AccountImage = fileName;
+            await _userManager.UpdateAsync(user);
         }
 
         return RedirectToAction(nameof(Index));
@@ -111,39 +101,39 @@ public class ProfilesController : Controller
 
     public async Task<IActionResult> Orders()
     {
-        if (!User.Identity.IsAuthenticated)
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
         {
+            await _signInManager.SignOutAsync();
             return RedirectToAction("Login", "Accounts");
         }
 
-        var email = User.Identity.Name;
-        var account = await _context.Accounts.FirstOrDefaultAsync(a => a.Email == email);
-
-        if (account == null)
-        {
-            return NotFound();
-        }
-
         var orders = await _context.OrderDetails
-    .Where(od => od.Order.AccountId == account.AccountId && !od.Order.IsCart)
-    .Include(od => od.Order)
-    .Include(od => od.Product)
-    .OrderByDescending(od => od.OrderDate) 
-    .ToListAsync();
-
+            .Where(od => od.Order.AccountId == user.Id && !od.Order.IsCart)
+            .Include(od => od.Order)
+            .Include(od => od.Product)
+            .OrderByDescending(od => od.OrderDate)
+            .ToListAsync();
 
         return View(orders);
     }
 
-    public IActionResult OrderDetails(int id)
+    public async Task<IActionResult> OrderDetails(int id)
     {
-        var orderDetails = _context.OrderDetails
-            .Include(od => od.Product)
-            .Include(od => od.Feedbacks) // Load đánh giá
-            .Where(od => od.OId == id)
-            .ToList();
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+        {
+            await _signInManager.SignOutAsync();
+            return RedirectToAction("Login", "Accounts");
+        }
 
-        if (orderDetails == null || !orderDetails.Any())
+        var orderDetails = await _context.OrderDetails
+            .Include(od => od.Product)
+            .Include(od => od.Feedbacks)
+            .Where(od => od.OId == id && od.Order.AccountId == user.Id)
+            .ToListAsync();
+
+        if (!orderDetails.Any())
         {
             TempData["Error"] = "Không tìm thấy đơn hàng!";
             return RedirectToAction("Orders");
@@ -152,19 +142,20 @@ public class ProfilesController : Controller
         return View(orderDetails);
     }
 
-
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> CancelOrder(int detailId)
     {
-        if (!User.Identity.IsAuthenticated)
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
         {
+            await _signInManager.SignOutAsync();
             return RedirectToAction("Login", "Accounts");
         }
 
         var orderDetail = await _context.OrderDetails
             .Include(od => od.Order)
-            .FirstOrDefaultAsync(od => od.DetailId == detailId);
+            .FirstOrDefaultAsync(od => od.DetailId == detailId && od.Order.AccountId == user.Id);
 
         if (orderDetail == null)
         {
@@ -189,6 +180,4 @@ public class ProfilesController : Controller
         TempData["Success"] = "Đơn hàng đã bị hủy thành công!";
         return RedirectToAction("OrderDetails", new { id = orderDetail.OId });
     }
-
-
 }

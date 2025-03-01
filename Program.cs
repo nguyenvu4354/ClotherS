@@ -1,13 +1,14 @@
 ﻿using ClotherS.Models;
 using ClotherS.Repositories;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// **1. Cấu hình MVC**
 builder.Services.AddControllersWithViews();
 
+// **2. Cấu hình Session**
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
@@ -16,224 +17,100 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
-// Cấu hình Authentication
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options =>
-    {
-        options.LoginPath = "/Accounts/Login";
-        options.AccessDeniedPath = "/Accounts/AccessDenied";
-    });
+// **3. Cấu hình DbContext (EF Core với SQL Server)**
+builder.Services.AddDbContext<DataContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectedDB")));
 
+// **4. Cấu hình Identity**
+builder.Services.AddIdentity<Account, Role>()
+    .AddEntityFrameworkStores<DataContext>()
+    .AddDefaultTokenProviders();
+
+
+// **6. Cấu hình Authentication & Cookie**
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Accounts/Login";  // Trang đăng nhập
+    options.AccessDeniedPath = "/Accounts/AccessDenied"; // Trang từ chối truy cập
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+    options.SlidingExpiration = true;
+});
+
+// **7. Cấu hình Authorization (Phân quyền dựa trên Role)**
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("AdminOnly", policy => policy.RequireRole("1"));
-    options.AddPolicy("StaffOnly", policy => policy.RequireRole("2"));
-    options.AddPolicy("CustomerOnly", policy => policy.RequireRole("3"));
+    options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+    options.AddPolicy("StaffOnly", policy => policy.RequireRole("Staff"));
+    options.AddPolicy("CustomerOnly", policy => policy.RequireRole("Customer"));
 });
 
-// Cấu hình DbContext
-builder.Services.AddDbContext<DataContext>(options =>
-{
-    options.UseSqlServer(builder.Configuration["ConnectionStrings:ConnectedDB"]);
-});
-
-// Xây dựng ứng dụng
+// **8. Xây dựng ứng dụng**
 var app = builder.Build();
 
-// Lấy dịch vụ DbContext để seeding dữ liệu
+// **9. Tạo Role & Admin mặc định**
 using (var scope = app.Services.CreateScope())
 {
-    var context = scope.ServiceProvider.GetRequiredService<DataContext>();
-    context.Database.Migrate(); // Áp dụng migration (nếu có)
-    SeedData(context); // Gọi phương thức seeding
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<Role>>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<Account>>();
+
+    // Danh sách Role cần tạo
+    string[] roles = { "Admin", "Staff", "Customer" };
+
+    foreach (var role in roles)
+    {
+        if (!await roleManager.RoleExistsAsync(role))
+        {
+            await roleManager.CreateAsync(new Role { Name = role });
+        }
+    }
+
+    // Tạo tài khoản Admin mặc định
+    string adminEmail = "admin@example.com";
+    string adminPassword = "Admin@123";
+
+    var adminUser = await userManager.FindByEmailAsync(adminEmail);
+    if (adminUser == null)
+    {
+        adminUser = new Account { UserName = adminEmail, Email = adminEmail };
+        var result = await userManager.CreateAsync(adminUser, adminPassword);
+
+        if (result.Succeeded)
+        {
+            await userManager.AddToRoleAsync(adminUser, "Admin");
+        }
+    }
 }
 
-// Kiểm tra môi trường để xử lý lỗi
+// **10. Cấu hình xử lý lỗi**
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");  // Quản lý lỗi cho môi trường sản xuất
-    app.UseHsts();  // Kích hoạt HSTS trong môi trường sản xuất
+    app.UseExceptionHandler("/Home/Error"); // Trang lỗi production
+    app.UseHsts(); // Tăng cường bảo mật HSTS
 }
 else
 {
-    app.UseDeveloperExceptionPage(); // Hiển thị lỗi trong môi trường phát triển
+    app.UseDeveloperExceptionPage(); // Hiển thị lỗi khi phát triển
 }
 
-// Cấu hình HTTPS và các file tĩnh
+// **11. Cấu hình HTTPS & file tĩnh**
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
-// Cấu hình Authentication và Session Middleware
+// **12. Middleware: Authentication, Session, Routing, Authorization**
+app.UseRouting();
 app.UseAuthentication();
+app.UseAuthorization();
 app.UseSession();
 
-// Cấu hình routing và Authorization
-app.UseRouting();
-app.UseAuthorization();
+// **13. Cấu hình route cho Areas (Admin)**
+app.MapControllerRoute(
+    name: "areas",
+    pattern: "{area:exists}/{controller=Dashboard}/{action=Index}/{id?}");
 
-// Thiết lập routing mặc định cho các Controller
+// **14. Cấu hình route mặc định**
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
-// Chạy ứng dụng
+
+// **15. Chạy ứng dụng**
 app.Run();
-
-// Phương thức SeedData để chèn dữ liệu mẫu
-void SeedData(DataContext context)
-{
-    if (!context.Roles.Any())
-    {
-        var roles = new List<Role>
-        {
-            new Role { RoleName = "Admin", Disable = false },
-            new Role { RoleName = "Customer", Disable = false },
-            new Role { RoleName = "Staff", Disable = false },
-            new Role { RoleName = "Shipper", Disable = false }
-        };
-
-        context.Roles.AddRange(roles);
-        context.SaveChanges();
-    }
-
-    // Seed dữ liệu cho bảng Category
-    if (!context.Categories.Any())
-    {
-        var categories = new List<Category>
-        {
-            new Category { CategoryName = "Áo Thun" },
-            new Category { CategoryName = "Quần Jean" },
-            new Category { CategoryName = "Áo Khoác" },
-            new Category { CategoryName = "Giày Dép" },
-            new Category { CategoryName = "Túi Xách" },
-            new Category { CategoryName = "Phụ Kiện" },
-            new Category { CategoryName = "Đồng Hồ" },
-            new Category { CategoryName = "Đồ Lót" },
-            new Category { CategoryName = "Váy Đầm" },
-            new Category { CategoryName = "Áo Sơ Mi" }
-        };
-
-        context.Categories.AddRange(categories);
-        context.SaveChanges();
-    }
-
-    // Seed dữ liệu cho bảng Brand
-    if (!context.Brands.Any())
-    {
-        var brands = new List<Brand>
-        {
-            new Brand { BrandName = "Nike" },
-            new Brand { BrandName = "Adidas" },
-            new Brand { BrandName = "Puma" },
-            new Brand { BrandName = "Gucci" },
-            new Brand { BrandName = "Louis Vuitton" },
-            new Brand { BrandName = "Hermès" },
-            new Brand { BrandName = "Chanel" },
-            new Brand { BrandName = "Rolex" },
-            new Brand { BrandName = "Zara" },
-            new Brand { BrandName = "H&M" }
-        };
-
-        context.Brands.AddRange(brands);
-        context.SaveChanges();
-    }
-
-    // Seed dữ liệu cho bảng Product (nếu chưa có)
-    if (!context.Products.Any())
-    {
-        var fakeProducts = new List<Product>
-        {
-            new Product
-            {
-                ProductName = "Áo Thun Nam",
-                Quantity = 50,
-                Price = 250000,
-                BrandId = 1,
-                Image = "product1.jpg",
-                Material = "Cotton",
-                CategoryId = 1,
-                Size = "M",
-                Discount = 10,
-                Description = "Áo thun nam thoáng mát, phù hợp cho mùa hè.",
-                Disable = false,
-                Status = "Available"
-            },
-            new Product
-            {
-                ProductName = "Quần Jean Nữ",
-                Quantity = 30,
-                Price = 450000,
-                BrandId = 2,
-                Image = "product2.jpg",
-                Material = "Jean",
-                CategoryId = 2,
-                Size = "S",
-                Discount = 15,
-                Description = "Quần jean nữ phong cách Hàn Quốc.",
-                Disable = false,
-                Status = "Available"
-            },
-            new Product
-            {
-                ProductName = "Áo Khoác Hoodie",
-                Quantity = 20,
-                Price = 550000,
-                BrandId = 3,
-                Image = "product3.jpg",
-                Material = "Nỉ",
-                CategoryId = 3,
-                Size = "L",
-                Discount = 20,
-                Description = "Áo khoác hoodie form rộng, thích hợp cho mùa đông.",
-                Disable = false,
-                Status = "Available"
-            }
-        };
-
-        context.Products.AddRange(fakeProducts);
-        context.SaveChanges();
-    }
-
-    // Seed dữ liệu cho bảng Account (nếu chưa có)
-    if (!context.Accounts.Any())
-    {
-        var fakeAccounts = new List<Account>
-        {
-            new Account
-            {
-                Email = "user1@example.com",
-                FirstName = "Nguyễn",
-                LastName = "Văn A",
-                Phone = "0123456789",
-                Password = "@1",
-                AccountImage = "avatar1.jpg",
-                Address = "Hà Nội",
-                Gender = "Male",
-                Active = true,
-                Description = "Khách hàng thường xuyên",
-                RoleId = 1,
-                DateOfBirth = "1995-05-10",
-                Disable = false
-            },
-            new Account
-            {
-                Email = "user2@example.com",
-                FirstName = "Trần",
-                LastName = "Thị B",
-                Phone = "0987654321",
-                Password = "@1",
-                AccountImage = "avatar2.jpg",
-                Address = "TP.HCM",
-                Gender = "Female",
-                Active = true,
-                Description = "Khách hàng VIP",
-                RoleId = 3,
-                DateOfBirth = "1992-08-15",
-                Disable = false
-            }
-        };
-
-        context.Accounts.AddRange(fakeAccounts);
-        context.SaveChanges();
-    }
-}
-

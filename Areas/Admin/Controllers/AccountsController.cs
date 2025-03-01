@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ClotherS.Models;
 using ClotherS.Repositories;
+using Microsoft.AspNetCore.Identity;
+using X.PagedList;
 
 namespace ClotherS.Areas.Admin.Controllers
 {
@@ -14,18 +11,36 @@ namespace ClotherS.Areas.Admin.Controllers
     public class AccountsController : Controller
     {
         private readonly DataContext _context;
+        private readonly UserManager<Account> _userManager;
+        private readonly RoleManager<Role> _roleManager;
 
-        public AccountsController(DataContext context)
+        public AccountsController(DataContext context, UserManager<Account> userManager, RoleManager<Role> roleManager)
         {
             _context = context;
+            _userManager = userManager;
+            _roleManager = roleManager;
         }
 
         // GET: Admin/Accounts
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? page)
         {
-            var dataContext = _context.Accounts.Include(a => a.Role);
-            return View(await dataContext.ToListAsync());
+            int pageSize = 5; 
+            int pageNumber = page ?? 1; 
+
+            var users = await _userManager.Users.ToListAsync();
+            var userRoles = new Dictionary<string, string>();
+
+            foreach (var user in users)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+                userRoles[user.Id.ToString()] = roles.Any() ? string.Join(", ", roles) : "No Role";
+            }
+
+            ViewBag.UserRoles = userRoles;
+            var pagedList = users.ToPagedList(pageNumber, pageSize);
+            return View(pagedList);
         }
+
 
         // GET: Admin/Accounts/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -35,9 +50,8 @@ namespace ClotherS.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var account = await _context.Accounts
-                .Include(a => a.Role)
-                .FirstOrDefaultAsync(m => m.AccountId == id);
+            var account = await _context.Users
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (account == null)
             {
                 return NotFound();
@@ -49,28 +63,50 @@ namespace ClotherS.Areas.Admin.Controllers
         // GET: Admin/Accounts/Create
         public IActionResult Create()
         {
-            ViewData["RoleId"] = new SelectList(_context.Roles, "RoleId", "RoleId");
+            ViewBag.Roles = _roleManager.Roles.ToList(); 
             return View();
         }
 
-        // POST: Admin/Accounts/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("AccountId,Email,FirstName,LastName,Phone,Password,AccountImage,Address,Gender,Active,Description,RoleId,DateOfBirth,Disable,ResetPasswordToken,ResetPasswordExpiry")] Account account)
+        public async Task<IActionResult> Create([Bind("FirstName,LastName,Address,Gender,Active,Description,DateOfBirth,Disable,UserName,Email,PhoneNumber,PasswordHash")] Account account, string roleName)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(account);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                // Đặt hình ảnh mặc định
+                account.AccountImage = "default.png";
+
+                var passwordHasher = new PasswordHasher<Account>();
+                account.PasswordHash = passwordHasher.HashPassword(account, account.PasswordHash);
+                account.AccessFailedCount = 0;
+
+                var result = await _userManager.CreateAsync(account);
+                if (result.Succeeded)
+                {
+                    if (!string.IsNullOrEmpty(roleName) && await _roleManager.RoleExistsAsync(roleName))
+                    {
+                        await _userManager.AddToRoleAsync(account, roleName);
+                    }
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+                }
             }
-            ViewData["RoleId"] = new SelectList(_context.Roles, "RoleId", "RoleId", account.RoleId);
+
+            ViewBag.Roles = _roleManager.Roles.ToList();
             return View(account);
         }
 
+
+
+
         // GET: Admin/Accounts/Edit/5
+        [HttpGet]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -78,50 +114,127 @@ namespace ClotherS.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var account = await _context.Accounts.FindAsync(id);
+            var account = await _userManager.FindByIdAsync(id.ToString());
             if (account == null)
             {
                 return NotFound();
             }
-            ViewData["RoleId"] = new SelectList(_context.Roles, "RoleId", "RoleId", account.RoleId);
+
+            // Lấy danh sách Role
+            ViewBag.Roles = _roleManager.Roles.ToList();
+
+            // Lấy Role hiện tại của User
+            var userRoles = await _userManager.GetRolesAsync(account);
+            ViewBag.CurrentRole = userRoles.FirstOrDefault();
+
             return View(account);
         }
 
         // POST: Admin/Accounts/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("AccountId,Email,FirstName,LastName,Phone,Password,AccountImage,Address,Gender,Active,Description,RoleId,DateOfBirth,Disable,ResetPasswordToken,ResetPasswordExpiry")] Account account)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,UserName,FirstName,LastName,Email,PhoneNumber,Address,DateOfBirth,Active,PasswordHash")] Account account, string roleName)
         {
-            if (id != account.AccountId)
+            if (id != account.Id)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
-                try
+                var existingAccount = await _userManager.FindByIdAsync(id.ToString());
+                if (existingAccount == null)
                 {
-                    _context.Update(account);
-                    await _context.SaveChangesAsync();
+                    return NotFound();
                 }
-                catch (DbUpdateConcurrencyException)
+
+                existingAccount.UserName = account.UserName;
+                existingAccount.FirstName = account.FirstName;
+                existingAccount.LastName = account.LastName;
+                existingAccount.Email = account.Email;
+                existingAccount.PhoneNumber = account.PhoneNumber;
+                existingAccount.Address = account.Address;
+                existingAccount.DateOfBirth = account.DateOfBirth;
+                existingAccount.Active = account.Active;
+
+                if (!string.IsNullOrEmpty(account.PasswordHash))
                 {
-                    if (!AccountExists(account.AccountId))
+                    var passwordHasher = new PasswordHasher<Account>();
+                    existingAccount.PasswordHash = passwordHasher.HashPassword(existingAccount, account.PasswordHash);
+                }
+
+                // Cập nhật Role nếu thay đổi
+                var currentRoles = await _userManager.GetRolesAsync(existingAccount);
+                if (!string.IsNullOrEmpty(roleName) && !currentRoles.Contains(roleName))
+                {
+                    await _userManager.RemoveFromRolesAsync(existingAccount, currentRoles);
+                    await _userManager.AddToRoleAsync(existingAccount, roleName);
+                }
+
+                var result = await _userManager.UpdateAsync(existingAccount);
+                if (result.Succeeded)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    foreach (var error in result.Errors)
                     {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
+                        ModelState.AddModelError(string.Empty, error.Description);
                     }
                 }
-                return RedirectToAction(nameof(Index));
             }
-            ViewData["RoleId"] = new SelectList(_context.Roles, "RoleId", "RoleId", account.RoleId);
+
+            ViewBag.Roles = _roleManager.Roles.ToList();
             return View(account);
         }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateProfileImage(int id, IFormFile file)
+        {
+            var user = await _userManager.FindByIdAsync(id.ToString());
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            if (file != null && file.Length > 0)
+            {
+                string uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images");
+                if (!Directory.Exists(uploadsFolder))
+                {
+                    Directory.CreateDirectory(uploadsFolder);
+                }
+
+                string uniqueFileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await file.CopyToAsync(stream);
+                }
+
+                // Xóa ảnh cũ nếu có
+                if (!string.IsNullOrEmpty(user.AccountImage))
+                {
+                    string oldFilePath = Path.Combine(uploadsFolder, user.AccountImage);
+                    if (System.IO.File.Exists(oldFilePath))
+                    {
+                        System.IO.File.Delete(oldFilePath);
+                    }
+                }
+
+                user.AccountImage = uniqueFileName;
+                await _userManager.UpdateAsync(user);
+            }
+
+            return RedirectToAction(nameof(Edit), new { id });
+        }
+
+
+
 
         // GET: Admin/Accounts/Delete/5
         public async Task<IActionResult> Delete(int? id)
@@ -131,9 +244,8 @@ namespace ClotherS.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var account = await _context.Accounts
-                .Include(a => a.Role)
-                .FirstOrDefaultAsync(m => m.AccountId == id);
+            var account = await _context.Users
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (account == null)
             {
                 return NotFound();
@@ -147,10 +259,10 @@ namespace ClotherS.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var account = await _context.Accounts.FindAsync(id);
+            var account = await _context.Users.FindAsync(id);
             if (account != null)
             {
-                _context.Accounts.Remove(account);
+                _context.Users.Remove(account);
             }
 
             await _context.SaveChangesAsync();
@@ -159,7 +271,7 @@ namespace ClotherS.Areas.Admin.Controllers
 
         private bool AccountExists(int id)
         {
-            return _context.Accounts.Any(e => e.AccountId == id);
+            return _context.Users.Any(e => e.Id == id);
         }
     }
 }

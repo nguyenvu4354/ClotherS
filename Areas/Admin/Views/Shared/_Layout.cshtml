@@ -14,6 +14,8 @@
     <link href="~/css/main.css" rel="stylesheet">
     <link href="~/css/responsive.css" rel="stylesheet">
     <link rel="shortcut icon" href="~/favicon.jpg">
+    <link rel="stylesheet" href="~/css/admin-sidebar.css" />
+
     <link rel="apple-touch-icon-precomposed" sizes="144x144" href="images/ico/apple-touch-icon-144-precomposed.png">
     <link rel="apple-touch-icon-precomposed" sizes="114x114" href="images/ico/apple-touch-icon-114-precomposed.png">
     <link rel="apple-touch-icon-precomposed" sizes="72x72" href="images/ico/apple-touch-icon-72-precomposed.png">
@@ -28,14 +30,20 @@
     <section>
         <div class="container">
             <div class="row">
-                @RenderBody()
+                <!-- Sidebar -->
+                <div class="col-md-3">
+                    @Html.Partial("_AdminSidebar")
+                </div>
+
+                <!-- Main Content -->
+                <div class="col-md-9">
+                    @RenderBody()
+                </div>
             </div>
         </div>
     </section>
 
-    <!--/Footer-->
-    @Html.Partial("_Footer")
-
+    <script src="~/js/admin-sidebar.js"></script>
     <script src="~/js/jquery.js"></script>
     <script src="~/js/bootstrap.min.js"></script>
     <script src="~/js/jquery.scrollUp.min.js"></script>

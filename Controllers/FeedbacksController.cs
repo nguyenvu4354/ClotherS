@@ -1,25 +1,33 @@
 ﻿using ClotherS.Models;
 using ClotherS.Repositories;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace ClotherS.Controllers
 {
+    [Authorize] // Yêu cầu đăng nhập
     public class FeedbacksController : Controller
     {
         private readonly DataContext _context;
+        private readonly UserManager<Account> _userManager;
 
-        public FeedbacksController(DataContext context)
+        public FeedbacksController(DataContext context, UserManager<Account> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // Hiển thị form đánh giá
-        public IActionResult Create(int detailId)
+        public async Task<IActionResult> Create(int detailId)
         {
-            var orderDetail = _context.OrderDetails
-                .FirstOrDefault(od => od.DetailId == detailId);
+            var orderDetail = await _context.OrderDetails
+                .AsNoTracking()
+                .FirstOrDefaultAsync(od => od.DetailId == detailId);
 
             if (orderDetail == null || orderDetail.IsReviewed)
             {
@@ -32,44 +40,48 @@ namespace ClotherS.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(Feedback feedback)
+        public async Task<IActionResult> Create(Feedback feedback)
         {
             if (!ModelState.IsValid)
             {
                 return View(feedback);
             }
 
-            var orderDetail = _context.OrderDetails.FirstOrDefault(od => od.DetailId == feedback.DetailId);
+            var orderDetail = await _context.OrderDetails
+                .FirstOrDefaultAsync(od => od.DetailId == feedback.DetailId);
+
             if (orderDetail == null || orderDetail.IsReviewed)
             {
                 TempData["Error"] = "Đơn hàng không hợp lệ hoặc đã được đánh giá.";
                 return RedirectToAction("OrderDetails", "Profiles");
             }
 
-            // 🔹 Lấy AccountId từ Session hoặc Identity
-            var user = _context.Accounts.FirstOrDefault(a => a.Email == User.Identity.Name); // Nếu dùng Identity
+            // 🔹 Lấy AccountId từ UserManager
+            var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
                 TempData["Error"] = "Tài khoản không hợp lệ.";
                 return RedirectToAction("OrderDetails", "Profiles");
             }
 
-            feedback.AccountId = user.AccountId; // Gán đúng AccountId
-            feedback.CreatedAt = DateTime.Now;
+            feedback.AccountId = user.Id; // Dùng Id từ IdentityUser<int>
+            feedback.CreatedAt = DateTime.UtcNow;
 
             _context.Feedbacks.Add(feedback);
-            orderDetail.IsReviewed = true; // Cập nhật trạng thái đã đánh giá
-            _context.SaveChanges();
+            orderDetail.IsReviewed = true;
+            await _context.SaveChangesAsync();
 
             TempData["Success"] = "Cảm ơn bạn đã đánh giá sản phẩm!";
             return RedirectToAction("OrderDetails", "Profiles", new { id = orderDetail.OId });
         }
 
-        public IActionResult Feedback(int detailId)
+        // Hiển thị đánh giá của một đơn hàng
+        public async Task<IActionResult> Feedback(int detailId)
         {
-            var feedback = _context.Feedbacks
+            var feedback = await _context.Feedbacks
                 .Include(f => f.Product)
-                .FirstOrDefault(f => f.DetailId == detailId);
+                .AsNoTracking()
+                .FirstOrDefaultAsync(f => f.DetailId == detailId);
 
             if (feedback == null)
             {
@@ -77,13 +89,12 @@ namespace ClotherS.Controllers
                 return RedirectToAction("OrderDetails", "Profiles");
             }
 
-            ViewData["OrderId"] = _context.OrderDetails
+            ViewData["OrderId"] = await _context.OrderDetails
                 .Where(od => od.DetailId == detailId)
                 .Select(od => od.OId)
-                .FirstOrDefault();
+                .FirstOrDefaultAsync();
 
             return View(feedback);
         }
-
     }
 }
