@@ -136,7 +136,7 @@ namespace ClotherS.Controllers
         }
 
         [HttpPost]
-        public IActionResult Checkout()
+        public IActionResult Checkout(Order model)
         {
             var userId = GetUserId();
             if (userId == null)
@@ -154,6 +154,11 @@ namespace ClotherS.Controllers
                 return RedirectToAction("Index");
             }
 
+            // Cập nhật thông tin giao hàng từ form
+            cart.ShippingAddress = model.ShippingAddress;
+            cart.PhoneNumber = model.PhoneNumber;
+            cart.CustomerNote = model.CustomerNote;
+
             foreach (var item in cart.OrderDetails)
             {
                 item.Status = "Processing";
@@ -166,6 +171,7 @@ namespace ClotherS.Controllers
             TempData["Success"] = "Order placed successfully!";
             return RedirectToAction("OrderConfirmation");
         }
+
 
         public IActionResult OrderConfirmation()
         {
@@ -196,5 +202,38 @@ namespace ClotherS.Controllers
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
             return userIdClaim != null ? int.Parse(userIdClaim.Value) : (int?)null;
         }
+
+        public IActionResult ConfirmOrder()
+        {
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Accounts");
+            }
+
+            var user = _context.Users.FirstOrDefault(u => u.Id == int.Parse(userId));
+            if (user == null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            var cart = _context.Orders
+                .Include(o => o.OrderDetails)
+                .ThenInclude(od => od.Product)
+                .FirstOrDefault(o => o.AccountId == user.Id && o.IsCart);
+
+            if (cart == null)
+            {
+                return RedirectToAction("Index", "ShoppingCart");
+            }
+
+            // Gán dữ liệu từ User vào Order nếu chưa có
+            cart.ShippingAddress ??= user.Address;
+            cart.PhoneNumber ??= user.PhoneNumber;
+
+            return View(cart);
+        }
+
+
     }
 }
