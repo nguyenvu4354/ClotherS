@@ -17,8 +17,7 @@ namespace ClotherS.Models
         public string Description { get; set; } = string.Empty;
         public string DateOfBirth { get; set; } = string.Empty;
         public bool Disable { get; set; } = false;
-
-
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
 
     }
 }

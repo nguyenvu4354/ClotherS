@@ -46,6 +46,8 @@
                     <dt class="col-sm-4">Date of Birth</dt>
                     <dd class="col-sm-8">@(string.IsNullOrEmpty(Model.DateOfBirth) ? "N/A" : Model.DateOfBirth)</dd>
 
+                    <dt class="col-sm-4">Account Created</dt>
+                    <dd class="col-sm-8">@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</dd>
 
                     <dt class="col-sm-4">Status</dt>
                     <dd class="col-sm-8">
