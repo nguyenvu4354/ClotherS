@@ -17,11 +17,33 @@ namespace ClotherS.Controllers
             _dataContext = context;
         }
 
-        public IActionResult Index()
-        {        
-            var products = _dataContext.Products.ToList();
-            return View(products); 
+        public async Task<IActionResult> Index(string sortOrder)
+        {
+            ViewData["CurrentSort"] = sortOrder;
+
+            var products = from p in _dataContext.Products select p;
+
+            switch (sortOrder)
+            {
+                case "price_asc":
+                    products = products.OrderBy(p => p.Price);
+                    break;
+                case "price_desc":
+                    products = products.OrderByDescending(p => p.Price);
+                    break;
+                default:
+                    products = products.OrderBy(p => p.ProductId);
+                    break;
+            }
+
+            var banners = await _dataContext.Banner.ToListAsync();
+            ViewData["Banners"] = banners;
+
+            return View(await products.ToListAsync());
         }
+
+
+
         public IActionResult Details(int id)
         {
             var product = _dataContext.Products
@@ -71,6 +93,12 @@ namespace ClotherS.Controllers
         {
             _logger.LogError("Có lỗi xảy ra!");
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        public async Task<IActionResult> Slider()
+        {
+            var banners = await _dataContext.Banner.ToListAsync();
+            return PartialView("_BannerSlider", banners);
         }
     }
 }
