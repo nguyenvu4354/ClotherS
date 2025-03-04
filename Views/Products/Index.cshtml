@@ -12,12 +12,12 @@
 <form asp-action="Index" method="get" class="mb-3">
     <div class="input-group">
         <input type="text" name="searchString" class="form-control" placeholder="Search product name..." value="@Context.Request.Query["searchString"]">
-        <button type="submit" class="btn btn-primary">Search</button>
+        <button type="submit" class="btn btn-default get">Search</button>
     </div>
 </form>
 
 <p style="text-align: right;">
-    <a asp-action="Create" class="btn btn-success">+ Add New Product</a>
+    <a asp-action="Create" class="btn btn-default get">+ Add New Product</a>
 </p>
 
 @if (!Model.Any())
@@ -29,9 +29,9 @@
 else
 {
     <!-- Bảng danh sách sản phẩm -->
-    <table class="table border">
+    <table class="table border" style="margin-bottom: 10px; margin-top: 35px; color: #696763;">
         <thead>
-            <tr>
+            <tr style="border-bottom: 0;">
                 <th>Product Name</th>
                 <th>Quantity</th>
                 <th>Price</th>
@@ -44,14 +44,14 @@ else
         <tbody>
             @foreach (var item in Model)
             {
-                <tr>
-                    <td>@item.ProductName</td>
+                <tr style="border-bottom: 0;">
+                    <td style="color: #FE980F; font-weight: 700; font-size: 16px;">@item.ProductName</td>
                     <td>@item.Quantity</td>
-                    <td class="text-success font-weight-bold">$@item.Price</td>
+                    <td class="text-success font-weight-bold" style="color: #FE980F; font-weight: 700; font-size: 16px;">$@item.Price</td>
                     <td>
                         <img src="@Url.Content("~/images/" + item.Image)" class="img-thumbnail" width="80" height="80">
                     </td>
-                    <td class="text-danger">@item.Discount%</td>
+                    <td class="text-danger" style="color: #FE980F; font-weight: 700; font-size: 16px;">@item.Discount%</td>
                     <td>@item.Status</td>
                     <td>
                         <a asp-action="Edit" asp-route-id="@item.ProductId" class="btn btn-warning btn-sm">Edit</a>
@@ -62,6 +62,7 @@ else
             }
         </tbody>
     </table>
+
 
     <!-- Phân trang -->
     <div id="pagination">
