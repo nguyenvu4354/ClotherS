@@ -42,7 +42,7 @@ namespace ClotherS.Controllers
 
             return View(category);
         }
-        public IActionResult Search(int id, string sortOrder)
+        public IActionResult Search( int id, string sortOrder)
         {
             var category = _context.Categories
                 .Include(c => c.Products)
@@ -53,19 +53,26 @@ namespace ClotherS.Controllers
                 return NotFound();
             }
 
+            // Chỉ lấy sản phẩm có Disable == false
+            var activeProducts = category.Products.Where(p => !p.Disable).ToList();
+
             ViewData["CurrentSort"] = sortOrder;
             switch (sortOrder)
             {
                 case "price_asc":
-                    category.Products = category.Products.OrderBy(p => p.Price).ToList();
+                    activeProducts = activeProducts.OrderBy(p => p.Price).ToList();
                     break;
                 case "price_desc":
-                    category.Products = category.Products.OrderByDescending(p => p.Price).ToList();
+                    activeProducts = activeProducts.OrderByDescending(p => p.Price).ToList();
                     break;
             }
 
+            // Cập nhật danh sách sản phẩm đã lọc
+            category.Products = activeProducts;
+
             return View(category);
         }
+
 
         // GET: Categories/Create
         public IActionResult Create()
