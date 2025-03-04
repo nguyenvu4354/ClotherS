@@ -1,36 +1,71 @@
-﻿<div class="left-sidebar">
-	<h2>Category</h2>
-	<div class="panel-group category-products" id="accordian">
-		<!--category-productsr-->
-	<vc:categories>
-	</vc:categories>
+﻿	<div class="left-sidebar">
+		<h2>Category</h2>
+		<div class="panel-group category-products" id="accordian">
+			<!--category-productsr-->
+		<vc:categories>
+		</vc:categories>
 
-	</div>
-	<!--/category-products-->
+		</div>
+		<!--/category-products-->
 
-	<!--brands_products-->
+		<!--brands_products-->
 	
-		<h2>Brands</h2>
-	<div class="panel-group category-products" id="accordian">
-		<vc:brands>
-		</vc:brands>
+			<h2>Brands</h2>
+		<div class="panel-group category-products" id="accordian">
+			<vc:brands>
+			</vc:brands>
+			</div>
 		</div>
+		<!--/brands_products-->
+		<h2 class="title text-center">Sort by Price</h2>
+			<select id="sortSelect" class="form-control">
+				<option value="" selected="@(string.IsNullOrEmpty(ViewData["CurrentSort"]?.ToString()) ? "selected" : null)">Default</option>
+				<option value="price_asc" selected="@(ViewData["CurrentSort"]?.ToString() == "price_asc" ? "selected" : null)">Ascending Price</option>
+				<option value="price_desc" selected="@(ViewData["CurrentSort"]?.ToString() == "price_desc" ? "selected" : null)">Descending Price</option>
+	</select>
+		</div>
+
+
+
+		<div class="price-range">
+			<!--price-range-->
+			<h2>Price Range</h2>
+			<div class="well text-center">
+				<input type="text" class="span2" value="" data-slider-min="0" data-slider-max="600" data-slider-step="5" data-slider-value="[250,450]" id="sl2"><br />
+				<b class="pull-left">$ 0</b> <b class="pull-right">$ 600</b>
+			</div>
+		</div><!--/price-range-->
+
+		<div class="shipping text-center">
+			<!--shipping-->
+			<img src="images/home/shipping.jpg" alt="" />
+		</div><!--/shipping-->
+
 	</div>
-	<!--/brands_products-->
+<script>
+	document.addEventListener("DOMContentLoaded", function () {
+		var sortSelect = document.getElementById("sortSelect");
+		if (sortSelect) {
+			sortSelect.addEventListener("change", function () {
+				var selectedValue = this.value;
+				var url = new URL(window.location.href);
 
-	<div class="price-range">
-		<!--price-range-->
-		<h2>Price Range</h2>
-		<div class="well text-center">
-			<input type="text" class="span2" value="" data-slider-min="0" data-slider-max="600" data-slider-step="5" data-slider-value="[250,450]" id="sl2"><br />
-			<b class="pull-left">$ 0</b> <b class="pull-right">$ 600</b>
-		</div>
-	</div><!--/price-range-->
+				// Giữ lại các tham số categoryId và brandId (nếu có)
+				var categoryId = url.searchParams.get("categoryId");
+				var brandId = url.searchParams.get("brandId");
 
-	<div class="shipping text-center">
-		<!--shipping-->
-		<img src="images/home/shipping.jpg" alt="" />
-	</div><!--/shipping-->
+				url.searchParams.set("sortOrder", selectedValue);
 
-</div>
-				
+				// Nếu categoryId và brandId tồn tại, thêm lại vào URL
+				if (categoryId) {
+					url.searchParams.set("categoryId", categoryId);
+				}
+				if (brandId) {
+					url.searchParams.set("brandId", brandId);
+				}
+
+				window.location.href = url.toString();
+			});
+		}
+	});
+</script>
