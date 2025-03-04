@@ -28,7 +28,10 @@ public class DataSeeder
             }
         }
 
+        // Tạo tài khoản Admin
         await CreateUserIfNotExists("admin@example.com", "Admin@123", "Admin");
+
+        // Tạo tài khoản Shipper
         await CreateUserIfNotExists("shipper@example.com", "@1", "Shipper");
     }
 
@@ -52,18 +55,18 @@ public class DataSeeder
         if (!_context.Brands.Any())
         {
             var brands = new List<Brand>
-        {
-            new Brand { BrandName = "Nike", Description = "Thương hiệu giày và quần áo thể thao hàng đầu.", Disable = false },
-            new Brand { BrandName = "Adidas", Description = "Thương hiệu thể thao nổi tiếng với ba sọc đặc trưng.", Disable = false },
-            new Brand { BrandName = "Puma", Description = "Thương hiệu thời trang thể thao và giày thể thao.", Disable = false },
-            new Brand { BrandName = "Reebok", Description = "Chuyên sản xuất giày thể thao và quần áo tập luyện.", Disable = false },
-            new Brand { BrandName = "Under Armour", Description = "Thương hiệu chuyên về đồ thể thao và phụ kiện.", Disable = false },
-            new Brand { BrandName = "New Balance", Description = "Hãng giày thể thao với thiết kế êm ái và thời trang.", Disable = false },
-            new Brand { BrandName = "Fila", Description = "Thương hiệu thời trang thể thao với phong cách retro.", Disable = false },
-            new Brand { BrandName = "ASICS", Description = "Hãng giày thể thao nổi tiếng với công nghệ Gel Cushioning.", Disable = false },
-            new Brand { BrandName = "Champion", Description = "Thương hiệu thời trang streetwear và thể thao.", Disable = false },
-            new Brand { BrandName = "Converse", Description = "Hãng giày nổi tiếng với dòng Chuck Taylor.", Disable = false }
-        };
+            {
+                new Brand { BrandName = "Nike" },
+                new Brand { BrandName = "Adidas" },
+                new Brand { BrandName = "Puma" },
+                new Brand { BrandName = "Reebok" },
+                new Brand { BrandName = "Under Armour" },
+                new Brand { BrandName = "New Balance" },
+                new Brand { BrandName = "Fila" },
+                new Brand { BrandName = "ASICS" },
+                new Brand { BrandName = "Champion" },
+                new Brand { BrandName = "Converse" }
+            };
 
             _context.Brands.AddRange(brands);
             await _context.SaveChangesAsync();
@@ -72,18 +75,18 @@ public class DataSeeder
         if (!_context.Categories.Any())
         {
             var categories = new List<Category>
-        {
-            new Category { CategoryName = "Shoes", Description = "Các loại giày thể thao, sneaker, và giày casual.", Disable = false },
-            new Category { CategoryName = "Shirts", Description = "Áo sơ mi, áo thun và áo thể thao.", Disable = false },
-            new Category { CategoryName = "Pants", Description = "Quần dài, quần jeans và quần thể thao.", Disable = false },
-            new Category { CategoryName = "Jackets", Description = "Áo khoác, hoodie và áo gió.", Disable = false },
-            new Category { CategoryName = "Shorts", Description = "Quần short thể thao và thời trang.", Disable = false },
-            new Category { CategoryName = "Socks", Description = "Các loại tất và phụ kiện liên quan.", Disable = false },
-            new Category { CategoryName = "Accessories", Description = "Phụ kiện thời trang như kính, găng tay, túi xách.", Disable = false },
-            new Category { CategoryName = "Hats", Description = "Mũ lưỡi trai, mũ len và mũ bucket.", Disable = false },
-            new Category { CategoryName = "Sweatshirts", Description = "Áo nỉ dài tay và áo sweater.", Disable = false },
-            new Category { CategoryName = "Gloves", Description = "Găng tay thời trang và găng tay thể thao.", Disable = false }
-        };
+            {
+                new Category { CategoryName = "Shoes" },
+                new Category { CategoryName = "Shirts" },
+                new Category { CategoryName = "Pants" },
+                new Category { CategoryName = "Jackets" },
+                new Category { CategoryName = "Shorts" },
+                new Category { CategoryName = "Socks" },
+                new Category { CategoryName = "Accessories" },
+                new Category { CategoryName = "Hats" },
+                new Category { CategoryName = "Sweatshirts" },
+                new Category { CategoryName = "Gloves" }
+            };
 
             _context.Categories.AddRange(categories);
             await _context.SaveChangesAsync();
