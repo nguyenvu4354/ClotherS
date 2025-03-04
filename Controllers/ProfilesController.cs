@@ -128,20 +128,22 @@ public class ProfilesController : Controller
             return RedirectToAction("Login", "Accounts");
         }
 
-        var orderDetails = await _context.OrderDetails
-            .Include(od => od.Product)
-            .Include(od => od.Feedbacks)
-            .Where(od => od.OId == id && od.Order.AccountId == user.Id)
-            .ToListAsync();
+        var order = await _context.Orders
+            .Include(o => o.OrderDetails)
+            .ThenInclude(od => od.Product)
+            .FirstOrDefaultAsync(o => o.OId == id && o.AccountId == user.Id);
 
-        if (!orderDetails.Any())
+        if (order == null || !order.OrderDetails.Any())
         {
             TempData["Error"] = "Không tìm thấy đơn hàng!";
             return RedirectToAction("Orders");
         }
 
-        return View(orderDetails);
+        ViewData["OrderStatus"] = order.OrderDetails.All(od => od.Status == "Success") ? "Success" : "Pending";
+
+        return View(order.OrderDetails);
     }
+
 
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -181,6 +183,7 @@ public class ProfilesController : Controller
         TempData["Success"] = "Đơn hàng đã bị hủy thành công!";
         return RedirectToAction("OrderDetails", new { id = orderDetail.OId });
     }
+
     public IActionResult ChangePassword()
     {
         return View();

@@ -64,7 +64,7 @@
                             <form asp-action="CancelOrder" method="post" class="d-inline">
                                 <input type="hidden" name="detailId" value="@detail.DetailId" />
                                 <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to cancel this order item?');">
-                                     Cancel Order
+                                    Cancel Order
                                 </button>
                             </form>
                         }
@@ -79,19 +79,26 @@
 
                         <!-- Review / View Review Button -->
                         <p class="mt-2">
-                            @if (!detail.IsReviewed)
+                            @if (detail.Status == "Success")
                             {
-                                <a href="@Url.Action("Create", "Feedbacks", new { detailId = detail.DetailId })"
-                                   class="btn btn-primary btn-sm">
-                                     Leave a Review
-                                </a>
+                                if (!detail.IsReviewed)
+                                {
+                                    <a href="@Url.Action("Create", "Feedbacks", new { detailId = detail.DetailId })"
+                                       class="btn btn-primary btn-sm">
+                                        Leave a Feedback
+                                    </a>
+                                }
+                                else
+                                {
+                                    <a href="@Url.Action("Feedback", "Feedbacks", new { detailId = detail.DetailId })"
+                                       class="btn btn-info btn-sm">
+                                        View Review
+                                    </a>
+                                }
                             }
                             else
                             {
-                                <a href="@Url.Action("Feedback", "Feedbacks", new { detailId = detail.DetailId })"
-                                   class="btn btn-info btn-sm">
-                                     View Review
-                                </a>
+                                <button class="btn btn-secondary btn-sm" disabled>Waiting for Delivery</button>
                             }
                         </p>
                     </td>

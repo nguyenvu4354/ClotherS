@@ -1,18 +1,19 @@
 ﻿@model ClotherS.Models.Feedback
 
 @{
-    ViewData["Title"] = "Viết đánh giá";
+    ViewData["Title"] = "Write a Review";
 }
 
-<h2>Viết đánh giá</h2>
+<h2 class="title text-center">Write your Feedback</h2>
+
 
 <form asp-action="Create" method="post">
     <input type="hidden" asp-for="DetailId" />
     <input type="hidden" asp-for="ProductId" />
-    <input type="hidden" asp-for="Rating" id="rating-value" /> <!-- Lưu giá trị rating -->
+    <input type="hidden" asp-for="Rating" id="rating-value" />
 
     <div class="mb-3">
-        <label class="form-label">Đánh giá</label>
+        <label class="form-label">Rating</label>
         <div id="rating-stars" class="mb-2">
             <i class="star fa fa-star" data-value="1"></i>
             <i class="star fa fa-star" data-value="2"></i>
@@ -24,13 +25,13 @@
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Nội dung</label>
+        <label class="form-label">Content</label>
         <textarea asp-for="Content" class="form-control" rows="3" required></textarea>
         <span asp-validation-for="Content" class="text-danger"></span>
     </div>
 
-    <button type="submit" class="btn btn-success">Gửi đánh giá</button>
-    <a href="@Url.Action("OrderDetails", "Profiles")" class="btn btn-secondary">Hủy</a>
+    <button type="submit" class="btn btn-success">Submit Review</button>
+    <a href="@Url.Action("OrderDetails", "Profiles")" class="btn btn-secondary">Cancel</a>
 </form>
 
 @section Scripts {
@@ -42,9 +43,9 @@
             stars.forEach(star => {
                 star.addEventListener("click", function () {
                     let rating = this.getAttribute("data-value");
-                    ratingInput.value = rating; // Gán giá trị vào input hidden
+                    ratingInput.value = rating; // Assign value to hidden input
 
-                    // Đổi màu sao
+                    // Change star colors
                     stars.forEach(s => s.classList.remove("selected"));
                     for (let i = 0; i < rating; i++) {
                         stars[i].classList.add("selected");

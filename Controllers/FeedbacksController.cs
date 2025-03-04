@@ -29,15 +29,16 @@ namespace ClotherS.Controllers
                 .AsNoTracking()
                 .FirstOrDefaultAsync(od => od.DetailId == detailId);
 
-            if (orderDetail == null || orderDetail.IsReviewed)
+            if (orderDetail == null || orderDetail.IsReviewed || orderDetail.Status != "Success")
             {
-                TempData["Error"] = "Không thể đánh giá đơn hàng này.";
+                TempData["Error"] = "Chỉ có thể đánh giá khi sản phẩm đã được giao thành công.";
                 return RedirectToAction("OrderDetails", "Profiles");
             }
 
             var feedback = new Feedback { DetailId = detailId, ProductId = orderDetail.ProductId };
             return View(feedback);
         }
+
 
         [HttpPost]
         public async Task<IActionResult> Create(Feedback feedback)
@@ -50,13 +51,12 @@ namespace ClotherS.Controllers
             var orderDetail = await _context.OrderDetails
                 .FirstOrDefaultAsync(od => od.DetailId == feedback.DetailId);
 
-            if (orderDetail == null || orderDetail.IsReviewed)
+            if (orderDetail == null || orderDetail.IsReviewed || orderDetail.Status != "Success")
             {
-                TempData["Error"] = "Đơn hàng không hợp lệ hoặc đã được đánh giá.";
+                TempData["Error"] = "Không thể đánh giá sản phẩm này. Hãy chắc chắn rằng sản phẩm đã được giao thành công.";
                 return RedirectToAction("OrderDetails", "Profiles");
             }
 
-            // 🔹 Lấy AccountId từ UserManager
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
@@ -64,7 +64,7 @@ namespace ClotherS.Controllers
                 return RedirectToAction("OrderDetails", "Profiles");
             }
 
-            feedback.AccountId = user.Id; // Dùng Id từ IdentityUser<int>
+            feedback.AccountId = user.Id;
             feedback.CreatedAt = DateTime.UtcNow;
 
             _context.Feedbacks.Add(feedback);
@@ -74,6 +74,7 @@ namespace ClotherS.Controllers
             TempData["Success"] = "Cảm ơn bạn đã đánh giá sản phẩm!";
             return RedirectToAction("OrderDetails", "Profiles", new { id = orderDetail.OId });
         }
+
 
         // Hiển thị đánh giá của một đơn hàng
         public async Task<IActionResult> Feedback(int detailId)
