@@ -75,5 +75,6 @@ namespace ClotherS.Repositories
                 .HasForeignKey(f => f.DetailId)
                 .OnDelete(DeleteBehavior.Restrict);
         }
+        public DbSet<ClotherS.Models.Banner> Banner { get; set; } = default!;
     }
 }
