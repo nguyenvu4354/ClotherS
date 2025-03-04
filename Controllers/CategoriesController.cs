@@ -42,18 +42,26 @@ namespace ClotherS.Controllers
 
             return View(category);
         }
+
         public IActionResult Search(int id, string sortOrder)
         {
             var category = _context.Categories
                 .Include(c => c.Products)
+                .ThenInclude(p => p.Brand) // Load cả Brand để kiểm tra Disable
                 .FirstOrDefault(c => c.CategoryId == id);
 
-            if (category == null)
+            if (category == null || category.Disable)
             {
-                return NotFound();
+                return NotFound(); // Nếu Category bị ẩn, trả về 404
             }
 
+            // Lọc sản phẩm có Brand hợp lệ
+            category.Products = category.Products
+                .Where(p => p.Brand != null && !p.Brand.Disable) // Loại bỏ sản phẩm có Brand bị ẩn
+                .ToList();
+
             ViewData["CurrentSort"] = sortOrder;
+
             switch (sortOrder)
             {
                 case "price_asc":
@@ -66,6 +74,7 @@ namespace ClotherS.Controllers
 
             return View(category);
         }
+
 
 
 
