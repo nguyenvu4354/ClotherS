@@ -4,46 +4,58 @@
 
 @if (Model.OrderDetails != null && Model.OrderDetails.Any())
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Product</th>
-                <th>Price</th>
-                <th>Discount</th>
-                <th>Quantity</th>
-                <th>Total</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model.OrderDetails)
-            {
+    <form id="cartForm" method="post" action="@Url.Action("ConfirmOrder", "ShoppingCart")">
+        <table class="table">
+            <thead>
                 <tr>
-                    <td>
-                        <img src="~/images/@item.Product.Image" alt="@item.Product.ProductName"
-                             class="img-thumbnail" style="width: 80px; height: 80px;">
-                        <br>
-                        @item.Product.ProductName
-                    </td>
-                    <td>@item.Price.ToString("C")</td>
-                    <td>@(item.Discount > 0 ? $"-{item.Discount:C}" : "No Discount")</td>
-                    <td>@item.Quantity</td>
-                    <td>@((item.Quantity * (item.Price - item.Discount)).ToString("C"))</td>
-                    <td>
-                        <a href="@Url.Action("RemoveFromCart", "ShoppingCart", new { productId = item.ProductId })" class="btn btn-danger">Remove</a>
-                    </td>
+                    <th>Select</th>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Discount</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                    <th>Action</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.OrderDetails)
+                {
+                    <tr>
+                        <td>
+                            <input type="checkbox" name="selectedProducts" value="@item.ProductId" class="product-checkbox">
+                        </td>
+                        <td>
+                            <img src="~/images/@item.Product.Image" alt="@item.Product.ProductName"
+                                 class="img-thumbnail" style="width: 80px; height: 80px;">
+                            <br>
+                            @item.Product.ProductName
+                        </td>
+                        <td>@item.Price.ToString("C")</td>
+                        <td>@(item.Discount > 0 ? $"-{item.Discount:C}" : "No Discount")</td>
+                        <td>
+                            <input type="number" class="quantity-input" data-product-id="@item.ProductId"
+                                   value="@item.Quantity" min="1" max="@item.Product.Quantity">
+                        </td>
+                        <td class="total-price" data-product-id="@item.ProductId">
+                            @((item.Quantity * (item.Price - item.Discount)).ToString("C"))
+                        </td>
+                        <td>
+                            <a href="@Url.Action("RemoveFromCart", "ShoppingCart", new { productId = item.ProductId })"
+                               class="btn btn-danger">Remove</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
 
-    <div class="d-flex justify-content-between">
-        <div>
-            <a href="@Url.Action("ClearCart", "ShoppingCart")" class="btn btn-default get">Clear Cart</a>
-            <a href="@Url.Action("ConfirmOrder", "ShoppingCart")" class="btn btn-default get">Confirm Order</a>
-            <a href="@Url.Action("Index", "Home")" class="btn btn-default get">Continue Shopping</a>
+        <div class="d-flex justify-content-between">
+            <div>
+                <a href="@Url.Action("ClearCart", "ShoppingCart")" class="btn btn-default get">Clear Cart</a>
+                <button type="submit" class="btn btn-default get">Confirm Order</button>
+                <a href="@Url.Action("Index", "Home")" class="btn btn-default get">Continue Shopping</a>
+            </div>
         </div>
-    </div>
+    </form>
 }
 else
 {
@@ -53,3 +65,66 @@ else
         <a href="@Url.Action("Index", "Home")" class="btn btn-default get">Shopping Now</a>
     </div>
 }
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $(".quantity-input").on("change", function () {
+            var inputElement = $(this);
+            var productId = inputElement.data("product-id");
+            var quantity = parseInt(inputElement.val());
+
+            if (quantity < 1) {
+                alert("Quantity must be at least 1.");
+                inputElement.val(1);
+                return;
+            }
+
+            $.ajax({
+                url: "/ShoppingCart/CheckStock",
+                type: "POST",
+                data: { productId: productId, quantity: quantity },
+                success: function (response) {
+                    if (!response.success) {
+                        alert("Only " + response.maxQuantity + " items available in stock.");
+                        inputElement.val(response.maxQuantity);
+                    }
+
+                    // Nếu số lượng hợp lệ, cập nhật vào database
+                    updateCart(productId, inputElement.val());
+                }
+            });
+        });
+
+        function updateCart(productId, quantity) {
+            $.ajax({
+                url: "/ShoppingCart/UpdateCart",
+                type: "POST",
+                data: { productId: productId, quantity: quantity },
+                success: function () {
+                    console.log("Cart updated successfully.");
+                    updateTotalPrice(productId, quantity);
+                },
+                error: function () {
+                    alert("Failed to update cart.");
+                }
+            });
+        }
+
+        function updateTotalPrice(productId, quantity) {
+            var price = parseFloat($(`.quantity-input[data-product-id='${productId}']`).closest("tr").find("td:nth-child(3)").text().replace("$", ""));
+            var discount = parseFloat($(`.quantity-input[data-product-id='${productId}']`).closest("tr").find("td:nth-child(4)").text().replace("$", "")) || 0;
+            var total = (quantity * (price - discount)).toFixed(2);
+            $(`.quantity-input[data-product-id='${productId}']`).closest("tr").find("td:nth-child(6)").text(`$${total}`);
+        }
+
+        // Kiểm tra khi nhấn "Confirm Order"
+        $("#cartForm").on("submit", function (event) {
+            if ($(".product-checkbox:checked").length === 0) {
+                alert("Please select at least one product to purchase.");
+                event.preventDefault(); // Ngăn chặn form submit
+            }
+        });
+    });
+
+</script>

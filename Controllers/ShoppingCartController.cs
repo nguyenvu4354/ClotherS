@@ -203,37 +203,99 @@ namespace ClotherS.Controllers
             return userIdClaim != null ? int.Parse(userIdClaim.Value) : (int?)null;
         }
 
-        public IActionResult ConfirmOrder()
+        [HttpPost]
+        public IActionResult ConfirmOrder(int[] selectedProducts)
+{
+    var userId = GetUserId();
+    if (userId == null)
+    {
+        return RedirectToAction("Login", "Authentication");
+    }
+
+    var user = _context.Users.FirstOrDefault(u => u.Id == userId);
+    if (user == null)
+    {
+        return RedirectToAction("Index", "Home");
+    }
+
+    var cart = _context.Orders
+        .Include(o => o.OrderDetails)
+        .ThenInclude(od => od.Product)
+        .FirstOrDefault(o => o.AccountId == user.Id && o.IsCart);
+
+    if (cart == null)
+    {
+        return RedirectToAction("Index", "ShoppingCart");
+    }
+
+    // Lọc những sản phẩm được chọn
+    cart.OrderDetails = cart.OrderDetails.Where(od => selectedProducts.Contains(od.ProductId)).ToList();
+
+    if (!cart.OrderDetails.Any())
+    {
+        TempData["Error"] = "No products selected for purchase!";
+        return RedirectToAction("Index");
+    }
+
+    return View(cart);
+}
+
+
+        [HttpPost]
+        public IActionResult UpdateCart(int productId, int quantity)
         {
-            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            var userId = GetUserId();
             if (userId == null)
             {
-                return RedirectToAction("Login", "Authentication");
+                return Unauthorized();
             }
 
-            var user = _context.Users.FirstOrDefault(u => u.Id == int.Parse(userId));
-            if (user == null)
+            var product = _context.Products.FirstOrDefault(p => p.ProductId == productId);
+            if (product == null)
             {
-                return RedirectToAction("Index", "Home");
+                return BadRequest(new { message = "Product not found." });
+            }
+
+            if (quantity > product.Quantity)
+            {
+                return BadRequest(new { message = "Not enough stock available." });
             }
 
             var cart = _context.Orders
                 .Include(o => o.OrderDetails)
-                .ThenInclude(od => od.Product)
-                .FirstOrDefault(o => o.AccountId == user.Id && o.IsCart);
+                .FirstOrDefault(o => o.AccountId == userId && o.IsCart);
 
-            if (cart == null)
+            if (cart != null)
             {
-                return RedirectToAction("Index", "ShoppingCart");
+                var item = cart.OrderDetails.FirstOrDefault(od => od.ProductId == productId);
+                if (item != null)
+                {
+                    item.Quantity = quantity;
+                    _context.SaveChanges();
+                    return Ok(new { message = "Cart updated successfully" });
+                }
             }
 
-            // Gán dữ liệu từ User vào Order nếu chưa có
-            cart.ShippingAddress ??= user.Address;
-            cart.PhoneNumber ??= user.PhoneNumber;
-
-            return View(cart);
+            return BadRequest(new { message = "Cart update failed." });
         }
 
+        [HttpPost]
+        public IActionResult CheckStock(int productId, int quantity)
+        {
+            var product = _context.Products.FirstOrDefault(p => p.ProductId == productId);
+
+            if (product == null)
+            {
+                return Json(new { success = false, message = "Product not found." });
+            }
+
+            if (quantity > product.Quantity)
+            {
+                return Json(new { success = false, maxQuantity = product.Quantity });
+            }
+
+            return Json(new { success = true });
+        }
 
     }
 }
