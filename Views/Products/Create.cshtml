@@ -15,11 +15,16 @@
                 <!-- Cột bên trái: Upload hình ảnh -->
                 <div class="col-md-6 text-center d-flex align-items-center justify-content-center">
                     <div>
-                        <div class="form-group">
+                        <div class="form-group text-center">
                             <label asp-for="Image" class="control-label"></label>
-                            <input type="file" name="ImageFile" class="form-control" id="imageInput" accept="image/*" />
-                            <img id="imagePreview" src="#" alt="Image Preview"
-                                 style="max-width: 100%; height: auto; display: none; margin-top: 10px; border: 1px solid #ccc; padding: 5px;" />
+                            <div>
+                                <input type="file" name="ImageFile" id="imageInput" accept="image/*" style="display: none;">
+
+                                <img id="imagePreview" src="~/images/Product.png"
+                                     alt="Product Image"
+                                     style="max-width: 100%; height: auto; border: 1px solid #ccc; padding: 5px; cursor: pointer;"
+                                     onclick="document.getElementById('imageInput').click();" />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -88,24 +93,20 @@
                         </label>
                     </div>
 
-                    <div class="form-group">
-                        <label asp-for="Status" class="control-label"></label>
-                        <input asp-for="Status" class="form-control" />
-                        <span asp-validation-for="Status" class="text-danger"></span>
-                    </div>
-
+                    
                     <div class="form-group">
                         <input type="submit" value="Create" class="btn btn-light" />
                     </div>
+                    <div>
+                        <a asp-action="Index" class="btn btn-default get">Back to List</a>
+                    </div>
+
                 </div>
             </div>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
 
 @section Scripts {
     @{
@@ -114,12 +115,12 @@
 }
 <script>
     document.getElementById("imageInput").addEventListener("change", function (event) {
-        var reader = new FileReader();
-        reader.onload = function () {
-            var preview = document.getElementById("imagePreview");
-            preview.src = reader.result;
-            preview.style.display = "block";
-        };
-        reader.readAsDataURL(event.target.files[0]);
+        if (event.target.files.length > 0) {
+            var reader = new FileReader();
+            reader.onload = function () {
+                document.getElementById("imagePreview").src = reader.result;
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        }
     });
 </script>

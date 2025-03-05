@@ -25,8 +25,7 @@
                                 <a asp-action="Details" asp-controller="Home" asp-route-id="@item.ProductId">
                                     <div class="product-overlay">
                                         <div class="overlay-content">
-                                            <h2>$@item.Price</h2>
-                                            <p>@item.ProductName</p>
+                                            <h2>Sale: @item.Discount%</h2>
                                         </div>
                                     </div>
                                 </a>

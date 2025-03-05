@@ -1,56 +1,53 @@
-﻿/* Sidebar Styles */
-.left-sidebar {
+﻿/* Sidebar */
+.sidebar {
     width: 250px;
-    background: #fdb45e; 
+    background: #fdb45e; /* Primary color */
+    color: white;
     padding: 15px;
-    border-radius: 8px;
-    position: fixed;
-    height: 100vh;
-    overflow-y: auto;
-    transition: transform 0.3s ease-in-out;
+    height: 100%;
+    position: relative; /* Not fixed */
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
 }
 
-/* Chỉnh tiêu đề ADMIN DASHBOARD */
-.admin-title {
+/* Sidebar title */
+.sidebar h3 {
     text-align: center;
-    color: #007bff; 
-    font-size: 24px; 
+    font-size: 22px;
     font-weight: bold;
-    text-transform: uppercase;
-    margin-bottom: 20px;
+    padding: 15px 0;
+    color: white;
 }
 
-.sidebar-menu {
+/* Sidebar menu list */
+.sidebar .nav {
     list-style: none;
     padding: 0;
 }
 
-    .sidebar-menu .menu-item {
-        cursor: pointer;
-        padding: 10px;
-        border-radius: 5px;
-        margin-bottom: 5px;
-        background: #e9ecef;
-        transition: 0.3s;
-    }
-
-        .sidebar-menu .menu-item:hover {
-            background: #ddd;
-        }
-
-.submenu {
-    display: none;
-    list-style: none;
-    padding-left: 15px;
+/* Sidebar menu item */
+.sidebar .nav-item {
+    margin: 5px 0;
 }
 
-    .submenu a {
-        display: block;
-        padding: 8px;
-        text-decoration: none;
-        color: #007bff;
-    }
+/* Sidebar menu link */
+.sidebar .nav-link {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+    transition: background 0.3s;
+    border-radius: 5px;
+}
 
-        .submenu a:hover {
-            text-decoration: underline;
-        }
+/* Sidebar icons */
+.sidebar .nav-link i {
+    margin-right: 10px;
+    font-size: 18px;
+}
+
+/* Hover effect */
+.sidebar .nav-link:hover {
+    background: rgba(255, 255, 255, 0.2);
+}

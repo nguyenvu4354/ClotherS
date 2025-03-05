@@ -1,28 +1,27 @@
 ﻿@model ClotherS.Models.Order
 
 @{
-    ViewData["Title"] = "Chi tiết đơn hàng";
+    ViewData["Title"] = "Order Details";
 }
 
-<h2>Chi tiết đơn hàng #@Model.OId</h2>
+<h2 class ="title text-center">Order Details #@Model.OId</h2>
 
-<p><strong>Khách hàng:</strong> @(Model.Account != null ? $"{Model.Account.FirstName} {Model.Account.LastName}" : "Không xác định")</p>
-<p><strong>Email:</strong> @(Model.Account?.Email ?? "Không có email")</p>
-<p><strong>Số điện thoại:</strong> @(Model.Account?.PhoneNumber ?? "Không có số điện thoại")</p>
+<p><strong>Customer:</strong> @(Model.Account != null ? $"{Model.Account.FirstName} {Model.Account.LastName}" : "Unknown")</p>
+<p><strong>Email:</strong> @(Model.Account?.Email ?? "No email")</p>
+<p><strong>Phone Number:</strong> @(Model.Account?.PhoneNumber ?? "No phone number")</p>
 
-
-<h4>Danh sách sản phẩm</h4>
+<h4>Product List</h4>
 <table class="table">
     <thead>
         <tr>
-            <th>Tên sản phẩm</th>
-            <th>Số lượng</th>
-            <th>Giá</th>
-            <th>Giảm giá</th>
-            <th>Thành tiền</th>
-            <th>Trạng thái</th>
-            <th>Ngày đặt</th>
-            <th>Ngày nhận</th>
+            <th>Product Name</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Discount</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th>Order Date</th>
+            <th>Receive Date</th>
         </tr>
     </thead>
     <tbody>
@@ -47,13 +46,10 @@
                     </form>
                 </td>
                 <td>@detail.OrderDate.ToString("dd/MM/yyyy")</td>
-                <td>@(detail.ReceiveDate?.ToString("dd/MM/yyyy") ?? "Chưa nhận")</td>
+                <td>@(detail.ReceiveDate?.ToString("dd/MM/yyyy") ?? "Not received yet")</td>
             </tr>
         }
     </tbody>
-
-
-
 </table>
 
-<a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+<a asp-action="Index" class="btn btn-secondary">Back</a>

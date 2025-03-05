@@ -1,6 +1,6 @@
 ﻿@model ClotherS.Models.Order
 
-<h2>Your Shopping Cart</h2>
+<h2 class="title text-center">Shopping Cart</h2>
 
 @if (Model.OrderDetails != null && Model.OrderDetails.Any())
 {
@@ -50,6 +50,6 @@ else
     <div class="text-center">
         <img src="~/images/EmptyCart.jpg" alt="Empty Cart" class="img-fluid" style="max-width: 400px;">
         <p>Your cart is empty.</p>
-        <a href="@Url.Action("Index", "Home")" class="btn btn-primary">Shopping Now</a>
+        <a href="@Url.Action("Index", "Home")" class="btn btn-default get">Shopping Now</a>
     </div>
 }

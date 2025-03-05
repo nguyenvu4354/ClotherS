@@ -3,9 +3,9 @@
 @{
     ViewData["Title"] = "My Shipping";
 }
-<a asp-action="UnassignedOrders" asp-controller="Shippers" class="btn btn-secondary mb-3">View Unassigned Orders</a>
+<a asp-action="UnassignedOrders" asp-controller="Shippers" class="btn btn-default get">View Unassigned Orders</a>
 
-<h2>My Shipping</h2>
+<h2 class="title text-center">My Shipping</h2>
 
 @foreach (var order in Model)
 {

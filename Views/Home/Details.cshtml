@@ -23,12 +23,21 @@
                     <tbody>
                         <tr>
                             <th>Category</th>
-                            <td>@ViewBag.CategoryName</td>
+                            <td>
+                                <a asp-controller="Categories" asp-action="Details" asp-route-id="@Model.CategoryId" class="text-decoration-none text-primary">
+                                    @ViewBag.CategoryName
+                                </a>
+                            </td>
                         </tr>
                         <tr>
                             <th>Brand</th>
-                            <td>@ViewBag.BrandName</td>
+                            <td>
+                                <a asp-controller="Brands" asp-action="Details" asp-route-id="@Model.BrandId" class="text-decoration-none text-primary">
+                                    @ViewBag.BrandName
+                                </a>
+                            </td>
                         </tr>
+
                         <tr>
                             <th>Price</th>
                             <td class="text-danger fw-bold">@Model.Price.ToString("C")</td>
@@ -62,7 +71,7 @@
 
                 <!-- Nút điều hướng -->
                 <div class="d-flex justify-content-between mt-4">
-                    <a href="javascript:history.back()" class="btn btn-outline-secondary px-4">Back</a>
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary px-4">Back</a>
                     <form method="post" action="@Url.Action("AddToCart", "ShoppingCart")">
                         <input type="hidden" name="productId" value="@Model.ProductId" />
                         <input type="hidden" name="quantity" value="1" />
