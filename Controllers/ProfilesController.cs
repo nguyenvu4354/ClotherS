@@ -26,7 +26,7 @@ public class ProfilesController : Controller
         if (user == null)
         {
             await _signInManager.SignOutAsync();
-            return RedirectToAction("Login", "Accounts");
+            return RedirectToAction("Login", "Authentication");
         }
         ViewData["ActivePage"] = "Profile";
         return View(user);
@@ -40,7 +40,7 @@ public class ProfilesController : Controller
         if (user == null)
         {
             await _signInManager.SignOutAsync();
-            return RedirectToAction("Login", "Accounts");
+            return RedirectToAction("Login", "Authentication");
         }
 
         user.FirstName = model.FirstName;
@@ -74,7 +74,7 @@ public class ProfilesController : Controller
         if (user == null)
         {
             await _signInManager.SignOutAsync();
-            return RedirectToAction("Login", "Accounts");
+            return RedirectToAction("Login", "Authentication");
         }
 
         if (profileImage != null && profileImage.Length > 0)
@@ -106,7 +106,7 @@ public class ProfilesController : Controller
         if (user == null)
         {
             await _signInManager.SignOutAsync();
-            return RedirectToAction("Login", "Accounts");
+            return RedirectToAction("Login", "Authentication");
         }
 
         var orders = await _context.OrderDetails
@@ -125,7 +125,7 @@ public class ProfilesController : Controller
         if (user == null)
         {
             await _signInManager.SignOutAsync();
-            return RedirectToAction("Login", "Accounts");
+            return RedirectToAction("Login", "Authentication");
         }
 
         var order = await _context.Orders
@@ -153,7 +153,7 @@ public class ProfilesController : Controller
         if (user == null)
         {
             await _signInManager.SignOutAsync();
-            return RedirectToAction("Login", "Accounts");
+            return RedirectToAction("Login", "Authentication");
         }
 
         var orderDetail = await _context.OrderDetails
@@ -197,7 +197,7 @@ public class ProfilesController : Controller
         if (user == null)
         {
             await _signInManager.SignOutAsync();
-            return RedirectToAction("Login", "Accounts");
+            return RedirectToAction("Login", "Authentication");
         }
 
         if (newPassword != confirmPassword)

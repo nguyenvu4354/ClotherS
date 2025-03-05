@@ -20,13 +20,13 @@ namespace ClotherS.Controllers
         {
             if (!User.Identity.IsAuthenticated)
             {
-                return RedirectToAction("Login", "Accounts");
+                return RedirectToAction("Login", "Authentication");
             }
 
             var userId = GetUserId();
             if (userId == null)
             {
-                return RedirectToAction("Login", "Accounts");
+                return RedirectToAction("Login", "Authentication");
             }
 
             var cart = _context.Orders
@@ -43,7 +43,7 @@ namespace ClotherS.Controllers
             var userId = GetUserId();
             if (userId == null)
             {
-                return RedirectToAction("Login", "Accounts");
+                return RedirectToAction("Login", "Authentication");
             }
 
             var cart = _context.Orders
@@ -93,7 +93,7 @@ namespace ClotherS.Controllers
             var userId = GetUserId();
             if (userId == null)
             {
-                return RedirectToAction("Login", "Accounts");
+                return RedirectToAction("Login", "Authentication");
             }
 
             var cart = _context.Orders
@@ -119,7 +119,7 @@ namespace ClotherS.Controllers
             var userId = GetUserId();
             if (userId == null)
             {
-                return RedirectToAction("Login", "Accounts");
+                return RedirectToAction("Login", "Authentication");
             }
 
             var cart = _context.Orders
@@ -141,7 +141,7 @@ namespace ClotherS.Controllers
             var userId = GetUserId();
             if (userId == null)
             {
-                return RedirectToAction("Login", "Accounts");
+                return RedirectToAction("Login", "Authentication");
             }
 
             var cart = _context.Orders
@@ -178,7 +178,7 @@ namespace ClotherS.Controllers
             var userId = GetUserId();
             if (userId == null)
             {
-                return RedirectToAction("Login", "Accounts");
+                return RedirectToAction("Login", "Authentication");
             }
 
             var latestOrder = _context.Orders
@@ -208,7 +208,7 @@ namespace ClotherS.Controllers
             var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
             if (userId == null)
             {
-                return RedirectToAction("Login", "Accounts");
+                return RedirectToAction("Login", "Authentication");
             }
 
             var user = _context.Users.FirstOrDefault(u => u.Id == int.Parse(userId));

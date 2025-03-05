@@ -24,7 +24,11 @@ namespace ClotherS.Controllers
             var products = _dataContext.Products
                 .Include(p => p.Category)
                 .Include(p => p.Brand)
-                .Where(p => p.Category != null && p.Brand != null && !p.Category.Disable && !p.Brand.Disable);
+                .Where(p => p.Category != null
+                            && p.Brand != null
+                            && !p.Category.Disable
+                            && !p.Brand.Disable
+                            && !p.Disable); 
 
             switch (sortOrder)
             {
@@ -44,6 +48,7 @@ namespace ClotherS.Controllers
 
             return View(await products.ToListAsync());
         }
+
 
         public IActionResult Details(int id)
         {
