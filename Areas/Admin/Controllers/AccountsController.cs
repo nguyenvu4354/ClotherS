@@ -82,7 +82,7 @@ namespace ClotherS.Areas.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-                account.AccountImage = "default.png";
+                account.AccountImage = "User.jpg";
                 var passwordHasher = new PasswordHasher<Account>();
                 account.PasswordHash = passwordHasher.HashPassword(account, account.PasswordHash);
                 account.AccessFailedCount = 0;

@@ -1,23 +1,41 @@
-﻿<!-- Sidebar -->
-<div class="left-sidebar" id="sidebar">
-    <h2 class="admin-title">ADMIN DASHBOARD</h2>
-    <ul class="sidebar-menu">
-        <li class="menu-item" onclick="toggleMenu('productsMenu')">📦 Products</li>
-        <ul id="productsMenu" class="submenu">
-            <li><a asp-action="Index" asp-controller="Products">All Products</a></li>
-            <li><a asp-action="Create" asp-controller="Products">Add New Product</a></li>
-        </ul>
-
-        <li class="menu-item" onclick="toggleMenu('ordersMenu')">🛒 Orders</li>
-        <ul id="ordersMenu" class="submenu">
-            <li><a asp-action="Index" asp-controller="Orders">All Orders</a></li>
-            <li><a asp-action="Pending" asp-controller="Orders">Pending Orders</a></li>
-        </ul>
-
-        <li class="menu-item" onclick="toggleMenu('accountsMenu')">👥 Accounts</li>
-        <ul id="accountsMenu" class="submenu">
-            <li><a asp-action="Index" asp-controller="Accounts">All Accounts</a></li>
-            <li><a asp-action="Create" asp-controller="Accounts">Add New Account</a></li>
-        </ul>
-    </ul>
+﻿<div class="container mt-3">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="sidebar">
+                <h3>Admin Panel</h3>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
+                            <i class="fas fa-chart-line"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="Admin" asp-controller="Product" asp-action="Index">
+                            <i class="fas fa-box"></i> Manage Products
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="Admin" asp-controller="Order" asp-action="Index">
+                            <i class="fas fa-shopping-cart"></i> Manage Orders
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="Admin" asp-controller="Accounts" asp-action="Index">
+                            <i class="fas fa-users"></i> Manage Users
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="Admin" asp-controller="Category" asp-action="Index">
+                            <i class="fas fa-list"></i> Manage Categories
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="Admin" asp-controller="Brand" asp-action="Index">
+                            <i class="fas fa-tags"></i> Manage Brands
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
 </div>
