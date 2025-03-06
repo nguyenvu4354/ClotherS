@@ -17,11 +17,11 @@
         <label for="CustomerNote" class="form-label">Customer Note</label>
         <textarea class="form-control" id="CustomerNote" name="CustomerNote">@Model.CustomerNote</textarea>
     </div>
-
     <h4>Order Summary</h4>
     <table class="table">
         <thead>
             <tr>
+                <th>Select</th>
                 <th>Product</th>
                 <th>Price</th>
                 <th>Quantity</th>
@@ -32,6 +32,9 @@
             @foreach (var item in Model.OrderDetails)
             {
                 <tr>
+                    <td>
+                        <input type="checkbox" name="selectedProducts" value="@item.ProductId" checked>
+                    </td>
                     <td>
                         <img src="~/images/@item.Product.Image" alt="@item.Product.ProductName"
                              class="img-thumbnail" style="width: 80px; height: 80px;">

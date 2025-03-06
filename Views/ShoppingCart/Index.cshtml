@@ -89,8 +89,6 @@ else
                         alert("Only " + response.maxQuantity + " items available in stock.");
                         inputElement.val(response.maxQuantity);
                     }
-
-                    // Nếu số lượng hợp lệ, cập nhật vào database
                     updateCart(productId, inputElement.val());
                 }
             });

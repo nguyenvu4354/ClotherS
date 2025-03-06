@@ -136,7 +136,7 @@ namespace ClotherS.Controllers
         }
 
         [HttpPost]
-        public IActionResult Checkout(Order model)
+        public IActionResult Checkout(int[] selectedProducts, Order model)
         {
             var userId = GetUserId();
             if (userId == null)
@@ -146,6 +146,7 @@ namespace ClotherS.Controllers
 
             var cart = _context.Orders
                 .Include(o => o.OrderDetails)
+                .ThenInclude(od => od.Product)
                 .FirstOrDefault(o => o.AccountId == userId && o.IsCart);
 
             if (cart == null || !cart.OrderDetails.Any())
@@ -154,23 +155,59 @@ namespace ClotherS.Controllers
                 return RedirectToAction("Index");
             }
 
-            // Cập nhật thông tin giao hàng từ form
+            // Lọc sản phẩm được chọn
+            var selectedOrderDetails = cart.OrderDetails
+                .Where(od => selectedProducts.Contains(od.ProductId))
+                .ToList();
+
+            if (!selectedOrderDetails.Any())
+            {
+                TempData["Error"] = "No products selected for purchase!";
+                return RedirectToAction("Index");
+            }
+
+            // Cập nhật thông tin đơn hàng
             cart.ShippingAddress = model.ShippingAddress;
             cart.PhoneNumber = model.PhoneNumber;
             cart.CustomerNote = model.CustomerNote;
 
-            foreach (var item in cart.OrderDetails)
+            foreach (var item in selectedOrderDetails)
             {
                 item.Status = "Processing";
                 item.OrderDate = DateTime.Now;
             }
 
-            cart.IsCart = false;
+            if (selectedOrderDetails.Count == cart.OrderDetails.Count)
+            {
+                cart.IsCart = false;
+            }
+            else
+            {
+                var newOrder = new Order
+                {
+                    AccountId = userId.Value,
+                    ShippingAddress = model.ShippingAddress,
+                    PhoneNumber = model.PhoneNumber,
+                    CustomerNote = model.CustomerNote,
+                    OrderDetails = selectedOrderDetails,
+                    IsCart = false
+                };
+
+                _context.Orders.Add(newOrder);
+
+                // Xóa các sản phẩm đã checkout khỏi giỏ hàng
+                foreach (var item in selectedOrderDetails)
+                {
+                    cart.OrderDetails.Remove(item);
+                }
+            }
+
             _context.SaveChanges();
 
             TempData["Success"] = "Order placed successfully!";
             return RedirectToAction("OrderConfirmation");
         }
+
 
 
         public IActionResult OrderConfirmation()
@@ -205,10 +242,10 @@ namespace ClotherS.Controllers
 
         [HttpPost]
         public IActionResult ConfirmOrder(int[] selectedProducts)
-{
-    var userId = GetUserId();
-    if (userId == null)
-    {
+        {
+            var userId = GetUserId();
+            if (userId == null)
+            {
         return RedirectToAction("Login", "Authentication");
     }
 

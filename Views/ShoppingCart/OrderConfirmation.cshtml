@@ -1,5 +1,6 @@
 ﻿@model Order
-<h2 class ="title text-center">Order Confirmation</h2>
+
+<h2 class="title text-center">Order Confirmation</h2>
 
 @if (TempData["Success"] != null)
 {
@@ -7,6 +8,12 @@
 }
 
 <p>Thank you for your order! Your order ID is <strong>@Model.OId</strong>.</p>
+
+<h4>Shipping Information</h4>
+<ul>
+    <li><strong>Shipping Address:</strong> @Model.ShippingAddress</li>
+    <li><strong>Phone Number:</strong> @Model.PhoneNumber</li>
+</ul>
 
 <table class="table">
     <thead>
