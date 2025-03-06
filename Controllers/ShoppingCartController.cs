@@ -155,7 +155,7 @@ namespace ClotherS.Controllers
                 return RedirectToAction("Index");
             }
 
-            // Lọc sản phẩm được chọn
+            // Lọc sản phẩm được chọn để checkout
             var selectedOrderDetails = cart.OrderDetails
                 .Where(od => selectedProducts.Contains(od.ProductId))
                 .ToList();
@@ -173,6 +173,19 @@ namespace ClotherS.Controllers
 
             foreach (var item in selectedOrderDetails)
             {
+                var product = _context.Products.FirstOrDefault(p => p.ProductId == item.ProductId);
+                if (product != null)
+                {
+                    if (product.Quantity < item.Quantity)
+                    {
+                        TempData["Error"] = $"Not enough stock for {product.ProductName}. Available: {product.Quantity}";
+                        return RedirectToAction("Index");
+                    }
+
+                    // Trừ số lượng sản phẩm trong kho
+                    product.Quantity -= item.Quantity;
+                }
+
                 item.Status = "Processing";
                 item.OrderDate = DateTime.Now;
             }
@@ -210,6 +223,7 @@ namespace ClotherS.Controllers
 
 
 
+
         public IActionResult OrderConfirmation()
         {
             var userId = GetUserId();
@@ -224,7 +238,6 @@ namespace ClotherS.Controllers
                 .Include(o => o.OrderDetails)
                 .ThenInclude(od => od.Product)
                 .FirstOrDefault();
-
             if (latestOrder == null)
             {
                 return RedirectToAction("Index");
