@@ -1,10 +1,28 @@
-﻿@model List<ClotherS.Models.Order>
-
-@{
-    ViewData["Title"] = "Order List";
-}
+﻿@model X.PagedList.IPagedList<ClotherS.Models.Order>
+@using X.PagedList.Mvc.Core
 
 <h2 class="title text-center">Order List</h2>
+
+<form method="get" asp-action="Index" class="mb-3">
+    <div class="row">
+        <div class="col-md-3">
+            <label for="searchName">Customer Name</label>
+            <input type="text" name="searchName" class="form-control"
+                   value="@Context.Request.Query["searchName"]" placeholder="Enter customer name" />
+        </div>
+        <div class="col-md-3">
+            <label for="startDate">Start Date</label>
+            <input type="date" name="startDate" class="form-control" value="@Context.Request.Query["startDate"]" />
+        </div>
+        <div class="col-md-3">
+            <label for="endDate">End Date</label>
+            <input type="date" name="endDate" class="form-control" value="@Context.Request.Query["endDate"]" />
+        </div>
+        <div class="col-md-3 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary">Search</button>
+        </div>
+    </div>
+</form>
 
 <table class="table">
     <thead>
@@ -19,7 +37,6 @@
     <tbody>
         @foreach (var order in Model)
         {
-            // Handle image path
             var imagePath = string.IsNullOrEmpty(order.Account?.AccountImage)
             ? "/images/default-avatar.png"
             : Url.Content("~/images/" + order.Account.AccountImage);
@@ -37,9 +54,9 @@
                     @{
                         var orderDate = order.OrderDetails.Any()
                         ? order.OrderDetails.Min(od => od.OrderDate)
-                        : (DateTime?)null;
+                        : DateTime.MinValue;
                     }
-                    @(orderDate.HasValue ? orderDate.Value.ToString("dd/MM/yyyy HH:mm") : "No Order Date")
+                    @(orderDate != DateTime.MinValue ? orderDate.ToString("dd/MM/yyyy HH:mm") : "No Order Date")
                 </td>
                 <td>
                     $@(order.OrderDetails.Sum(d => d.Price * d.Quantity * (1 - d.Discount / 100.0)))
@@ -51,3 +68,8 @@
         }
     </tbody>
 </table>
+
+<!-- Hiển thị phân trang -->
+<div class="pagination-container">
+    @Html.PagedListPager(Model, page => Url.Action("Index", new { page, searchName = Context.Request.Query["searchName"], startDate = Context.Request.Query["startDate"], endDate = Context.Request.Query["endDate"] }))
+</div>

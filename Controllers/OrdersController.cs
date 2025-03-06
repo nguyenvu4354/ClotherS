@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ClotherS.Repositories;
+using X.PagedList;
 
 namespace ClotherS.Controllers
 {
@@ -13,19 +14,46 @@ namespace ClotherS.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index()
-        {
-            var orders = await _context.Orders
-                .Where(o => !o.IsCart) 
-                .Include(o => o.Account)
-                .Include(o => o.OrderDetails)
-                .ThenInclude(od => od.Product)
-                .ToListAsync();
 
-            return View(orders);
+
+        public async Task<IActionResult> Index(DateTime? startDate, DateTime? endDate, string searchName, int page = 1)
+        {
+        int pageSize = 5; // Số đơn hàng trên mỗi trang
+
+        var ordersQuery = _context.Orders
+            .Where(o => !o.IsCart)
+            .Include(o => o.Account)
+            .Include(o => o.OrderDetails)
+            .ThenInclude(od => od.Product)
+            .AsQueryable();
+
+        // Lọc theo khoảng ngày
+        if (startDate.HasValue)
+        {
+            ordersQuery = ordersQuery.Where(o => o.OrderDetails.Any(od => od.OrderDate >= startDate.Value));
+        }
+        if (endDate.HasValue)
+        {
+            DateTime endOfDay = endDate.Value.Date.AddDays(1).AddTicks(-1);
+            ordersQuery = ordersQuery.Where(o => o.OrderDetails.Any(od => od.OrderDate <= endOfDay));
         }
 
-        public async Task<IActionResult> Details(int id)
+        // Lọc theo tên khách hàng
+        if (!string.IsNullOrEmpty(searchName))
+        {
+            ordersQuery = ordersQuery.Where(o => o.Account != null &&
+                                                 (o.Account.FirstName + " " + o.Account.LastName)
+                                                 .Contains(searchName.Trim()));
+        }
+
+        var orders = await ordersQuery.OrderByDescending(o => o.OId).ToPagedListAsync(page, pageSize);
+
+        return View(orders);
+    }
+
+
+
+    public async Task<IActionResult> Details(int id)
         {
             var order = await _context.Orders
                 .Include(o => o.Account)
@@ -48,13 +76,11 @@ namespace ClotherS.Controllers
                 return NotFound();
             }
 
-            // Nếu trạng thái đã là "Success" hoặc "Disable", không cho phép cập nhật nữa
             if (orderDetail.Status == "Success" || orderDetail.Status == "Disable")
             {
                 return BadRequest("Không thể cập nhật trạng thái của sản phẩm đã hoàn thành hoặc bị vô hiệu hóa.");
             }
 
-            // Danh sách trạng thái hợp lệ
             var validStatuses = new List<string> { "Processing", "Delivering", "Success", "Disable" };
             if (!validStatuses.Contains(status))
             {
