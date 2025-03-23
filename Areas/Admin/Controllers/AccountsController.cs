@@ -261,23 +261,21 @@ namespace ClotherS.Areas.Admin.Controllers
         }
 
         // POST: Admin/Accounts/Delete/5
-        [HttpPost, ActionName("Delete")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             var account = await _context.Users.FindAsync(id);
-            if (account != null)
+            if (account == null)
             {
-                _context.Users.Remove(account);
+                return Json(new { success = false, message = "Account not found." });
             }
 
+            _context.Users.Remove(account);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+
+            return Json(new { success = true, message = "Account deleted successfully." });
         }
 
-        private bool AccountExists(int id)
-        {
-            return _context.Users.Any(e => e.Id == id);
-        }
     }
 }

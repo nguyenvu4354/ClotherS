@@ -43,9 +43,12 @@
             {
                 <tr class="account-row" data-username="@item.UserName.ToLower()" data-status="@(item.Active.HasValue && item.Active.Value ? "active" : "inactive")">
                     <td>
-                        <img src="@Url.Content(string.IsNullOrEmpty(item.AccountImage) ? "~/images/accountImg.png" : "~/images/" + item.AccountImage)"
-                             alt="Profile" width="50" height="50" class="rounded-circle" />
+                        <div class="profile-img-container">
+                            <img src="@Url.Content(string.IsNullOrEmpty(item.AccountImage) ? "~/images/accountImg.png" : "~/images/" + item.AccountImage)"
+                                 alt="Profile" class="profile-img" />
+                        </div>
                     </td>
+
                     <td>@(item.FirstName + " " + item.LastName)</td>
                     <td>@item.UserName</td>
                     <td>
@@ -71,7 +74,7 @@
                     <td>
                         <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Edit</a>
                         <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">Details</a>
-                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this account?');">Delete</a>
+                        <button class="btn btn-sm btn-danger delete-account" data-id="@item.Id">Delete</button>
                     </td>
                 </tr>
             }
@@ -83,27 +86,13 @@
     </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-    $(document).ready(function () {
-        $('#searchBox').on('input', function () {
-            var searchText = $(this).val().toLowerCase();
-            $('.account-row').each(function () {
-                var username = $(this).data('username');
-                $(this).toggle(username.includes(searchText));
-            });
-        });
+@* Token CSRF để bảo mật *@
+<form id="deleteAccountForm">
+    @Html.AntiForgeryToken()
+</form>
 
-        $('#statusFilter').on('change', function () {
-            var selectedStatus = $(this).val();
-            $('.account-row').each(function () {
-                var accountStatus = $(this).data('status');
-                if (selectedStatus === 'all' || accountStatus === selectedStatus) {
-                    $(this).show();
-                } else {
-                    $(this).hide();
-                }
-            });
-        });
-    });
-</script>
+<link rel="stylesheet" href="~/css/account-list.css" />
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="~/js/account-list.js"></script>

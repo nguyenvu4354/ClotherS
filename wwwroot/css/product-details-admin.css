@@ -1,0 +1,44 @@
+﻿.product-image-container {
+    width: 100%;
+    max-width: 400px;
+    margin: auto;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 3px solid #ffc107;
+    padding: 5px;
+    background: white;
+}
+
+.product-image {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+
+.card {
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.card-header {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.list-group-item {
+    font-size: 16px;
+    padding: 10px 15px;
+}
+
+.btn {
+    border-radius: 8px;
+    transition: 0.3s;
+}
+
+.btn-warning:hover {
+    background-color: #e0a800;
+}
+
+.btn-dark:hover {
+    background-color: #343a40;
+}
