@@ -4,6 +4,10 @@
     ViewData["Title"] = "Register Account";
     var roles = ViewBag.Roles as List<ClotherS.Models.Role>;
 }
+@if (ViewData["Message"] != null)
+{
+    <div class="alert alert-warning">@ViewData["Message"]</div>
+}
 
 <h1>Register Account</h1>
 <hr />

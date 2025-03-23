@@ -2,6 +2,7 @@
 using ClotherS.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using ClotherS.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,6 +29,8 @@ builder.Services.AddIdentity<Account, Role>()
 
 // **5. Đăng ký DataSeeder**
 builder.Services.AddScoped<DataSeeder>();
+
+builder.Services.AddScoped<EmailService>();
 
 // **6. Cấu hình Authentication & Cookie**
 builder.Services.ConfigureApplicationCookie(options =>

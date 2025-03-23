@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using ClotherS.Models;
 using System.Net.Mail;
 using System.Net;
+using ClotherS.Services;
 
 
 namespace ClotherS.Controllers
@@ -13,14 +14,18 @@ namespace ClotherS.Controllers
         private readonly SignInManager<Account> _signInManager;
         private readonly RoleManager<Role> _roleManager;
         private readonly IConfiguration _config;
+        private readonly EmailService _emailService;
 
-        public AuthenticationController(UserManager<Account> userManager, SignInManager<Account> signInManager, RoleManager<Role> roleManager, IConfiguration config)
+        public AuthenticationController(UserManager<Account> userManager, SignInManager<Account> signInManager,
+                                        RoleManager<Role> roleManager, IConfiguration config, EmailService emailService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _roleManager = roleManager;
             _config = config;
+            _emailService = emailService;
         }
+
 
         public IActionResult Login()
         {
@@ -61,60 +66,45 @@ namespace ClotherS.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register([Bind("UserName,FirstName,LastName,Email,PhoneNumber,Address,DateOfBirth,Active,PasswordHash")] Account account, string roleName, string ConfirmPassword)
+        public async Task<IActionResult> Register([Bind("UserName,FirstName,LastName,Email,PhoneNumber,Address,DateOfBirth,PasswordHash")] Account account, string roleName, string ConfirmPassword)
         {
             if (account.PasswordHash != ConfirmPassword)
             {
                 ViewData["ConfirmPasswordError"] = "Passwords do not match.";
-                ViewBag.Roles = _roleManager.Roles.ToList();
                 return View(account);
             }
 
-            // Kiểm tra email đã tồn tại chưa
             var existingUser = await _userManager.FindByEmailAsync(account.Email);
             if (existingUser != null)
             {
                 ModelState.AddModelError("Email", "This email is already in use.");
-                ViewBag.Roles = _roleManager.Roles.ToList();
                 return View(account);
             }
 
             if (ModelState.IsValid)
             {
-                var user = new Account
-                {
-                    UserName = account.UserName,
-                    FirstName = account.FirstName,
-                    LastName = account.LastName,
-                    Email = account.Email,
-                    PhoneNumber = account.PhoneNumber,
-                    Address = account.Address,
-                    DateOfBirth = account.DateOfBirth,
-                    Active = true,
-                    SecurityStamp = Guid.NewGuid().ToString()
-                };
+                var token = Guid.NewGuid().ToString();
+                account.AccountImage = "User.jpg"; 
 
-                var result = await _userManager.CreateAsync(user, account.PasswordHash);
-                if (result.Succeeded)
+                TempData[$"register_{token}"] = Newtonsoft.Json.JsonConvert.SerializeObject(account);
+                var confirmationLink = Url.Action("ConfirmEmail", "Authentication", new { token }, Request.Scheme);
+
+                var emailSent = await _emailService.SendEmailAsync(account.Email, "Email Confirmation",
+                    $"Click vào link để xác nhận email: <a href='{confirmationLink}'>Xác nhận email</a>");
+
+                if (emailSent)
                 {
-                    await _userManager.AddToRoleAsync(user, "CUSTOMER");
-                    await _userManager.AddToRoleAsync(user, roleName);
-                    return RedirectToAction("Login");
+                    ViewBag.Email = account.Email;
+                    return View("CheckEmail");
                 }
                 else
                 {
-                    foreach (var error in result.Errors)
-                    {
-                        ModelState.AddModelError(string.Empty, error.Description);
-                    }
+                    ViewBag.Message = "Failed to send confirmation email.";
                 }
             }
 
-            ViewBag.Roles = _roleManager.Roles.ToList();
             return View(account);
         }
-
-
 
         public async Task<IActionResult> Logout()
         {
@@ -141,38 +131,16 @@ namespace ClotherS.Controllers
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
             var resetLink = Url.Action("ResetPassword", "Authentication", new { token, email = user.Email }, Request.Scheme);
 
-            var smtpServer = _config["EmailSettings:SmtpServer"];
-            var smtpPort = int.Parse(_config["EmailSettings:SmtpPort"]);
-            var smtpUsername = _config["EmailSettings:SmtpUsername"];
-            var smtpPassword = _config["EmailSettings:SmtpPassword"];
-            var senderEmail = _config["EmailSettings:SenderEmail"];
-            var senderName = _config["EmailSettings:SenderName"];
+            var emailSent = await _emailService.SendEmailAsync(email, "Password Reset",
+                $"Click vào link để đặt lại mật khẩu: <a href='{resetLink}'>Đặt lại mật khẩu</a>");
 
-            try
+            if (emailSent)
             {
-                var smtpClient = new SmtpClient(smtpServer)
-                {
-                    Port = smtpPort,
-                    Credentials = new NetworkCredential(smtpUsername, smtpPassword),
-                    EnableSsl = true
-                };
-
-                var mailMessage = new MailMessage
-                {
-                    From = new MailAddress(senderEmail, senderName),
-                    Subject = "Password Reset",
-                    Body = $"Click vào link để đặt lại mật khẩu: <a href='{resetLink}'>Đặt lại mật khẩu</a>",
-                    IsBodyHtml = true
-                };
-
-                mailMessage.To.Add(email);
-                await smtpClient.SendMailAsync(mailMessage);
-
                 ViewBag.Message = "Email đặt lại mật khẩu đã được gửi!";
             }
-            catch (Exception ex)
+            else
             {
-                ViewBag.Message = "Không thể gửi email: " + ex.Message;
+                ViewBag.Message = "Không thể gửi email.";
             }
 
             return View();
@@ -189,7 +157,6 @@ namespace ClotherS.Controllers
             ViewBag.Email = email;
             return View();
         }
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -224,6 +191,40 @@ namespace ClotherS.Controllers
             return View();
         }
 
+        [HttpGet]
+        public async Task<IActionResult> ConfirmEmail(string token)
+        {
+            if (string.IsNullOrEmpty(token) || !TempData.ContainsKey($"register_{token}"))
+            {
+                return BadRequest("Invalid email confirmation request.");
+            }
 
+            var accountJson = TempData[$"register_{token}"].ToString();
+            var account = Newtonsoft.Json.JsonConvert.DeserializeObject<Account>(accountJson);
+
+            var user = new Account
+            {
+                UserName = account.UserName,
+                FirstName = account.FirstName,
+                LastName = account.LastName,
+                Email = account.Email,
+                PhoneNumber = account.PhoneNumber,
+                Address = account.Address,
+                DateOfBirth = account.DateOfBirth,
+                Active = true,
+                SecurityStamp = Guid.NewGuid().ToString(),
+                AccountImage = account.AccountImage ?? "User.jpg"
+            };
+
+            var result = await _userManager.CreateAsync(user, account.PasswordHash);
+            if (result.Succeeded)
+            {
+                await _userManager.AddToRoleAsync(user, "CUSTOMER");
+                return View("ConfirmEmailSuccess");
+            }
+
+            ViewBag.Message = "Failed to create account.";
+            return View("Error");
+        }
     }
 }

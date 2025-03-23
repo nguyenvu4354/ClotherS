@@ -1,8 +1,8 @@
 ﻿@{
-    ViewData["Title"] = "Đăng nhập";
+    ViewData["Title"] = "Login";
 }
 
-<h2>Đăng nhập</h2>
+<h2>Login</h2>
 
 @if (ViewBag.Error != null)
 {
@@ -15,11 +15,11 @@
         <input type="email" name="email" class="form-control" required />
     </div>
     <div class="form-group">
-        <label>Mật khẩu</label>
+        <label>Password</label>
         <input type="password" name="password" class="form-control" required />
     </div>
-    <button type="submit" class="btn btn-default get">Đăng nhập</button>
+    <button type="submit" class="btn btn-default get">Login</button>
 </form>
 
-<p><a asp-action="ForgotPassword">Quên mật khẩu?</a></p>
-<p>Chưa có tài khoản? <a asp-action="Register">Đăng ký</a></p>
+<p><a asp-action="ForgotPassword">Forgot your password?</a></p>
+<p>Don't have an account? <a asp-action="Register">Sign up</a></p>

@@ -68,7 +68,6 @@ namespace ClotherS.Controllers
             ViewBag.CategoryName = product.Category?.CategoryName ?? "Unknown";
             ViewBag.BrandName = product.Brand?.BrandName ?? "Unknown";
 
-            // Lấy danh sách feedback của sản phẩm
             var feedbacks = _dataContext.Feedbacks
                 .Include(f => f.Account) 
                 .Where(f => f.ProductId == id && (f.Disable == false || f.Disable == null))
@@ -91,7 +90,6 @@ namespace ClotherS.Controllers
 
         public IActionResult About()
         {
-            // Thêm một trang About
             ViewData["Title"] = "Về chúng tôi";
             ViewData["Description"] = "ClotherS - Nơi cung cấp thời trang chất lượng.";
             return View();
