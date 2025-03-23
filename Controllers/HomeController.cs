@@ -3,6 +3,7 @@ using ClotherS.Models;
 using ClotherS.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using X.PagedList;
 
 namespace ClotherS.Controllers
 {
@@ -17,8 +18,9 @@ namespace ClotherS.Controllers
             _dataContext = context;
         }
 
-        public async Task<IActionResult> Index(string sortOrder)
+        public async Task<IActionResult> Index(string sortOrder, int page = 1)
         {
+            int pageSize = 6; 
             ViewData["CurrentSort"] = sortOrder;
 
             var products = _dataContext.Products
@@ -28,7 +30,7 @@ namespace ClotherS.Controllers
                             && p.Brand != null
                             && !p.Category.Disable
                             && !p.Brand.Disable
-                            && !p.Disable); 
+                            && !p.Disable);
 
             switch (sortOrder)
             {
@@ -46,9 +48,10 @@ namespace ClotherS.Controllers
             var banners = await _dataContext.Banner.ToListAsync();
             ViewData["Banners"] = banners;
 
-            return View(await products.ToListAsync());
-        }
+            var pagedProducts = await products.ToPagedListAsync(page, pageSize);
 
+            return View(pagedProducts);
+        }
 
         public IActionResult Details(int id)
         {
@@ -67,7 +70,7 @@ namespace ClotherS.Controllers
 
             // Lấy danh sách feedback của sản phẩm
             var feedbacks = _dataContext.Feedbacks
-                .Include(f => f.Account) // Nếu bạn muốn hiển thị tên người dùng
+                .Include(f => f.Account) 
                 .Where(f => f.ProductId == id && (f.Disable == false || f.Disable == null))
                 .OrderByDescending(f => f.CreatedAt)
                 .ToList();
