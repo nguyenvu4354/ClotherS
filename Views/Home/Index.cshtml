@@ -1,4 +1,7 @@
-﻿<!--/slider-->
+﻿@model X.PagedList.IPagedList<ClotherS.Models.Product>
+@using X.PagedList.Mvc.Core
+
+<!-- Slider -->
 @Html.Partial("_BannerSlider", ViewData["Banners"] as List<ClotherS.Models.Banner>)
 
 @{
@@ -10,6 +13,8 @@
         <div class="col-sm-9">
             <div class="features_items">
                 <h2 class="title text-center">Features Items</h2>
+
+                <!-- Lặp qua danh sách sản phẩm -->
                 @foreach (var item in Model)
                 {
                     <div class="col-sm-4">
@@ -40,6 +45,12 @@
                         </div>
                     </div>
                 }
+
+                <!-- Phân trang -->
+                <div class="pagination-container">
+                    @Html.PagedListPager(Model, page => Url.Action("Index", new { page, sortOrder = currentSort }))
+                </div>
+
             </div>
         </div>
 

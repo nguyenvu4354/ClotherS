@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ClotherS.Models;
 using ClotherS.Repositories;
+using X.PagedList;
 
 namespace ClotherS.Controllers
 {
@@ -44,40 +45,43 @@ namespace ClotherS.Controllers
         }
 
         // GET: Brands/Search/5
-        public IActionResult Search(int id, string sortOrder)
+        public IActionResult Search(int id, string sortOrder, int page = 1)
         {
+            int pageSize = 6; 
+
             var brand = _context.Brands
                 .Include(b => b.Products)
-                .ThenInclude(p => p.Category) // Load Category để kiểm tra Disable
+                .ThenInclude(p => p.Category)
                 .FirstOrDefault(b => b.BrandId == id);
 
             if (brand == null || brand.Disable)
             {
-                return NotFound(); // Nếu Brand bị ẩn, trả về 404
+                return NotFound(); 
             }
 
-            // Lọc sản phẩm có Category hợp lệ
-            brand.Products = brand.Products
-                .Where(p => p.Category != null && !p.Category.Disable) // Loại bỏ sản phẩm có Category bị ẩn
-                .ToList();
+            var products = brand.Products
+                .Where(p => p.Category != null && !p.Category.Disable)
+                .AsQueryable();
 
             ViewData["CurrentSort"] = sortOrder;
 
             switch (sortOrder)
             {
                 case "price_asc":
-                    brand.Products = brand.Products.OrderBy(p => p.Price).ToList();
+                    products = products.OrderBy(p => p.Price);
                     break;
                 case "price_desc":
-                    brand.Products = brand.Products.OrderByDescending(p => p.Price).ToList();
+                    products = products.OrderByDescending(p => p.Price);
                     break;
             }
 
-            return View(brand);
+            var pagedProducts = products.ToPagedList(page, pageSize);
+
+            ViewData["Brand"] = brand;
+            return View(pagedProducts);
         }
 
 
-        // GET: Brands/Create
         public IActionResult Create()
         {
             return View();

@@ -17,54 +17,49 @@
     <div class="alert alert-danger">@TempData["Error"]</div>
 }
 
-<div class="table-responsive">
-    <table class="table table-hover table-bordered">
-        <thead class="table-dark text-center">
-            <tr>
-                <th>Product Image</th>
-                <th>Product Information</th>
-                <th>Order Status & Actions</th>
-            </tr>
-        </thead>
-
-        <tbody>
-            @foreach (var detail in Model)
-            {
-                <tr>
-                    <!-- Column 1: Product Image -->
-                    <td class="align-middle text-center">
+<div class="row">
+    @foreach (var detail in Model)
+    {
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card shadow">
+                <div class="card-header bg-dark text-white text-center">
+                    <strong>Order ID: @detail.OId</strong>
+                </div>
+                <div class="card-body">
+                    <!-- Product Image -->
+                    <div class="text-center mb-3">
                         <img src="~/images/@detail.Product.Image"
                              alt="Product Image"
                              class="img-thumbnail"
-                             style="width: 100px; height: 100px; object-fit: cover;" />
-                    </td>
+                             style="width: 120px; height: 120px; object-fit: cover;" />
+                    </div>
 
-                    <!-- Column 2: Product Details -->
-                    <td class="align-middle">
-                        <p><strong>@detail.Product.ProductName</strong></p>
-                        <p>Price: <strong>$@detail.Price</strong></p>
-                        <p>Quantity: <strong>@detail.Quantity</strong></p>
-                        <p>Discount: <strong>@detail.Discount%</strong></p>
-                        <p>Total: <strong class="text-success">$@(detail.Price * detail.Quantity * (1 - detail.Discount / 100.0))</strong></p>
-                        <p>Receive Date: <strong>@(detail.ReceiveDate?.ToString("yyyy-MM-dd HH:mm:ss") ?? "Not received")</strong></p>
-                    </td>
+                    <!-- Product Information -->
+                    <h5 class="card-title text-center">@detail.Product.ProductName</h5>
+                    <p class="text-center text-muted">Price: <strong>$@detail.Price</strong></p>
+                    <p class="text-center">Quantity: <strong>@detail.Quantity</strong></p>
+                    <p class="text-center">Discount: <strong>@detail.Discount%</strong></p>
+                    <p class="text-center text-success">
+                        Total: <strong>$@(detail.Price * detail.Quantity * (1 - detail.Discount / 100.0))</strong>
+                    </p>
+                    <p class="text-center">Receive Date: <strong>@(detail.ReceiveDate?.ToString("yyyy-MM-dd HH:mm:ss") ?? "Not received")</strong></p>
 
-                    <!-- Column 3: Order Status, Cancel & Review -->
-                    <td class="align-middle text-center">
-                        <!-- Order Status Badge -->
-                        <p>
-                            <span class="badge @(detail.Status == "Processing" ? "bg-primary" : detail.Status == "Success" ? "bg-success" : detail.Status == "Disabled" ? "bg-danger" : "bg-warning text-dark")">
-                                @detail.Status
-                            </span>
-                        </p>
+                    <!-- Order Status -->
+                    <div class="text-center mb-3">
+                        <span class="badge @(detail.Status == "Processing" ? "bg-primary" : detail.Status == "Success" ? "bg-success" : detail.Status == "Disabled" ? "bg-danger" : "bg-warning text-dark")">
+                            @detail.Status
+                        </span>
+                    </div>
 
+                    <!-- Actions -->
+                    <div class="d-flex justify-content-center gap-2">
                         <!-- Cancel Order Button -->
                         @if (detail.Status == "Processing")
                         {
                             <form asp-action="CancelOrder" method="post" class="d-inline">
                                 <input type="hidden" name="detailId" value="@detail.DetailId" />
                                 <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to cancel this order item?');">
-                                    Cancel Order
+                                    <i class="fas fa-times"></i> Cancel
                                 </button>
                             </form>
                         }
@@ -72,38 +67,34 @@
                         {
                             <p class="text-muted">Cancelled</p>
                         }
-                        else
-                        {
-                            <p class="text-muted">Cannot cancel</p>
-                        }
 
-                        <!-- Review / View Review Button -->
-                        <p class="mt-2">
-                            @if (detail.Status == "Success")
+                        <!-- Review Button -->
+                        @if (detail.Status == "Success")
+                        {
+                            if (!detail.IsReviewed)
                             {
-                                if (!detail.IsReviewed)
-                                {
-                                    <a href="@Url.Action("Create", "Feedbacks", new { detailId = detail.DetailId })"
-                                       class="btn btn-primary btn-sm">
-                                        Leave a Feedback
-                                    </a>
-                                }
-                                else
-                                {
-                                    <a href="@Url.Action("Feedback", "Feedbacks", new { detailId = detail.DetailId })"
-                                       class="btn btn-info btn-sm">
-                                        View Review
-                                    </a>
-                                }
+                                <a href="@Url.Action("Create", "Feedbacks", new { detailId = detail.DetailId })"
+                                   class="btn btn-primary btn-sm">
+                                    <i class="fas fa-comment"></i> Leave Feedback
+                                </a>
                             }
                             else
                             {
-                                <button class="btn btn-secondary btn-sm" disabled>Waiting for Delivery</button>
+                                <a href="@Url.Action("Feedback", "Feedbacks", new { detailId = detail.DetailId })"
+                                   class="btn btn-info btn-sm">
+                                    <i class="fas fa-eye"></i> View Review
+                                </a>
                             }
-                        </p>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+                        }
+                        else
+                        {
+                            <button class="btn btn-secondary btn-sm" disabled>
+                                <i class="fas fa-clock"></i> Waiting for Delivery
+                            </button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
 </div>

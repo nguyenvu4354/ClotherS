@@ -99,9 +99,10 @@ public class ProfilesController : Controller
 
         return RedirectToAction(nameof(Index));
     }
-
-    public async Task<IActionResult> Orders()
+    public async Task<IActionResult> Orders(DateTime? startDate, DateTime? endDate, string sortOrder, int pageNumber = 1)
     {
+        int pageSize = 5; // Số đơn hàng trên mỗi trang
+
         var user = await _userManager.GetUserAsync(User);
         if (user == null)
         {
@@ -109,15 +110,44 @@ public class ProfilesController : Controller
             return RedirectToAction("Login", "Authentication");
         }
 
-        var orders = await _context.OrderDetails
+        var query = _context.OrderDetails
             .Where(od => od.Order.AccountId == user.Id && !od.Order.IsCart)
             .Include(od => od.Order)
             .Include(od => od.Product)
-            .OrderByDescending(od => od.OrderDate)
-            .ToListAsync();
+            .AsQueryable();
+
+        // Lọc theo khoảng ngày
+        if (startDate.HasValue)
+        {
+            query = query.Where(od => od.Order.OrderDate >= startDate.Value);
+        }
+        if (endDate.HasValue)
+        {
+            endDate = endDate.Value.AddDays(1).AddTicks(-1);
+            query = query.Where(od => od.Order.OrderDate <= endDate.Value);
+        }
+
+        // Sắp xếp theo OrderDate
+        switch (sortOrder)
+        {
+            case "oldest":
+                query = query.OrderBy(od => od.Order.OrderDate);
+                break;
+            default:
+                query = query.OrderByDescending(od => od.Order.OrderDate);
+                break;
+        }
+
+        var orders = await PaginatedList<OrderDetail>.CreateAsync(query, pageNumber, pageSize);
+
         ViewData["ActivePage"] = "Orders";
+        ViewData["CurrentSort"] = sortOrder;
+        ViewData["StartDate"] = startDate?.ToString("yyyy-MM-dd");
+        ViewData["EndDate"] = endDate?.ToString("yyyy-MM-dd");
+
         return View(orders);
     }
+
 
     public async Task<IActionResult> OrderDetails(int id)
     {

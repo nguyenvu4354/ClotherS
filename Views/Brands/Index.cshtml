@@ -1,47 +1,54 @@
 ﻿@model IEnumerable<ClotherS.Models.Brand>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Manage Brands";
 }
 
-<h2 class ="title text-center">Manage Brand</h2>
+<h2 class="title text-center">Manage Brands</h2>
 
-<p>
-    <a asp-action="Create">Create New Brand</a>
-</p>
-<table class="table">
-    <thead>
+<div class="d-flex justify-content-between mb-3">
+    <a asp-action="Create" class="btn btn-default get">
+        <i class="fas fa-plus-circle"></i> Create New Brand
+    </a>
+</div>
+
+<table class="table table-hover table-bordered">
+    <thead class="table-dark text-center">
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.BrandName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Disable)
-            </th>
-            <th></th>
+            <th>@Html.DisplayNameFor(model => model.BrandName)</th>
+            <th>@Html.DisplayNameFor(model => model.Description)</th>
+            <th>@Html.DisplayNameFor(model => model.Disable)</th>
+            <th>Actions</th>
         </tr>
     </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.BrandName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Disable)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.BrandId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.BrandId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.BrandId">Delete</a>
-            </td>
-        </tr>
-}
+    <tbody class="text-center">
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.BrandName)</td>
+                <td>@Html.DisplayFor(modelItem => item.Description)</td>
+                <td>
+                    @if (item.Disable)
+                    {
+                        <span class="badge bg-danger">Disabled</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-success">Active</span>
+                    }
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.BrandId" class="btn btn-warning btn-sm">
+                        <i class="fas fa-edit"></i> Edit
+                    </a>
+                    <a asp-action="Details" asp-route-id="@item.BrandId" class="btn btn-info btn-sm">
+                        <i class="fas fa-eye"></i> Details
+                    </a>
+                    <a asp-action="Delete" asp-route-id="@item.BrandId" class="btn btn-danger btn-sm">
+                        <i class="fas fa-trash"></i> Delete
+                    </a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

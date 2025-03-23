@@ -61,8 +61,24 @@ namespace ClotherS.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register([Bind("UserName,FirstName,LastName,Email,PhoneNumber,Address,DateOfBirth,Active,PasswordHash")] Account account, string roleName)
+        public async Task<IActionResult> Register([Bind("UserName,FirstName,LastName,Email,PhoneNumber,Address,DateOfBirth,Active,PasswordHash")] Account account, string roleName, string ConfirmPassword)
         {
+            if (account.PasswordHash != ConfirmPassword)
+            {
+                ViewData["ConfirmPasswordError"] = "Passwords do not match.";
+                ViewBag.Roles = _roleManager.Roles.ToList();
+                return View(account);
+            }
+
+            // Kiểm tra email đã tồn tại chưa
+            var existingUser = await _userManager.FindByEmailAsync(account.Email);
+            if (existingUser != null)
+            {
+                ModelState.AddModelError("Email", "This email is already in use.");
+                ViewBag.Roles = _roleManager.Roles.ToList();
+                return View(account);
+            }
+
             if (ModelState.IsValid)
             {
                 var user = new Account
@@ -97,6 +113,7 @@ namespace ClotherS.Controllers
             ViewBag.Roles = _roleManager.Roles.ToList();
             return View(account);
         }
+
 
 
         public async Task<IActionResult> Logout()
