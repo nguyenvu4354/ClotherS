@@ -34,12 +34,12 @@ namespace ClotherS.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(string email, string password)
+        public async Task<IActionResult> Login(string username, string password)
         {
-            var user = await _userManager.FindByEmailAsync(email);
+            var user = await _userManager.FindByNameAsync(username);
             if (user == null)
             {
-                ViewBag.Error = "Invalid email or password";
+                ViewBag.Error = "Invalid username or password";
                 return View();
             }
 
@@ -53,7 +53,7 @@ namespace ClotherS.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            ViewBag.Error = "Invalid email or password";
+            ViewBag.Error = "Invalid username or password";
             return View();
         }
 
