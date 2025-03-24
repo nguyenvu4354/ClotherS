@@ -25,25 +25,6 @@ namespace ClotherS.Controllers
         {
             return View(await _context.Brands.ToListAsync());
         }
-
-        // GET: Brands/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var brand = await _context.Brands
-                .FirstOrDefaultAsync(m => m.BrandId == id);
-            if (brand == null)
-            {
-                return NotFound();
-            }
-
-            return View(brand);
-        }
-
         // GET: Brands/Search/5
         public IActionResult Search(int id, string sortOrder, int page = 1)
         {
