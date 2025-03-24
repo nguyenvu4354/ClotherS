@@ -1,4 +1,7 @@
-﻿<header id="header">
+﻿@using Microsoft.AspNetCore.Identity
+@using ClotherS.Models
+@inject UserManager<Account> UserManager
+<header id="header">
 	<!--header-->
 	<div class="header_top">
 		<!--header_top-->
@@ -62,6 +65,17 @@
 				<div class="col-sm-8">
 					<div class="shop-menu pull-right">
 						<ul class="nav navbar-nav">
+							@if (User.Identity.IsAuthenticated)
+							{
+								var user = await UserManager.GetUserAsync(User);
+								var imageUrl = !string.IsNullOrEmpty(user?.AccountImage)
+								? $"/images/{user.AccountImage}"
+								: "/images/default-avatar.png";
+
+								<li class="nav-item">
+									<img src="@imageUrl" alt="User Avatar" class="user-avatar">
+								</li>
+							}
 							@if (User.Identity.IsAuthenticated)
 							{
 								<li class="nav-item">
@@ -138,3 +152,13 @@
 		</div>
 	</div><!--/header-bottom-->
 </header>
+<style>
+	.user-avatar {
+		width: 40px;
+		height: 40px;
+		border-radius: 50%;
+		object-fit: cover;
+		border: 2px solid #ddd;
+		margin-right: 10px;
+	}
+</style>

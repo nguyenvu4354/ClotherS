@@ -4,51 +4,56 @@
     ViewData["Title"] = "Manage Brands";
 }
 
-<h2 class="title text-center">Manage Brands</h2>
+<link rel="stylesheet" href="~/css/product-styles.css" asp-append-version="true">
 
-<div class="d-flex justify-content-between mb-3">
-    <a asp-action="Create" class="btn btn-default get">
-        <i class="fas fa-plus-circle"></i> Create New Brand
-    </a>
+<div class="container mt-4">
+    <div class="card shadow-lg">
+        <div class="card-header bg-warning text-white text-center">
+            <h1 class="title text-center">Manage Brands</h1>
+        </div>
+
+        <div class="card-body">
+            <div class="text-end btn-create">
+                <a asp-action="Create" class="btn btn-success">
+                    <i class="fas fa-plus-circle"></i> Create New
+                </a>
+            </div>
+
+            <table class="table table-hover table-bordered text-center align-middle">
+                <thead class="table-orange">
+                    <tr>
+                        <th>Brand Name</th>
+                        <th>Description</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@Html.DisplayFor(modelItem => item.BrandName)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Description)</td>
+                            <td>
+                                <span class="badge @(item.Disable ? "bg-danger" : "bg-success")">
+                                    @(item.Disable ? "Disabled" : "Active")
+                                </span>
+                            </td>
+                            <td>
+                                <a asp-action="Edit" asp-route-id="@item.BrandId" class="btn btn-warning btn-sm">
+                                    <i class="fas fa-edit"></i> Edit
+                                </a>
+                                <a asp-action="Delete" asp-route-id="@item.BrandId" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?');">
+                                    <i class="fas fa-trash"></i> Delete
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
-<table class="table table-hover table-bordered">
-    <thead class="table-dark text-center">
-        <tr>
-            <th>@Html.DisplayNameFor(model => model.BrandName)</th>
-            <th>@Html.DisplayNameFor(model => model.Description)</th>
-            <th>@Html.DisplayNameFor(model => model.Disable)</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody class="text-center">
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@Html.DisplayFor(modelItem => item.BrandName)</td>
-                <td>@Html.DisplayFor(modelItem => item.Description)</td>
-                <td>
-                    @if (item.Disable)
-                    {
-                        <span class="badge bg-danger">Disabled</span>
-                    }
-                    else
-                    {
-                        <span class="badge bg-success">Active</span>
-                    }
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.BrandId" class="btn btn-warning btn-sm">
-                        <i class="fas fa-edit"></i> Edit
-                    </a>
-                    <a asp-action="Details" asp-route-id="@item.BrandId" class="btn btn-info btn-sm">
-                        <i class="fas fa-eye"></i> Details
-                    </a>
-                    <a asp-action="Delete" asp-route-id="@item.BrandId" class="btn btn-danger btn-sm">
-                        <i class="fas fa-trash"></i> Delete
-                    </a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+<!-- Import FontAwesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
