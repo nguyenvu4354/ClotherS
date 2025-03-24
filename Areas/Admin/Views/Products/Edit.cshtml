@@ -1,16 +1,17 @@
 ﻿@model ClotherS.Models.Product
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Edit";
 }
 
-<h1 class="title text-center">Create New Product</h1>
+<h1 class="title text-center">Edit Product</h1>
 <hr />
 <div class="row">
     <div class="col-md-12">
-        <form asp-action="Create" enctype="multipart/form-data">
+        <form asp-action="Edit" enctype="multipart/form-data">
+            <input type="hidden" asp-for="ProductId" />
             <div class="row">
-                <!-- Cột bên trái: Upload hình ảnh -->
+                <!-- Cột bên trái: Hình ảnh sản phẩm -->
                 <div class="col-md-6 text-center d-flex align-items-center justify-content-center">
                     <div>
                         <div class="form-group text-center">
@@ -18,7 +19,7 @@
                             <div>
                                 <input type="file" name="ImageFile" id="imageInput" accept="image/*" style="display: none;">
 
-                                <img id="imagePreview" src="~/images/Product.png"
+                                <img id="imagePreview" src="~/images/@Model.Image"
                                      alt="Product Image"
                                      style="max-width: 100%; height: auto; border: 1px solid #ccc; padding: 5px; cursor: pointer;"
                                      onclick="document.getElementById('imageInput').click();" />
@@ -28,7 +29,7 @@
                 </div>
 
                 <!-- Cột bên phải: Các trường nhập liệu -->
-                <div class="col-md-6" style="background-color: #9cddec; padding: 20px; border-radius: 5px; color: white;">
+                <div class="col-md-6" style="background-color: #4eecb9; padding: 20px; border-radius: 5px; color: white;">
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
                     <div class="form-group">
@@ -91,19 +92,18 @@
                         </label>
                     </div>
 
-                    
                     <div class="form-group">
-                        <input type="submit" value="Create" class="btn btn-light" />
+                        <input type="submit" value="Save Changes" class="btn btn-light" />
                     </div>
                     <div>
                         <a asp-action="Index" class="btn btn-default get">Back to List</a>
                     </div>
-
                 </div>
             </div>
         </form>
     </div>
 </div>
+
 
 
 @section Scripts {
