@@ -17,7 +17,6 @@ namespace ClotherS.Areas.Admin.Controllers
         }
 
         // GET: Products
-
         public async Task<IActionResult> Index(int? page, string searchString, string statusFilter)
         {
             int pageSize = 5;
@@ -26,6 +25,7 @@ namespace ClotherS.Areas.Admin.Controllers
             var products = _context.Products
                 .Include(p => p.Brand)
                 .Include(p => p.Category)
+                .Where(p => !p.Disable) // Chỉ lấy sản phẩm chưa bị vô hiệu hóa
                 .AsQueryable();
 
             // Cập nhật trạng thái sản phẩm dựa vào số lượng
@@ -40,36 +40,29 @@ namespace ClotherS.Areas.Admin.Controllers
                 }
                 await _context.SaveChangesAsync();
             }
-
             // Tìm kiếm theo tên sản phẩm
             if (!string.IsNullOrEmpty(searchString))
             {
                 products = products.Where(p => p.ProductName.Contains(searchString));
             }
-
             // Lọc theo trạng thái sản phẩm
             if (!string.IsNullOrEmpty(statusFilter))
             {
                 products = products.Where(p => p.Status == statusFilter);
             }
-
             // Phân trang
             var pagedList = await products.OrderBy(p => p.ProductId)
                                           .ToPagedListAsync(pageNumber, pageSize);
-
             ViewBag.SearchString = searchString;
             ViewBag.StatusFilter = statusFilter;
 
             return View(pagedList);
         }
 
-
-
         // GET: Products/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();
-
             var product = await _context.Products
                 .Include(p => p.Brand)
                 .Include(p => p.Category)
@@ -99,39 +92,31 @@ namespace ClotherS.Areas.Admin.Controllers
                 {
                     var fileName = Path.GetFileName(ImageFile.FileName);
                     var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images", fileName);
-
                     using (var stream = new FileStream(filePath, FileMode.Create))
                     {
                         await ImageFile.CopyToAsync(stream);
                     }
-
                     product.Image = fileName;
                 }
                 else
                 {
                     product.Image = "Product.png";
                 }
-
                 _context.Add(product);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-
             ViewData["BrandId"] = new SelectList(_context.Brands, "BrandId", "BrandName", product.BrandId);
             ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryName", product.CategoryId);
             return View(product);
         }
 
-
-
         // GET: Products/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
-
             var product = await _context.Products.FindAsync(id);
             if (product == null) return NotFound();
-
             ViewData["BrandId"] = new SelectList(_context.Brands, "BrandId", "BrandName", product.BrandId);
             ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryName", product.CategoryId);
             return View(product);
@@ -184,7 +169,6 @@ namespace ClotherS.Areas.Admin.Controllers
             return View(product);
         }
 
-
         // POST: Products/Delete
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -193,10 +177,10 @@ namespace ClotherS.Areas.Admin.Controllers
             var product = await _context.Products.FindAsync(id);
             if (product != null)
             {
-                _context.Products.Remove(product);
+                product.Disable = true; 
+                _context.Update(product);
                 await _context.SaveChangesAsync();
             }
-
             return RedirectToAction(nameof(Index));
         }
 

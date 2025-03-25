@@ -20,9 +20,10 @@
             <tbody>
                 @foreach (var item in Model.OrderDetails)
                 {
-                    <tr>
+                    <tr data-product-id="@item.ProductId">
                         <td>
-                            <input type="checkbox" name="selectedProducts" value="@item.ProductId" class="product-checkbox">
+                            <input type="checkbox" name="selectedProducts" value="@item.ProductId"
+                                   class="product-checkbox" data-disable="@item.Product.Disable.ToString().ToLower()">
                         </td>
                         <td>
                             <img src="~/images/@item.Product.Image" alt="@item.Product.ProductName"
@@ -41,7 +42,7 @@
                         </td>
                         <td>
                             <a href="@Url.Action("RemoveFromCart", "ShoppingCart", new { productId = item.ProductId })"
-                               class="btn btn-danger">Remove</a>
+                               class="btn btn-danger remove-item">Remove</a>
                         </td>
                     </tr>
                 }
@@ -65,64 +66,6 @@ else
         <a href="@Url.Action("Index", "Home")" class="btn btn-default get">Shopping Now</a>
     </div>
 }
-
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-    $(document).ready(function () {
-        $(".quantity-input").on("change", function () {
-            var inputElement = $(this);
-            var productId = inputElement.data("product-id");
-            var quantity = parseInt(inputElement.val());
-
-            if (quantity < 1) {
-                alert("Quantity must be at least 1.");
-                inputElement.val(1);
-                return;
-            }
-
-            $.ajax({
-                url: "/ShoppingCart/CheckStock",
-                type: "POST",
-                data: { productId: productId, quantity: quantity },
-                success: function (response) {
-                    if (!response.success) {
-                        alert("Only " + response.maxQuantity + " items available in stock.");
-                        inputElement.val(response.maxQuantity);
-                    }
-                    updateCart(productId, inputElement.val());
-                }
-            });
-        });
-
-        function updateCart(productId, quantity) {
-            $.ajax({
-                url: "/ShoppingCart/UpdateCart",
-                type: "POST",
-                data: { productId: productId, quantity: quantity },
-                success: function () {
-                    console.log("Cart updated successfully.");
-                    updateTotalPrice(productId, quantity);
-                },
-                error: function () {
-                    alert("Failed to update cart.");
-                }
-            });
-        }
-
-        function updateTotalPrice(productId, quantity) {
-            var price = parseFloat($(`.quantity-input[data-product-id='${productId}']`).closest("tr").find("td:nth-child(3)").text().replace("$", ""));
-            var discount = parseFloat($(`.quantity-input[data-product-id='${productId}']`).closest("tr").find("td:nth-child(4)").text().replace("$", "")) || 0;
-            var total = (quantity * (price - discount)).toFixed(2);
-            $(`.quantity-input[data-product-id='${productId}']`).closest("tr").find("td:nth-child(6)").text(`$${total}`);
-        }
-
-        // Kiểm tra khi nhấn "Confirm Order"
-        $("#cartForm").on("submit", function (event) {
-            if ($(".product-checkbox:checked").length === 0) {
-                alert("Please select at least one product to purchase.");
-                event.preventDefault(); // Ngăn chặn form submit
-            }
-        });
-    });
-
-</script>
+<script src="~/js/shopping-cart.js"></script>
