@@ -277,5 +277,25 @@ namespace ClotherS.Areas.Admin.Controllers
             return Json(new { success = true, message = "Account deleted successfully." });
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ActiveStatus(int id, bool isActive)
+        {
+            var user = await _userManager.FindByIdAsync(id.ToString());
+            if (user == null)
+            {
+                return Json(new { success = false, message = "User not found." });
+            }
+
+            user.Active = isActive;
+            var result = await _userManager.UpdateAsync(user);
+            if (result.Succeeded)
+            {
+                return Json(new { success = true, message = "User status updated successfully." });
+            }
+
+            return Json(new { success = false, message = "Failed to update user status." });
+        }
+
     }
 }
