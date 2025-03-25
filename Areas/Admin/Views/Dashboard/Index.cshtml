@@ -44,7 +44,7 @@
 </style>
 
 <div class="container mt-4">
-    <h2 class="mb-4 text-center">Admin Dashboard</h2>
+    <h1 class="title text-center">Admin Dashboard</h1>
     <div class="row text-center">
         <div class="col-md-3">
             <div class="card text-white p-4">
@@ -92,10 +92,10 @@
         </div>
     </div>
 
-    <h4 class="mt-4 text-center">Revenue Chart</h4>
+    <h2 class="title text-center">Revenue Chart</h2>
     <canvas id="revenueChart" height="100"></canvas>
 
-    <h4 class="mt-4">Latest Orders</h4>
+    <h2 class="title text-center">Latest Orders</h2>
     <table class="table table-bordered">
         <thead class="table-dark">
             <tr>
@@ -107,7 +107,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var order in ViewBag.LatestOrders)
+            @foreach (var order in ViewBag.LatestOrders) 
             {
                 <tr>
                     <td>@order.OId</td>
@@ -122,7 +122,7 @@
         </tbody>
     </table>
 
-    <h4 class="mt-4">Best Selling Products</h4>
+    <h2 class="title text-center">Best Selling Products</h2>
     <table class="table table-bordered">
         <thead class="table-dark">
             <tr>

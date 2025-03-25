@@ -17,7 +17,8 @@
         <label for="CustomerNote" class="form-label">Customer Note</label>
         <textarea class="form-control" id="CustomerNote" name="CustomerNote">@Model.CustomerNote</textarea>
     </div>
-    <h4>Order Summary</h4>
+    <hr />
+    <h2 class="title text-center">Order Products</h2>
     <table class="table">
         <thead>
             <tr>
@@ -49,5 +50,5 @@
         </tbody>
     </table>
     <button type="submit" class="btn btn-default get">Place Order</button>
-    <a href="@Url.Action("Index", "ShoppingCart")" class="btn btn-secondary">Back to Cart</a>
+    <a href="@Url.Action("Index", "ShoppingCart")" class="btn btn-default get">Back to Cart</a>
 </form>

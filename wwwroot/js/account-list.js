@@ -68,4 +68,48 @@
             }
         });
     });
+
+    // Cập nhật trạng thái Active
+    $('.toggle-active').change(function () {
+        var accountId = $(this).data('id');
+        var isActive = $(this).prop('checked');
+
+        $.ajax({
+            url: '/Admin/Accounts/ActiveStatus', // Gọi API mới
+            type: 'POST',
+            data: {
+                id: accountId,
+                isActive: isActive,
+                __RequestVerificationToken: $('#deleteAccountForm input[name="__RequestVerificationToken"]').val()
+            },
+            success: function (response) {
+                if (response.success) {
+                    Swal.fire({
+                        title: "Success!",
+                        text: "User status updated successfully.",
+                        icon: "success",
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+
+                    // Cập nhật trạng thái data-status của hàng (để lọc hoạt động đúng)
+                    var row = $('.account-row[data-id="' + accountId + '"]');
+                    row.attr('data-status', isActive ? 'active' : 'inactive');
+                } else {
+                    Swal.fire({
+                        title: "Error!",
+                        text: response.message,
+                        icon: "error"
+                    });
+                }
+            },
+            error: function () {
+                Swal.fire({
+                    title: "Error!",
+                    text: "Failed to update status. Please try again.",
+                    icon: "error"
+                });
+            }
+        });
+    });
 });
