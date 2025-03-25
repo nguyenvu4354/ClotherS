@@ -46,6 +46,10 @@ namespace ClotherS.Controllers
             var result = await _signInManager.PasswordSignInAsync(user, password, true, lockoutOnFailure: false);
             if (result.Succeeded)
             {
+                if (await _userManager.IsInRoleAsync(user, "ADMIN"))
+                {
+                    return RedirectToAction("Dashboard", "Admin");
+                }
                 if (await _userManager.IsInRoleAsync(user, "SHIPPER"))
                 {
                     return RedirectToAction("MyShipping", "Shippers");

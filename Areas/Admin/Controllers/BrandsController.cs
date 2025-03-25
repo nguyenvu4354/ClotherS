@@ -9,8 +9,9 @@ using ClotherS.Models;
 using ClotherS.Repositories;
 using X.PagedList;
 
-namespace ClotherS.Controllers
+namespace ClotherS.Areas.Admin.Controllers
 {
+    [Area("Admin")]
     public class BrandsController : Controller
     {
         private readonly DataContext _context;

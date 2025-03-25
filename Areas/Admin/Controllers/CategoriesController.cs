@@ -8,8 +8,9 @@ using Microsoft.EntityFrameworkCore;
 using ClotherS.Models;
 using ClotherS.Repositories;
 
-namespace ClotherS.Controllers
+namespace ClotherS.Areas.Admin.Controllers
 {
+    [Area("Admin")]
     public class CategoriesController : Controller
     {
         private readonly DataContext _context;

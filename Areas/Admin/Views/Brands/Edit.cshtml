@@ -1,20 +1,20 @@
-﻿@model ClotherS.Models.Category
+﻿@model ClotherS.Models.Brand
 
 @{
     ViewData["Title"] = "Edit";
 }
 
-<h2 class="title text-center">Edit Category</h2>
+<h1 class="title text-center">Edit Brand</h1>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="CategoryId" />
+            <input type="hidden" asp-for="BrandId" />
             <div class="form-group">
-                <label asp-for="CategoryName" class="control-label"></label>
-                <input asp-for="CategoryName" class="form-control" />
-                <span asp-validation-for="CategoryName" class="text-danger"></span>
+                <label asp-for="BrandName" class="control-label"></label>
+                <input asp-for="BrandName" class="form-control" />
+                <span asp-validation-for="BrandName" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Description" class="control-label"></label>

@@ -10,10 +10,11 @@
 <p><strong>Email:</strong> @(Model.Account?.Email ?? "No email")</p>
 <p><strong>Phone Number:</strong> @(Model.Account?.PhoneNumber ?? "No phone number")</p>
 
-<h4>Product List</h4>
+<h2 class="title text-center">Ordered products</h2>
 <table class="table">
     <thead>
         <tr>
+            <th>Image</th> 
             <th>Product Name</th>
             <th>Quantity</th>
             <th>Price</th>
@@ -28,6 +29,10 @@
         @foreach (var detail in Model.OrderDetails)
         {
             <tr>
+                <td>
+                    <img src="~/images/@(detail.Product?.Image ?? "default.png")"
+                         alt="Product Image" width="50" height="50" class="img-thumbnail" />
+                </td>
                 <td>@detail.Product?.ProductName</td>
                 <td>@detail.Quantity</td>
                 <td>@detail.Price</td>
@@ -51,5 +56,6 @@
         }
     </tbody>
 </table>
+
 
 <a asp-action="Index" class="btn btn-secondary">Back</a>
