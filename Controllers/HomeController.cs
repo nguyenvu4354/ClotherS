@@ -11,17 +11,18 @@ namespace ClotherS.Controllers
     {
         private readonly DataContext _dataContext;
         private readonly ILogger<HomeController> _logger;
-
         public HomeController(ILogger<HomeController> logger, DataContext context)
         {
             _logger = logger;
             _dataContext = context;
         }
-
-        public async Task<IActionResult> Index(string sortOrder, int page = 1)
+        public async Task<IActionResult> Index(string sortOrder, string searchTerm, int? minPrice, int? maxPrice, int page = 1)
         {
-            int pageSize = 6; 
+            int pageSize = 6;
             ViewData["CurrentSort"] = sortOrder;
+            ViewData["SearchTerm"] = searchTerm;
+            ViewData["MinPrice"] = minPrice;
+            ViewData["MaxPrice"] = maxPrice;
 
             var products = _dataContext.Products
                 .Include(p => p.Category)
@@ -31,6 +32,21 @@ namespace ClotherS.Controllers
                             && !p.Category.Disable
                             && !p.Brand.Disable
                             && !p.Disable);
+
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                products = products.Where(p => p.ProductName.Contains(searchTerm));
+            }
+
+            if (minPrice.HasValue)
+            {
+                products = products.Where(p => p.Price >= minPrice.Value);
+            }
+
+            if (maxPrice.HasValue)
+            {
+                products = products.Where(p => p.Price <= maxPrice.Value);
+            }
 
             switch (sortOrder)
             {
@@ -52,6 +68,8 @@ namespace ClotherS.Controllers
 
             return View(pagedProducts);
         }
+
+
 
         public IActionResult Details(int id)
         {

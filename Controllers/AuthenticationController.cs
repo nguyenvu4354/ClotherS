@@ -37,9 +37,9 @@ namespace ClotherS.Controllers
         public async Task<IActionResult> Login(string username, string password)
         {
             var user = await _userManager.FindByNameAsync(username);
-            if (user == null)
+            if (user == null || user.Active == false) 
             {
-                ViewBag.Error = "Invalid username or password";
+                ViewBag.Error = "Account is invalid or has been disabled.";
                 return View();
             }
 

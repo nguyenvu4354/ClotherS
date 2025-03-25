@@ -26,25 +26,34 @@ namespace ClotherS.Controllers
             return View(await _context.Brands.ToListAsync());
         }
         // GET: Brands/Search/5
-        public IActionResult Search(int id, string sortOrder, int page = 1)
+        public async Task<IActionResult> Search(int id, string searchTerm, string sortOrder, int page = 1)
         {
-            int pageSize = 6; 
+            int pageSize = 6;
 
-            var brand = _context.Brands
-                .Include(b => b.Products)
-                .ThenInclude(p => p.Category)
-                .FirstOrDefault(b => b.BrandId == id);
+            var brand = await _context.Brands
+                .FirstOrDefaultAsync(b => b.BrandId == id);
 
             if (brand == null || brand.Disable)
             {
-                return NotFound(); 
+                return NotFound();
             }
 
-            var products = brand.Products
-                .Where(p => p.Category != null && !p.Category.Disable)
+            var products = _context.Products
+                .Include(p => p.Category)
+                .Where(p => p.BrandId == id
+                            && p.Category != null
+                            && !p.Category.Disable
+                            && !p.Disable) 
                 .AsQueryable();
 
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                products = products.Where(p => p.ProductName.Contains(searchTerm));
+            }
+
             ViewData["CurrentSort"] = sortOrder;
+            ViewData["SearchTerm"] = searchTerm;
+            ViewData["Brand"] = brand;
 
             switch (sortOrder)
             {
@@ -54,13 +63,17 @@ namespace ClotherS.Controllers
                 case "price_desc":
                     products = products.OrderByDescending(p => p.Price);
                     break;
+                default:
+                    products = products.OrderBy(p => p.ProductId);
+                    break;
             }
 
-            var pagedProducts = products.ToPagedList(page, pageSize);
+            var pagedProducts = await products.ToPagedListAsync(page, pageSize);
 
-            ViewData["Brand"] = brand;
             return View(pagedProducts);
         }
+
+
 
 
         public IActionResult Create()

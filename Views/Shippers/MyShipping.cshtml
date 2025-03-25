@@ -19,6 +19,7 @@
             <table class="table">
                 <thead>
                     <tr>
+                        <th>Image</th>
                         <th>Product</th>
                         <th>Quantity</th>
                         <th>Price</th>
@@ -30,6 +31,9 @@
                     @foreach (var detail in order.OrderDetails)
                     {
                         <tr>
+                            <td>
+                                <img src="~/images/@detail.Product.Image" style="width: 50px; height: 50px; object-fit: cover;" />
+                            </td>
                             <td>@detail.Product.ProductName</td>
                             <td>@detail.Quantity</td>
                             <td>@detail.Price</td>
@@ -49,6 +53,7 @@
                     }
                 </tbody>
             </table>
+
         </div>
     </div>
 }

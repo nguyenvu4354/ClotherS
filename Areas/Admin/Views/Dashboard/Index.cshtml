@@ -3,45 +3,7 @@
     ViewData["Title"] = "Dashboard";
 }
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<style>
-    body {
-        background-color: #f4f4f4;
-    }
-
-    .card {
-        transition: transform 0.3s ease-in-out, box-shadow 0.3s;
-        background: linear-gradient(135deg, #FE980F, #ff7300);
-        border-radius: 15px;
-    }
-
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-        }
-
-    .table tbody tr:hover {
-        background-color: #ffe5b4;
-        transition: 0.3s;
-    }
-
-    .dashboard-icon {
-        font-size: 2.5rem;
-        margin-right: 15px;
-    }
-
-    h2 {
-        color: #FE980F;
-        font-weight: bold;
-    }
-
-    .table-dark {
-        background-color: #FE980F !important;
-        color: white;
-    }
-</style>
 
 <div class="container mt-4">
     <h1 class="title text-center">Admin Dashboard</h1>
@@ -126,6 +88,7 @@
     <table class="table table-bordered">
         <thead class="table-dark">
             <tr>
+                <th>Product Image</th>
                 <th>Product Name</th>
                 <th>Units Sold</th>
             </tr>
@@ -134,11 +97,19 @@
             @foreach (var product in ViewBag.BestSellingProducts)
             {
                 <tr>
+                    <td>
+                        <img src="@Url.Content("~/images/" + product.Image)"
+                             alt="@product.ProductName"
+                             width="80" height="80"
+                             style="object-fit: cover; border-radius: 8px;" />
+                    </td>
                     <td>@product.ProductName</td>
                     <td>@product.TotalSold</td>
                 </tr>
             }
         </tbody>
+    </table>
+
     </table>
 </div>
 <script>
@@ -170,3 +141,42 @@
         });
     });
 </script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+    body {
+        background-color: #FFFFFF;
+    }
+
+    .card {
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s;
+        background: linear-gradient(135deg, #FE980F, #ff7300);
+        border-radius: 15px;
+    }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+    .table tbody tr:hover {
+        background-color: #ffe5b4;
+        transition: 0.3s;
+    }
+
+    .dashboard-icon {
+        font-size: 2.5rem;
+        margin-right: 15px;
+    }
+
+    h2 {
+        color: #FE980F;
+        font-weight: bold;
+    }
+
+    .table-dark {
+        background-color: #FE980F !important;
+        color: white;
+    }
+</style>

@@ -15,7 +15,7 @@
         <div class="card-body">
             <div class="text-end btn-create">
                 <a asp-action="Create" class="btn btn-success">
-                    <i class="fas fa-plus-circle"></i> Create New
+                    <i class="fas fa-plus-circle"></i> Create New Brand
                 </a>
             </div>
 
@@ -34,10 +34,9 @@
                             <td>@Html.DisplayFor(modelItem => item.BrandName)</td>
                             <td>@Html.DisplayFor(modelItem => item.Description)</td>
                             <td>
-                                <form asp-action="UpdateStatus" asp-route-id="@item.BrandId" method="post" style="display:inline;">
-                                    <button type="submit" class="btn btn-sm @(item.Disable ? "btn-success" : "btn-danger")">
-                                        <i class="fas @(item.Disable ? "fa-check-circle" : "fa-ban")"></i>
-                                        @(item.Disable ? "Enable" : "Disable")
+                                <form id="deleteForm-@item.BrandId" asp-action="SoftDelete" asp-route-id="@item.BrandId" method="post" style="display:inline;">
+                                    <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete(@item.BrandId)">
+                                        <i class="fas fa-trash-alt"></i> Delete
                                     </button>
                                 </form>
                                 <a asp-action="Edit" asp-route-id="@item.BrandId" class="btn btn-warning btn-sm">
@@ -54,3 +53,35 @@
 
 <!-- Import FontAwesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function confirmDelete(brandId) {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "This brand will be deleted!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById("deleteForm-" + brandId).submit();
+            }
+        });
+    }
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var successMessage = "@TempData["SuccessMessage"]";
+        if (successMessage) {
+            Swal.fire({
+                icon: "success",
+                title: "Success",
+                text: successMessage,
+                showConfirmButton: false,
+                timer: 2000
+            });
+        }
+    });
+</script>

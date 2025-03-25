@@ -32,10 +32,11 @@ namespace ClotherS.Areas.Admin.Controllers
 
             var bestSellingProducts = await _context.OrderDetails
                 .Include(od => od.Product)
-                .GroupBy(od => new { od.ProductId, od.Product.ProductName })
+                .GroupBy(od => new { od.ProductId, od.Product.ProductName, od.Product.Image })
                 .Select(g => new
                 {
                     g.Key.ProductName,
+                    g.Key.Image,
                     TotalSold = g.Sum(od => od.Quantity)
                 })
                 .OrderByDescending(g => g.TotalSold)
@@ -45,7 +46,7 @@ namespace ClotherS.Areas.Admin.Controllers
             // Doanh thu theo từng tháng
             var revenueByMonth = await _context.OrderDetails
                 .Include(od => od.Order)
-                .Where(od => od.Order.OrderDate.Year == DateTime.Now.Year) // Lọc theo năm hiện tại
+                .Where(od => od.Order.OrderDate.Year == DateTime.Now.Year) 
                 .GroupBy(od => od.Order.OrderDate.Month)
                 .Select(g => new
                 {

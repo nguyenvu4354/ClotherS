@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ClotherS.Models;
 using ClotherS.Repositories;
+using X.PagedList;
 
 namespace ClotherS.Controllers
 {
@@ -25,41 +22,50 @@ namespace ClotherS.Controllers
             return View(await _context.Categories.ToListAsync());
         }
 
-
-        public IActionResult Search(int id, string sortOrder)
+        public async Task<IActionResult> Search(int id, string sortOrder, int page = 1)
         {
-            var category = _context.Categories
+            int pageSize = 6;
+
+            var category = await _context.Categories
                 .Include(c => c.Products)
-                .ThenInclude(p => p.Brand) // Load cả Brand để kiểm tra Disable
-                .FirstOrDefault(c => c.CategoryId == id);
+                .ThenInclude(p => p.Brand)
+                .FirstOrDefaultAsync(c => c.CategoryId == id);
 
             if (category == null || category.Disable)
             {
-                return NotFound(); // Nếu Category bị ẩn, trả về 404
+                return NotFound();
             }
 
-            // Lọc sản phẩm có Brand hợp lệ
-            category.Products = category.Products
-                .Where(p => p.Brand != null && !p.Brand.Disable) // Loại bỏ sản phẩm có Brand bị ẩn
-                .ToList();
+            var products = _context.Products
+                .Include(p => p.Category)
+                .Include(p => p.Brand)
+                .Where(p => p.CategoryId == id
+                            && p.Brand != null
+                            && !p.Category.Disable
+                            && !p.Brand.Disable
+                            && !p.Disable) 
+                .AsQueryable();
 
             ViewData["CurrentSort"] = sortOrder;
+            ViewData["Category"] = category;
 
             switch (sortOrder)
             {
                 case "price_asc":
-                    category.Products = category.Products.OrderBy(p => p.Price).ToList();
+                    products = products.OrderBy(p => p.Price);
                     break;
                 case "price_desc":
-                    category.Products = category.Products.OrderByDescending(p => p.Price).ToList();
+                    products = products.OrderByDescending(p => p.Price);
+                    break;
+                default:
+                    products = products.OrderBy(p => p.ProductId);
                     break;
             }
 
-            return View(category);
+            var pagedProducts = await products.ToPagedListAsync(page, pageSize);
+
+            return View(pagedProducts);
         }
-
-
-
 
         // GET: Categories/Create
         public IActionResult Create()

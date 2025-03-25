@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ClotherS.Models;
 using ClotherS.Repositories;
@@ -19,48 +14,14 @@ namespace ClotherS.Areas.Admin.Controllers
         {
             _context = context;
         }
-
-        // GET: Categories
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Categories.ToListAsync());
+            var categories = await _context.Categories
+                .Where(c => !c.Disable)
+                .ToListAsync();
+
+            return View(categories);
         }
-
-
-        public IActionResult Search(int id, string sortOrder)
-        {
-            var category = _context.Categories
-                .Include(c => c.Products)
-                .ThenInclude(p => p.Brand) // Load cả Brand để kiểm tra Disable
-                .FirstOrDefault(c => c.CategoryId == id);
-
-            if (category == null || category.Disable)
-            {
-                return NotFound(); // Nếu Category bị ẩn, trả về 404
-            }
-
-            // Lọc sản phẩm có Brand hợp lệ
-            category.Products = category.Products
-                .Where(p => p.Brand != null && !p.Brand.Disable) // Loại bỏ sản phẩm có Brand bị ẩn
-                .ToList();
-
-            ViewData["CurrentSort"] = sortOrder;
-
-            switch (sortOrder)
-            {
-                case "price_asc":
-                    category.Products = category.Products.OrderBy(p => p.Price).ToList();
-                    break;
-                case "price_desc":
-                    category.Products = category.Products.OrderByDescending(p => p.Price).ToList();
-                    break;
-            }
-
-            return View(category);
-        }
-
-
-
 
         // GET: Categories/Create
         public IActionResult Create()
@@ -69,8 +30,6 @@ namespace ClotherS.Areas.Admin.Controllers
         }
 
         // POST: Categories/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("CategoryId,CategoryName,Description,Disable")] Category category)
@@ -79,11 +38,13 @@ namespace ClotherS.Areas.Admin.Controllers
             {
                 _context.Add(category);
                 await _context.SaveChangesAsync();
+
+                TempData["SuccessMessage"] = "Category added successfully!";
                 return RedirectToAction(nameof(Index));
             }
             return View(category);
         }
-
+        
         // GET: Categories/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -101,8 +62,6 @@ namespace ClotherS.Areas.Admin.Controllers
         }
 
         // POST: Categories/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("CategoryId,CategoryName,Description,Disable")] Category category)
@@ -118,6 +77,8 @@ namespace ClotherS.Areas.Admin.Controllers
                 {
                     _context.Update(category);
                     await _context.SaveChangesAsync();
+
+                    TempData["SuccessMessage"] = "Category updated successfully!";
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -136,7 +97,7 @@ namespace ClotherS.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> UpdateStatus(int id)
+        public async Task<IActionResult> SoftDelete(int id)
         {
             var category = await _context.Categories.FindAsync(id);
             if (category == null)
@@ -144,15 +105,13 @@ namespace ClotherS.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            // Đảo trạng thái Disable
-            category.Disable = !category.Disable;
-
+            category.Disable = true;
             _context.Update(category);
             await _context.SaveChangesAsync();
 
+            TempData["SuccessMessage"] = "Category deleted successfully!";
             return RedirectToAction(nameof(Index));
         }
-
 
         private bool CategoryExists(int id)
         {

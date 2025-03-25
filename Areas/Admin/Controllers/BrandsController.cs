@@ -21,15 +21,20 @@ namespace ClotherS.Areas.Admin.Controllers
             _context = context;
         }
 
-        // GET: Brands
+        // Hiển thị danh sách Brands (Ẩn những Brand bị xóa mềm)
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Brands.ToListAsync());
+            var brands = await _context.Brands
+                .Where(b => !b.Disable)
+                .ToListAsync();
+
+            return View(brands);
         }
-        // GET: Brands/Search/5
+
+        // Tìm kiếm Brand
         public IActionResult Search(int id, string sortOrder, int page = 1)
         {
-            int pageSize = 6; 
+            int pageSize = 6;
 
             var brand = _context.Brands
                 .Include(b => b.Products)
@@ -38,7 +43,7 @@ namespace ClotherS.Areas.Admin.Controllers
 
             if (brand == null || brand.Disable)
             {
-                return NotFound(); 
+                return NotFound();
             }
 
             var products = brand.Products
@@ -58,11 +63,9 @@ namespace ClotherS.Areas.Admin.Controllers
             }
 
             var pagedProducts = products.ToPagedList(page, pageSize);
-
             ViewData["Brand"] = brand;
             return View(pagedProducts);
         }
-
 
         public IActionResult Create()
         {
@@ -78,6 +81,7 @@ namespace ClotherS.Areas.Admin.Controllers
             {
                 _context.Add(brand);
                 await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Brand added successfully!";
                 return RedirectToAction(nameof(Index));
             }
             return View(brand);
@@ -115,6 +119,7 @@ namespace ClotherS.Areas.Admin.Controllers
                 {
                     _context.Update(brand);
                     await _context.SaveChangesAsync();
+                    TempData["SuccessMessage"] = "Brand updated successfully!";
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -138,18 +143,18 @@ namespace ClotherS.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> UpdateStatus(int id)
+        public async Task<IActionResult> SoftDelete(int id)
         {
             var brand = await _context.Brands.FindAsync(id);
             if (brand == null)
             {
                 return NotFound();
             }
-            brand.Disable = !brand.Disable;
+            brand.Disable = true;
             _context.Update(brand);
             await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "Brand deleted successfully!";
             return RedirectToAction(nameof(Index));
         }
-
     }
 }
