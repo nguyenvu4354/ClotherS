@@ -56,9 +56,9 @@
                         <!-- Cancel Order Button -->
                         @if (detail.Status == "Processing")
                         {
-                            <form asp-action="CancelOrder" method="post" class="d-inline">
+                            <form id="cancelOrderForm-@detail.DetailId" asp-action="CancelOrder" method="post" class="d-inline">
                                 <input type="hidden" name="detailId" value="@detail.DetailId" />
-                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to cancel this order item?');">
+                                <button type="button" class="btn btn-danger btn-sm" onclick="confirmCancel(@detail.DetailId)">
                                     <i class="fas fa-times"></i> Cancel
                                 </button>
                             </form>
@@ -98,3 +98,22 @@
         </div>
     }
 </div>
+
+<script>
+    function confirmCancel(detailId) {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "Do you really want to cancel this order item?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Yes, cancel it!",
+            cancelButtonText: "No, keep it"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById("cancelOrderForm-" + detailId).submit();
+            }
+        });
+    }
+</script>

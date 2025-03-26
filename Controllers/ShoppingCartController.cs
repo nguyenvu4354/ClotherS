@@ -278,7 +278,6 @@ namespace ClotherS.Controllers
         return RedirectToAction("Index", "ShoppingCart");
     }
 
-    // Lọc những sản phẩm được chọn
     cart.OrderDetails = cart.OrderDetails.Where(od => selectedProducts.Contains(od.ProductId)).ToList();
 
     if (!cart.OrderDetails.Any())
@@ -346,6 +345,5 @@ namespace ClotherS.Controllers
 
             return Json(new { success = true });
         }
-
     }
 }

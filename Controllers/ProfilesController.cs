@@ -101,7 +101,7 @@ public class ProfilesController : Controller
     }
     public async Task<IActionResult> Orders(DateTime? startDate, DateTime? endDate, string sortOrder, int pageNumber = 1)
     {
-        int pageSize = 5; // Số đơn hàng trên mỗi trang
+        int pageSize = 5; 
 
         var user = await _userManager.GetUserAsync(User);
         if (user == null)
@@ -197,7 +197,7 @@ public class ProfilesController : Controller
 
         if (orderDetail.Status != "Processing")
         {
-            TempData["Error"] = "Chỉ có thể hủy đơn hàng khi đang ở trạng thái Processing!";
+            TempData["Error"] = "Orders can only be canceled while in Processing status!";
             return RedirectToAction("OrderDetails", new { id = orderDetail.OId });
         }
 
@@ -210,10 +210,9 @@ public class ProfilesController : Controller
 
         await _context.SaveChangesAsync();
 
-        TempData["Success"] = "Đơn hàng đã bị hủy thành công!";
+        TempData["Success"] = "Order was successfully canceled!";
         return RedirectToAction("OrderDetails", new { id = orderDetail.OId });
     }
-
     public IActionResult ChangePassword()
     {
         return View();
@@ -251,6 +250,4 @@ public class ProfilesController : Controller
         ViewData["ActivePage"] = "ChangePassword";
         return View();
     }
-
-
 }

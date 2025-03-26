@@ -18,7 +18,7 @@ namespace ClotherS.Controllers
         }
         public async Task<IActionResult> Index(string sortOrder, string searchTerm, int? minPrice, int? maxPrice, int page = 1)
         {
-            int pageSize = 6;
+            int pageSize = 9;
             ViewData["CurrentSort"] = sortOrder;
             ViewData["SearchTerm"] = searchTerm;
             ViewData["MinPrice"] = minPrice;
@@ -69,8 +69,6 @@ namespace ClotherS.Controllers
             return View(pagedProducts);
         }
 
-
-
         public IActionResult Details(int id)
         {
             var product = _dataContext.Products
@@ -98,7 +96,6 @@ namespace ClotherS.Controllers
             ViewBag.TotalReviews = feedbacks.Count;
             return View(product);
         }
-
 
         public IActionResult Privacy()
         {
