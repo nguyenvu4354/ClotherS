@@ -4,9 +4,11 @@ using Microsoft.EntityFrameworkCore;
 using ClotherS.Models;
 using ClotherS.Repositories;
 using X.PagedList;
+using Microsoft.AspNetCore.Authorization;
 namespace ClotherS.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Policy = "AdminOnly")]
     public class ProductsController : Controller
     {
         private readonly DataContext _context;
@@ -25,10 +27,9 @@ namespace ClotherS.Areas.Admin.Controllers
             var products = _context.Products
                 .Include(p => p.Brand)
                 .Include(p => p.Category)
-                .Where(p => !p.Disable) // Chỉ lấy sản phẩm chưa bị vô hiệu hóa
+                .Where(p => !p.Disable) 
                 .AsQueryable();
 
-            // Cập nhật trạng thái sản phẩm dựa vào số lượng
             var productsToUpdate = await products.Where(p => (p.Quantity == 0 && p.Status != "Sold out") ||
                                                               (p.Quantity > 0 && p.Status != "Available")).ToListAsync();
 

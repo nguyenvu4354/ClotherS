@@ -7,10 +7,12 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ClotherS.Models;
 using ClotherS.Repositories;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ClotherS.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Policy = "AdminOnly")]
     public class BannersController : Controller
     {
         private readonly DataContext _context;

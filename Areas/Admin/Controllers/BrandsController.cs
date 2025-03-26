@@ -1,17 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ClotherS.Models;
 using ClotherS.Repositories;
 using X.PagedList;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ClotherS.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Policy = "AdminOnly")]
     public class BrandsController : Controller
     {
         private readonly DataContext _context;
@@ -21,7 +18,6 @@ namespace ClotherS.Areas.Admin.Controllers
             _context = context;
         }
 
-        // Hiển thị danh sách Brands (Ẩn những Brand bị xóa mềm)
         public async Task<IActionResult> Index()
         {
             var brands = await _context.Brands
@@ -31,7 +27,6 @@ namespace ClotherS.Areas.Admin.Controllers
             return View(brands);
         }
 
-        // Tìm kiếm Brand
         public IActionResult Search(int id, string sortOrder, int page = 1)
         {
             int pageSize = 6;

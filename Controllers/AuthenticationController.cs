@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using ClotherS.Models;
-using System.Net.Mail;
-using System.Net;
 using ClotherS.Services;
 
 
@@ -25,7 +23,6 @@ namespace ClotherS.Controllers
             _config = config;
             _emailService = emailService;
         }
-
 
         public IActionResult Login()
         {
@@ -128,7 +125,7 @@ namespace ClotherS.Controllers
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null)
             {
-                ViewBag.Message = "Email không tồn tại.";
+                ViewBag.Message = "Email does not exist.";
                 return View();
             }
 
@@ -136,15 +133,15 @@ namespace ClotherS.Controllers
             var resetLink = Url.Action("ResetPassword", "Authentication", new { token, email = user.Email }, Request.Scheme);
 
             var emailSent = await _emailService.SendEmailAsync(email, "Password Reset",
-                $"Click vào link để đặt lại mật khẩu: <a href='{resetLink}'>Đặt lại mật khẩu</a>");
+                $"Click the link to reset your password: <a href='{resetLink}'>Reset Password</a>");
 
             if (emailSent)
             {
-                ViewBag.Message = "Email đặt lại mật khẩu đã được gửi!";
+                ViewBag.Message = "Password reset email has been sent!";
             }
             else
             {
-                ViewBag.Message = "Không thể gửi email.";
+                ViewBag.Message = "Unable to send email.";
             }
 
             return View();
@@ -154,7 +151,7 @@ namespace ClotherS.Controllers
         {
             if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(token))
             {
-                return BadRequest("Token hoặc Email không hợp lệ.");
+                return BadRequest("Invalid token or email.");
             }
 
             ViewBag.Token = token;
@@ -168,20 +165,20 @@ namespace ClotherS.Controllers
         {
             if (string.IsNullOrEmpty(email))
             {
-                ViewBag.Error = "Email không hợp lệ.";
+                ViewBag.Error = "Invalid email.";
                 return View();
             }
 
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null)
             {
-                ViewBag.Error = "Không tìm thấy người dùng.";
+                ViewBag.Error = "User not found.";
                 return View();
             }
 
             if (newPassword != confirmPassword)
             {
-                ViewBag.Error = "Mật khẩu xác nhận không khớp.";
+                ViewBag.Error = "Password confirmation does not match.";
                 return View();
             }
 
@@ -230,5 +227,10 @@ namespace ClotherS.Controllers
             ViewBag.Message = "Failed to create account.";
             return View("Error");
         }
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
     }
+
 }

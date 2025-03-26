@@ -4,10 +4,12 @@ using ClotherS.Models;
 using ClotherS.Repositories;
 using Microsoft.AspNetCore.Identity;
 using X.PagedList;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ClotherS.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Policy = "AdminOnly")]
     public class AccountsController : Controller
     {
         private readonly DataContext _context;

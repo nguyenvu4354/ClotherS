@@ -35,8 +35,8 @@ builder.Services.AddScoped<EmailService>();
 // **6. Cấu hình Authentication & Cookie**
 builder.Services.ConfigureApplicationCookie(options =>
 {
-    options.LoginPath = "/Accounts/Login";  // Trang đăng nhập
-    options.AccessDeniedPath = "/Accounts/AccessDenied"; // Trang từ chối truy cập
+    options.LoginPath = "/Authentication/Login";  // Trang đăng nhập
+    options.AccessDeniedPath = "/Authentication/AccessDenied";
     options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
     options.SlidingExpiration = true;
 });
