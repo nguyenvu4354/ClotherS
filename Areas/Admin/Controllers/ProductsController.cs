@@ -5,6 +5,8 @@ using ClotherS.Models;
 using ClotherS.Repositories;
 using X.PagedList;
 using Microsoft.AspNetCore.Authorization;
+using ClotherS.Hubs;
+using Microsoft.AspNetCore.SignalR;
 namespace ClotherS.Areas.Admin.Controllers
 {
     [Area("Admin")]
@@ -12,10 +14,12 @@ namespace ClotherS.Areas.Admin.Controllers
     public class ProductsController : Controller
     {
         private readonly DataContext _context;
+        private readonly IHubContext<ProductHub> _hubContext;
 
-        public ProductsController(DataContext context)
+        public ProductsController(DataContext context, IHubContext<ProductHub> hubContext)
         {
             _context = context;
+            _hubContext = hubContext;
         }
 
         // GET: Products
@@ -105,6 +109,7 @@ namespace ClotherS.Areas.Admin.Controllers
                 }
                 _context.Add(product);
                 await _context.SaveChangesAsync();
+                await _hubContext.Clients.All.SendAsync("ReceiveProductUpdate");
                 return RedirectToAction(nameof(Index));
             }
             ViewData["BrandId"] = new SelectList(_context.Brands, "BrandId", "BrandName", product.BrandId);
@@ -156,6 +161,8 @@ namespace ClotherS.Areas.Admin.Controllers
 
                     _context.Update(product);
                     await _context.SaveChangesAsync();
+                    await _hubContext.Clients.All.SendAsync("ReceiveProductUpdate");
+
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -181,6 +188,8 @@ namespace ClotherS.Areas.Admin.Controllers
                 product.Disable = true; 
                 _context.Update(product);
                 await _context.SaveChangesAsync();
+                await _hubContext.Clients.All.SendAsync("ReceiveProductUpdate");
+
             }
             return RedirectToAction(nameof(Index));
         }

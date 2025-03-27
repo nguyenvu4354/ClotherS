@@ -56,3 +56,15 @@
         </div>
     </div>
 </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+<script>
+    const connection = new signalR.HubConnectionBuilder()
+        .withUrl("/productHub")
+        .build();
+
+    connection.start().catch(err => console.error(err));
+
+    connection.on("ReceiveProductUpdate", function () {
+        location.reload(); // Tải lại trang khi có thay đổi sản phẩm
+    });
+</script>

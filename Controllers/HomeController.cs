@@ -1,7 +1,9 @@
 ﻿using System.Diagnostics;
+using ClotherS.Hubs;
 using ClotherS.Models;
 using ClotherS.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using X.PagedList;
 
@@ -11,10 +13,12 @@ namespace ClotherS.Controllers
     {
         private readonly DataContext _dataContext;
         private readonly ILogger<HomeController> _logger;
-        public HomeController(ILogger<HomeController> logger, DataContext context)
+        private readonly IHubContext<ProductHub> _hubContext;
+        public HomeController(ILogger<HomeController> logger, DataContext context, IHubContext<ProductHub> hubContext)
         {
             _logger = logger;
             _dataContext = context;
+            _hubContext = hubContext;
         }
         public async Task<IActionResult> Index(string sortOrder, string searchTerm, int? minPrice, int? maxPrice, int page = 1)
         {
@@ -65,7 +69,6 @@ namespace ClotherS.Controllers
             ViewData["Banners"] = banners;
 
             var pagedProducts = await products.ToPagedListAsync(page, pageSize);
-
             return View(pagedProducts);
         }
 

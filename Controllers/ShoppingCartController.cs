@@ -182,7 +182,6 @@ namespace ClotherS.Controllers
                         return RedirectToAction("Index");
                     }
 
-                    // Trừ số lượng sản phẩm trong kho
                     product.Quantity -= item.Quantity;
                 }
 
@@ -260,33 +259,33 @@ namespace ClotherS.Controllers
             if (userId == null)
             {
         return RedirectToAction("Login", "Authentication");
-    }
+        }
 
-    var user = _context.Users.FirstOrDefault(u => u.Id == userId);
-    if (user == null)
-    {
+        var user = _context.Users.FirstOrDefault(u => u.Id == userId);
+        if (user == null)
+        {
         return RedirectToAction("Index", "Home");
-    }
+        }
 
-    var cart = _context.Orders
+        var cart = _context.Orders
         .Include(o => o.OrderDetails)
         .ThenInclude(od => od.Product)
         .FirstOrDefault(o => o.AccountId == user.Id && o.IsCart);
 
-    if (cart == null)
-    {
+        if (cart == null)
+        {
         return RedirectToAction("Index", "ShoppingCart");
-    }
+        }
 
-    cart.OrderDetails = cart.OrderDetails.Where(od => selectedProducts.Contains(od.ProductId)).ToList();
+        cart.OrderDetails = cart.OrderDetails.Where(od => selectedProducts.Contains(od.ProductId)).ToList();
 
-    if (!cart.OrderDetails.Any())
-    {
+        if (!cart.OrderDetails.Any())
+        {
         TempData["Error"] = "No products selected for purchase!";
         return RedirectToAction("Index");
-    }
+        }
 
-    return View(cart);
+        return View(cart);
 }
 
 

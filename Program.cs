@@ -3,9 +3,11 @@ using ClotherS.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using ClotherS.Services;
+using ClotherS.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddSignalR();
 // **1. Cấu hình MVC**
 builder.Services.AddControllersWithViews();
 
@@ -74,6 +76,7 @@ else
 // **11. Cấu hình HTTPS & file tĩnh**
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+app.MapHub<ProductHub>("/productHub");
 
 // **12. Middleware: Authentication, Session, Routing, Authorization**
 app.UseRouting();

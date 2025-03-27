@@ -2,16 +2,28 @@
 
 <div class="container py-5">
     <div class="text-center mb-4">
-        <h1 class="title text-center" ; font-weight: bold;">Order Confirmation</h1>
+        <h1 class="title text-center" style="font-weight: bold;">Order Confirmation</h1>
     </div>
 
     @if (TempData["Success"] != null)
     {
-        <div class="alert alert-success text-center">@TempData["Success"]</div>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                Swal.fire({
+                    title: "Success!",
+                    text: "@TempData["Success"]",
+                    icon: "success",
+                    confirmButtonText: "OK"
+                });
+            });
+        </script>
     }
 
     <div class="card p-4 shadow-sm mb-4">
-        <p class="text-center" style="font-size: 18px; font-weight: bold;">Thank you for your order! We appreciate your support and are processing your order with care. If you need any assistance, feel free to reach out. We hope you enjoy your purchase!</p>
+        <p class="text-center" style="font-size: 18px; font-weight: bold;">
+            Thank you for your order! We appreciate your support and are processing your order with care.
+            If you need any assistance, feel free to reach out. We hope you enjoy your purchase!
+        </p>
     </div>
 
     <div class="card p-4 shadow-sm mb-4">
@@ -59,6 +71,8 @@
     </div>
 
     <div class="text-center">
-        <a asp-controller="Home" asp-action="Index" class="btn btn-default get" style="border-radius: 5px; font-size: 18px;">Continue Shopping</a>
+        <a asp-controller="Home" asp-action="Index" class="btn btn-primary" style="border-radius: 5px; font-size: 18px;">
+            Continue Shopping
+        </a>
     </div>
 </div>
