@@ -36,7 +36,13 @@
                             </div>
                             <div class="choose">
                                 <ul class="nav nav-pills nav-justified">
-                                    <li><a href="#"><i class="fa fa-plus-square"></i>Add to Cart</a></li>
+                                    <li>
+                                        <a href="javascript:void(0);" class="btn-add-to-cart" data-id="@item.ProductId">
+                                            <i class="fa fa-plus-square"></i> Add to Cart
+                                        </a>
+                                    </li>
+
+
                                     <li><a href="#"><i class="fa fa-plus-square"></i>Add to Wishlist</a></li>
                                 </ul>
                             </div>
@@ -65,6 +71,52 @@
     connection.start().catch(err => console.error(err));
 
     connection.on("ReceiveProductUpdate", function () {
-        location.reload(); // Tải lại trang khi có thay đổi sản phẩm
+        location.reload();
     });
 </script>
+<script>
+    document.querySelectorAll('.btn-add-to-cart').forEach(button => {
+        button.addEventListener('click', function () {
+            const productId = this.getAttribute('data-id');
+
+            fetch('/ShoppingCart/AddToCart?productId=' + productId + '&quantity=1', {
+                method: 'POST'
+            })
+            .then(response => {
+                if (response.redirected) {
+                    window.location.href = response.url;
+                } else if (response.ok) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Successfully added to cart!',
+                        text: 'You can continue shopping or check your cart.',
+                        confirmButtonText: 'OK',
+                        showCancelButton: true,
+                        cancelButtonText: 'View Cart',
+                        reverseButtons: true,
+                        backdrop: true,
+                        allowOutsideClick: true,
+                        allowEscapeKey: true
+                    }).then((result) => {
+                        if (result.dismiss === Swal.DismissReason.cancel) {
+                            window.location.href = "/ShoppingCart/Index";
+                        }
+                    });
+                } else {
+                    throw new Error("There was an error adding the product.");
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: 'Could not add the product to the cart.',
+                    confirmButtonText: 'OK'
+                });
+            });
+        });
+    });
+</script>
+
+

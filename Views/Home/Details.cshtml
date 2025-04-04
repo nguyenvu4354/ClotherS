@@ -75,6 +75,7 @@
                     <form method="post" action="@Url.Action("AddToCart", "ShoppingCart")">
                         <input type="hidden" name="productId" value="@Model.ProductId" />
                         <input type="hidden" name="quantity" value="1" />
+                        <input type="hidden" name="redirectToCart" value="true" />
                         <button type="submit" class="btn btn-default get">Add to Cart</button>
                     </form>
                 </div>

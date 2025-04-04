@@ -6,79 +6,101 @@
     ViewData["Title"] = "Product Management";
 }
 
-<h1 class="title text-center">Product Management</h1>
+<link rel="stylesheet" href="~/css/management-styles.css" asp-append-version="true">
 
-<form asp-action="Index" method="get" class="mb-3">
-    <div class="input-group">
-        <input type="text" name="searchString" class="form-control" placeholder="Search product name..." value="@Context.Request.Query["searchString"]">
+<div class="container mt-4">
+    <div class="card shadow-lg">
+        <div class="card-header bg-warning text-white text-center">
+            <h1 class="title">Product Management</h1>
+        </div>
+        <div class="card-body">
+            <form asp-action="Index" method="get" class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <input type="text" name="searchString" class="form-control" placeholder="Search product name..." value="@Context.Request.Query["searchString"]" />
+                </div>
+                <div class="col-md-4">
+                    <select name="statusFilter" class="form-select">
+                        <option value="">-- All Status --</option>
+                        <option value="Available" selected="@(ViewBag.StatusFilter == "Available" ? "selected" : null)">Available</option>
+                        <option value="Sold out" selected="@(ViewBag.StatusFilter == "Sold out" ? "selected" : null)">Sold out</option>
+                    </select>
+                </div>
+                <div class="col-md-2 d-grid">
+                    <button type="submit" class="btn btn-warning">Search</button>
+                </div>
+            </form>
 
-        <select name="statusFilter" class="form-select">
-            <option value="">-- All Status --</option>
-            <option value="Available" selected="@(ViewBag.StatusFilter == "Available" ? "selected" : null)">Available</option>
-            <option value="Sold out" selected="@(ViewBag.StatusFilter == "Sold out" ? "selected" : null)">Sold out</option>
-        </select>
+            <div class="text-end btn-create mb-3">
+                <a asp-action="Create" class="btn btn-success">
+                    <i class="fas fa-plus-circle"></i> Add New Product
+                </a>
+            </div>
 
-        <button type="submit" class="btn btn-default get">Search</button>
-    </div>
-</form>
-
-<p style="text-align: right;">
-    <a asp-action="Create" class="btn btn-default get">+ Add New Product</a>
-</p>
-
-@if (!Model.Any())
-{
-    <div class="alert alert-warning text-center mt-3">
-        No products found!
-    </div>
-}
-else
-{
-    <table class="table border" style="margin-bottom: 10px; margin-top: 35px; color: #696763;">
-        <thead>
-            <tr style="border-bottom: 0;">
-                <th>Product Name</th>
-                <th>Quantity</th>
-                <th>Price</th>
-                <th>Image</th>
-                <th>Discount</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
+            @if (!Model.Any())
             {
-                <tr>
-                    <td style="color: #FE980F; font-weight: 700; font-size: 16px;">@item.ProductName</td>
-                    <td>@item.Quantity</td>
-                    <td class="text-success font-weight-bold" style="color: #FE980F; font-weight: 700; font-size: 16px;">$@item.Price</td>
-                    <td>
-                        <img src="@Url.Content("~/images/" + item.Image)" class="img-thumbnail" width="80" height="80">
-                    </td>
-                    <td class="text-danger" style="color: #FE980F; font-weight: 700; font-size: 16px;">@item.Discount%</td>
-                    <td>@item.Status</td>
-                    <td>
-                        <a asp-action="Edit" asp-route-id="@item.ProductId" class="btn btn-warning btn-sm">Edit</a>
-                        <a asp-action="Details" asp-route-id="@item.ProductId" class="btn btn-info btn-sm">Details</a>
-                        <form id="delete-form-@item.ProductId" asp-action="Delete" method="post" style="display:inline;">
-                            <input type="hidden" name="id" value="@item.ProductId" />
-                            <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete(@item.ProductId)">Delete</button>
-                        </form>
-                    </td>
-                </tr>
+                <div class="alert alert-warning text-center">No products found!</div>
             }
-        </tbody>
-    </table>
+            else
+            {
+                <table class="table table-hover table-bordered text-center align-middle">
+                    <thead class="table-orange">
+                        <tr>
+                            <th>Product Name</th>
+                            <th>Quantity</th>
+                            <th>Price</th>
+                            <th>Image</th>
+                            <th>Discount</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td style="color: #FE980F; font-weight: 700;">@item.ProductName</td>
+                                <td>@item.Quantity</td>
+                                <td class="text-success fw-bold">$@item.Price</td>
+                                <td>
+                                    <img src="@Url.Content("~/images/" + item.Image)" class="img-thumbnail banner-image" />
+                                </td>
+                                <td class="text-danger fw-bold">@item.Discount%</td>
+                                <td>
+                                    <span class="badge bg-@(item.Status == "Available" ? "success" : "secondary")">@item.Status</span>
+                                </td>
+                                <td>
+                                    <a asp-action="Edit" asp-route-id="@item.ProductId" class="btn btn-warning btn-sm">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </a>
+                                    <a asp-action="Details" asp-route-id="@item.ProductId" class="btn btn-info btn-sm">
+                                        <i class="fas fa-info-circle"></i> Details
+                                    </a>
+                                    <form id="delete-form-@item.ProductId" asp-action="Delete" method="post" style="display:inline;">
+                                        <input type="hidden" name="id" value="@item.ProductId" />
+                                        <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete(@item.ProductId)">
+                                            <i class="fas fa-trash-alt"></i> Delete
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
 
-    <!-- Phân trang -->
-    <div id="pagination">
-        @Html.PagedListPager(Model, page => Url.Action("Index", new { page, searchString = Context.Request.Query["searchString"], statusFilter = Context.Request.Query["statusFilter"] }))
+                <div id="pagination" class="text-center">
+                    @Html.PagedListPager(Model, page => Url.Action("Index", new
+                        {
+                            page,
+                            searchString = Context.Request.Query["searchString"],
+                            statusFilter = Context.Request.Query["statusFilter"]
+                        }))
+                </div>
+            }
+        </div>
     </div>
+</div>
 
-}
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
 <script>
     const connection = new signalR.HubConnectionBuilder()
@@ -86,9 +108,8 @@ else
         .build();
 
     connection.start().catch(err => console.error(err));
-
     connection.on("ReceiveProductUpdate", function () {
-        location.reload(); 
+        location.reload();
     });
 </script>
 
@@ -96,7 +117,7 @@ else
     function confirmDelete(productId) {
         Swal.fire({
             title: "Are you sure?",
-                text: "This product will be deleted.",
+            text: "This product will be deleted.",
             icon: "warning",
             showCancelButton: true,
             confirmButtonColor: "#d33",

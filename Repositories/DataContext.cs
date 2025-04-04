@@ -17,6 +17,7 @@ namespace ClotherS.Repositories
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderDetail> OrderDetails { get; set; }
         public DbSet<Feedback> Feedbacks { get; set; }
+        public DbSet<Wishlist> Wishlists { get; set; } = default!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -74,7 +75,21 @@ namespace ClotherS.Repositories
                 .WithMany(od => od.Feedbacks)
                 .HasForeignKey(f => f.DetailId)
                 .OnDelete(DeleteBehavior.Restrict);
+            // Cấu hình quan hệ giữa Wishlist và Product
+            modelBuilder.Entity<Wishlist>()
+                .HasOne(w => w.Product)
+                .WithMany()  // Một sản phẩm có thể xuất hiện trong nhiều wishlist của các user
+                .HasForeignKey(w => w.ProductId)
+                .OnDelete(DeleteBehavior.Cascade); // Xóa wishlist nếu sản phẩm bị xóa
+
+            // Cấu hình quan hệ giữa Wishlist và Account (User)
+            modelBuilder.Entity<Wishlist>()
+                .HasOne(w => w.Account) // Liên kết với Account (User)
+                .WithMany() // Một người dùng có thể có nhiều sản phẩm trong wishlist
+                .HasForeignKey(w => w.AccountId)
+                .OnDelete(DeleteBehavior.Cascade); // Xóa wishlist nếu tài khoản bị xóa
         }
+
         public DbSet<ClotherS.Models.Banner> Banner { get; set; } = default!;
     }
 }

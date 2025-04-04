@@ -38,7 +38,8 @@ namespace ClotherS.Controllers
         }
 
         // Thêm sản phẩm vào giỏ hàng
-        public IActionResult AddToCart(int productId, int quantity)
+        [HttpPost]
+        public IActionResult AddToCart(int productId, int quantity, bool redirectToCart = false)
         {
             var userId = GetUserId();
             if (userId == null)
@@ -84,9 +85,12 @@ namespace ClotherS.Controllers
             }
 
             _context.SaveChanges();
-            return RedirectToAction("Index");
+            if (redirectToCart)
+            {
+                return RedirectToAction("Index", "ShoppingCart");
+            }
+            return Json(new { success = true });
         }
-
         // Xóa sản phẩm khỏi giỏ hàng
         public IActionResult RemoveFromCart(int productId)
         {
@@ -204,9 +208,7 @@ namespace ClotherS.Controllers
                     OrderDetails = selectedOrderDetails,
                     IsCart = false
                 };
-
                 _context.Orders.Add(newOrder);
-
                 // Xóa các sản phẩm đã checkout khỏi giỏ hàng
                 foreach (var item in selectedOrderDetails)
                 {
@@ -219,9 +221,6 @@ namespace ClotherS.Controllers
             TempData["Success"] = "Order placed successfully!";
             return RedirectToAction("OrderConfirmation");
         }
-
-
-
 
         public IActionResult OrderConfirmation()
         {
@@ -286,7 +285,7 @@ namespace ClotherS.Controllers
         }
 
         return View(cart);
-}
+        }
 
 
         [HttpPost]
